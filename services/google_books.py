@@ -8,8 +8,13 @@ BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 
 def fetch_book_by_isbn(isbn):
     params = {
-        'q': f'isbn:{isbn}',
-        'key': API_KEY
+        "q": f"isbn:{isbn}",
+        "key": API_KEY
     }
     response = requests.get(BASE_URL, params=params)
+    if response.status_code != 200:
+        raise Exception(f"Error fetching book data: {response.status_code}")
+    return response.json()
+        
+        
     
