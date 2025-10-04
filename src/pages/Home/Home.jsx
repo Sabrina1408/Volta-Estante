@@ -4,31 +4,32 @@ import styles from "./Home.module.css";
 import { useState } from "react";
 
 const Home = () => {
-  const [count, setCount] = useState(0);
-  const [apiMessage, setApiMessage] = useState("");
-
-  const fetchFromApi = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/about");
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setApiMessage(data.version);
-    } catch (error) {
-      console.error("Error fetching from API:", error);
-      setApiMessage(`Error connecting to API: ${error.message}`);
-    }
-  };
-
   return (
-    <div className={styles.home}>
-      <h1>Home</h1>
-      <div className="card">
-        <button onClick={fetchFromApi}>Fetch from API</button>
-        <p>{apiMessage && <p>API Response: {apiMessage}</p>}</p>
+    <main className={styles}>
+      <div className={styles.text}>
+        <h1>
+        A Gestão Inteligente que o Seu Sebo Merece: Estoque, Análise e Controle
+        Total.
+      </h1>
+      <p>
+        Nosso sistema foi desenvolvido para donos de sebos que buscam otimizar o
+        gerenciamento de seu estoque de livros. Oferecemos um painel acessível
+        por meio de um sistema de autenticação segura (Firebase Authentication)
+      </p>
+      <p>
+        Visão Completa e Decisões Baseadas em Dados Tenha controle total com
+        nosso Dashboard (Painel de Controle), que oferece uma visão geral e
+        informações rápidas e essenciais sobre o seu negócio. Utilize gráficos
+        informativos para monitorar:
+      </p>
+      <ul>
+        <li>Livros e gêneros mais vendidos (por unidade).</li>
+        <li>Itens com as melhores avaliações.</li>
+        <li>O valor total estimado do estoque.</li>
+      </ul>
       </div>
-    </div>
+      <img src="../../src/assets/StackBooks.jpg" alt="" />
+    </main>
   );
 };
 

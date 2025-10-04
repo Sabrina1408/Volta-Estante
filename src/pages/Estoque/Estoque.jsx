@@ -1,9 +1,33 @@
 import React from 'react';
 import styles from './Estoque.module.css';
+import { useState } from "react";
 
 const Estoque = () => {
+  const [count, setCount] = useState(0);
+  const [apiMessage, setApiMessage] = useState("");
+
+  const fetchFromApi = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/about");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setApiMessage(data.version);
+    } catch (error) {
+      console.error("Error fetching from API:", error);
+      setApiMessage(`Error connecting to API: ${error.message}`);
+    }
+  };
+
   return (
-    <div></div>
+    <div className={styles.home}>
+      <h1>Home</h1>
+      <div className="card">
+        <button onClick={fetchFromApi}>Fetch from API</button>
+        <p>{apiMessage && <p>API Response: {apiMessage}</p>}</p>
+      </div>
+    </div>
   );
 };
 
