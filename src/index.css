@@ -13,7 +13,9 @@
   -moz-osx-font-smoothing: grayscale;
 
   --primaryBackground: #121212;
-  --secondaryBackground: #1e1e1e;
+  --secondaryBackground: #363636;
+  --tertiaryBackground: #818181;
+  --navHoverColor: #ffffff;
 }
 
 * {
