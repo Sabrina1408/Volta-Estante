@@ -1,58 +1,140 @@
 import requests
+import json
+from pprint import pprint
 
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://127.0.0.1:5000"
+ISBN = "9780140449136"
 
-def test_add_book(isbn: str):
+copy_id_to_update = None  # Will be set after adding a copy
+
+
+def print_section(title):
+    print("\n" + "=" * 60)
+    print(f"📘 {title}")
+    print("=" * 60)
+
+
+def print_request_info(method, url, payload=None):
+    print(f"\n➡ {method} {url}")
+    if payload:
+        print(f"Payload: {json.dumps(payload)}")
+
+
+# -------------------------------
+#  POST /books — Add first copy
+# -------------------------------
+def test_add_book():
+    global copy_id_to_update
     url = f"{BASE_URL}/books"
-    payload = {"isbn": isbn}
-    response = requests.post(url, json=payload)  # requests sets Content-Type for us
-    print("POST /books")
+    payload = {
+        "isbn": ISBN,
+        "price": 39.90,
+        "conservation_state": "Ótimo estado"
+    }
+    print_request_info("POST", url, payload)
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(payload)
+    )
     print("Status:", response.status_code)
-    print("Response:", response.json())
-    print("-" * 50)
+    try:
+        data = response.json()
+        # pprint(data)
 
-def test_get_book(isbn: str):
+        # Grab the first copy_id to use in update test
+        copies = data.get("copies", {})
+        if copies:
+            copy_id_to_update = list(copies.keys())[0]
+
+    except Exception:
+        print("Response Text:", response.text)
+
+
+# -------------------------------
+#  POST /books — Add second copy
+# -------------------------------
+def test_add_book2():
     url = f"{BASE_URL}/books"
-    params = {"isbn": isbn}
-    response = requests.get(url, params=params)
-    print("GET /books")
+    payload = {
+        "isbn": ISBN,
+        "price": 29.90,
+        "conservation_state": "Mediano"
+    }
+    print_request_info("POST", url, payload)
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(payload)
+    )
     print("Status:", response.status_code)
-    print("Response:", response.json())
-    print("-" * 50)
+    
 
-def test_delete_book(isbn: str):
-    url = f"{BASE_URL}/books"
-    params = {"isbn": isbn}
-    response = requests.delete(url, params=params)
-    print("DELETE /books")
+
+# -------------------------------
+#  GET /books/<isbn>
+# -------------------------------
+def test_get_book():
+    url = f"{BASE_URL}/books/{ISBN}"
+    print_request_info("GET", url)
+    response = requests.get(url)
     print("Status:", response.status_code)
-    print("Response:", response.json())
-    print("-" * 50)
+    try:
+        pprint(response.json())
+    except Exception:
+        print("Response Text:", response.text)
 
-def test_update_book(isbn: str, update_data: dict):
-    url = f"{BASE_URL}/books"
-    params = {"isbn": isbn}
-    response = requests.put(url, params=params, json=update_data)
-    print("PUT /books")
+
+# -------------------------------
+#  PUT /books/<isbn>/copies/<copy_id>
+# -------------------------------
+def test_update_book():
+    if not copy_id_to_update:
+        print("\n⚠ No copy_id available to update.")
+        return
+
+    url = f"{BASE_URL}/books/{ISBN}/copies/{copy_id_to_update}"
+    payload = {
+        "price": 49.90,
+        "conservation_state": "Excelente estado"
+    }
+    print_request_info("PUT", url, payload)
+    response = requests.put(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(payload)
+    )
     print("Status:", response.status_code)
-    print("Response:", response.json())
-    print("-" * 50)
+    try:
+        pprint(response.json())
+    except Exception:
+        print("Response Text:", response.text)
 
 
+# -------------------------------
+#  DELETE /books/<isbn>
+# -------------------------------
+def test_delete_book():
+    url = f"{BASE_URL}/books/{ISBN}"
+    print_request_info("DELETE", url)
+    response = requests.delete(url)
+    print("Status:", response.status_code)
+    try:
+        pprint(response.json())
+    except Exception:
+        print("Response Text:", response.text)
+
+
+# -------------------------------
+#  Run All Tests
+# -------------------------------
 if __name__ == "__main__":
-    isbn = "9780140449136"  # Example ISBN
-
-    # Test add (fetches from Google API if not in Firestore)
-    test_add_book(isbn)
-
-    # Test get
-    test_get_book(isbn)
-
-    # Test update
-    test_update_book(isbn, {"title": "Updated Title via Test Script"})
-
-    # Test delete
-    test_delete_book(isbn)
-
-    # Try fetching after delete
-    test_get_book(isbn)
+    test_delete_book()
+    test_add_book()
+    test_add_book2()
+    test_get_book()
+    test_update_book()
+    test_get_book()
+    
+    # test_delete_book() # deve deletar TODA entidade do DB, não só as copias
+    
