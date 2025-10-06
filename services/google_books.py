@@ -22,7 +22,7 @@ def fetch_book_by_isbn(isbn):
     
         book_data = data['items'][0]
         volume_info = book_data.get('volumeInfo', {})
-        
+        search_info = book_data.get('searchInfo', {})
         # normalizar os dados da api do google
         normalized_data = {
             "isbn": isbn,
@@ -36,8 +36,11 @@ def fetch_book_by_isbn(isbn):
             "ratingsCount": volume_info.get("ratingsCount"),
             "averageRating": volume_info.get("averageRating"),
             "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail"),
+            "smallThumbnail": volume_info.get("imageLinks", {}).get("smallThumbnail"),
             "language": volume_info.get("language"),
-            "maturityRating": volume_info.get("maturityRating")}
+            "maturityRating": volume_info.get("maturityRating"),
+            "textSnippet": search_info.get("textSnippet")}
+            
         return normalized_data
         
     except Exception as e:

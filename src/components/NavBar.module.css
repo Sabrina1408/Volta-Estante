@@ -8,7 +8,7 @@
   color: var(--navHoverColor);
 }
 
-ul {
+.navbar ul {
   display: flex;
   align-items: center;
 }
