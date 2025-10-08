@@ -8,15 +8,15 @@ const Estoque = () => {
 
   const fetchFromApi = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/about");
+      const response = await fetch("http://127.0.0.1:5000/books/9780140449136");
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      setApiMessage(data.version);
+      setApiMessage("API Response: ${JSON.stringify(data, null, 2)}");
     } catch (error) {
       console.error("Error fetching from API:", error);
-      setApiMessage(`Error connecting to API: ${error.message}`);
+      setApiMessage("Error connecting to API: ${error.message}");
     }
   };
 
@@ -25,7 +25,7 @@ const Estoque = () => {
       <h1>Home</h1>
       <div className="card">
         <button onClick={fetchFromApi}>Fetch from API</button>
-        <p>{apiMessage && <p>API Response: {apiMessage}</p>}</p>
+        <p>{apiMessage}</p>
       </div>
     </div>
   );
