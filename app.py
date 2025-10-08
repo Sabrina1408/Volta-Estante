@@ -12,6 +12,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 from models.books import save_book, fetch_book, delete_book, update_book, delete_copy
+from models.users import save_user, delete_user
 from services.google_books import fetch_book_by_isbn
 
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
@@ -34,17 +35,17 @@ def handle_general_error(e):
     GET: /book/<isbn>
     POST: /book + json {isbn, price, conservation_state}
     DELETE: /book/<isbn> - deleta TUDO, até as copias se tiver
-    DELETE COPY: /book/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
+    DELETE COPY: library/users/<user_id>/book/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
     PUT : /book/<isbn>/copies/<copy_id> + json {price, conservation_state} - atualiza apenas a copia do id dado
 
 """
 
 
-@app.route("/books/", methods=["POST"])
+@app.route("/books", methods=["POST"])
 def add_book_route():
     data = request.get_json()
     if not data or "isbn" not in data:
-        return jsonify({"error": "ISBN is required"}), 400
+        raise ValueError("ISBN is required")
     isbn = data.get("isbn")
     inventory_data = {
         "price": data.get("price", 0.0),
@@ -87,7 +88,7 @@ def update_book_route(isbn, copy_id):
         }), 200
     
 
-@app.route("/books/<isbn>/copy/<copy_id>", methods=["DELETE"])
+@app.route("/books/<isbn>/copies/<copy_id>", methods=["DELETE"])
 def delete_copy_route(isbn, copy_id):
     deleted = delete_copy(isbn, copy_id)
     return jsonify({
@@ -95,6 +96,35 @@ def delete_copy_route(isbn, copy_id):
         "data": deleted
         }), 200
     
+# user routes
+""" 
+Estrutura do usuario:
+- uid
+- nome
+- email
+- funcao
+- data de criacao
+- id do sebo pra linkar o usuario ao sebo <- como implemnetar
+"""
+@app.route("/users", methods=["POST"])
+def add_user_route():
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"error": "User ID is required"}), 400   
+    save_user(data)
+    return jsonify(data), 201
+
+@app.route("/users/<user_id>", methods=["DELETE"])
+def delete_user_route(user_id):
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+    deleted = delete_user({"user_id": user_id})
+    return jsonify({
+        "message": "User deleted successfully",
+        "data": deleted
+        }), 200
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 

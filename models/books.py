@@ -6,9 +6,6 @@ from datetime import datetime
 
 db = firestore.client()
 def save_book(book_data, inventory_data): 
-    if not book_data or 'isbn' not in book_data:
-        raise ValueError("Invalid book data: Missing ISBN")
-    
     book_ref = db.collection('Books').document(book_data['isbn'])
     book_doc = book_ref.get()
     
