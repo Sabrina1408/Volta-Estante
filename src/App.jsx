@@ -10,6 +10,7 @@ import Cadastro from "./pages/Cadastro/Cadastro";
 import Perfil from "./pages/Perfil/Perfil";
 import Estoque from "./pages/Estoque/Estoque";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import Search from "./pages/Search/Search";
 
 // Components
 import Footer from "./components/Footer";
@@ -28,6 +29,7 @@ function App() {
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/estoque" element={<Estoque />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/search" element={<Search />} />
           </Routes>
         </div>
         <Footer />

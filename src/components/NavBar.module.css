@@ -23,6 +23,31 @@ a:hover {
   opacity: 0.7;
 }
 
+.navbar form {
+  display: flex;
+}
+
+.searchInput {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: var(--tertiaryBackground);
+  color: var(--navHoverColor);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.searchInput::placeholder {
+  color: var(--navHoverColor);
+}
+
+.searchButton {
+  padding: 5px 10px;
+  border-radius: 0 4px 4px 0;
+  border: 1px solid #ccc;
+  background-color: var(--secondaryBackground);
+  color: var(--navHoverColor);
+}
+
 .active {
   background-color: var(--tertiaryBackground);
   border-radius: 4px;
