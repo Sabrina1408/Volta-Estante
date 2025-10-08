@@ -4,7 +4,7 @@ from pprint import pprint
 
 BASE_URL = "http://127.0.0.1:5000"
 ISBN = "9780140449136"
-
+sebo_id = "4f74e8f0-3ed1-4da4-8361-8bd27ce62bdc"
 copy_id_to_update = None  # Will be set after adding a copy
 
 
@@ -23,13 +23,35 @@ def print_request_info(method, url, payload=None):
 # -------------------------------
 #  POST /books — Add first copy
 # -------------------------------
+
+def test_user_add():
+    url = f"{BASE_URL}/users"
+    payload = {
+        "user_id": "tralelo tralala", # isso é gerado pelo firebase auth
+        "email" : "sadasd@nsei.com2",
+        "funcaoAdmin" : "Admin",
+        "nomeSebo" : "bombadilo"
+    }
+    print_request_info("POST", url, payload)
+    response = requests.post(
+        url,
+        headers={"Content-Type": "application/json"},
+        data=json.dumps(payload)
+    )
+    print("Status:", response.status_code)
+    try:
+        pprint(response.json())
+    except Exception:
+        print("Response Text:", response.text)
+
 def test_add_book():
     global copy_id_to_update
     url = f"{BASE_URL}/books"
     payload = {
         "isbn": ISBN,
         "price": 39.90,
-        "conservation_state": "Ótimo estado"
+        "conservation_state": "Ótimo estado",
+        "sebo_id": sebo_id
     }
     print_request_info("POST", url, payload)
     response = requests.post(
@@ -59,7 +81,8 @@ def test_add_book2():
     payload = {
         "isbn": ISBN,
         "price": 29.90,
-        "conservation_state": "Mediano"
+        "conservation_state": "Mediano",
+        "sebo_id": sebo_id
     }
     print_request_info("POST", url, payload)
     response = requests.post(
@@ -75,7 +98,7 @@ def test_add_book2():
 #  GET /books/<isbn>
 # -------------------------------
 def test_get_book():
-    url = f"{BASE_URL}/books/{ISBN}"
+    url = f"{BASE_URL}/books/{sebo_id}/{ISBN}"
     print_request_info("GET", url)
     response = requests.get(url)
     print("Status:", response.status_code)
@@ -125,16 +148,13 @@ def test_delete_book():
         print("Response Text:", response.text)
 
 
+
 # -------------------------------
 #  Run All Tests
 # -------------------------------
 if __name__ == "__main__":
-    test_delete_book()
-    test_add_book()
-    test_add_book2()
-    test_get_book()
-    test_update_book()
-    test_get_book()
+    test_user_add()
     
-    # test_delete_book() # deve deletar TODA entidade do DB, não só as copias
+    
+    
     

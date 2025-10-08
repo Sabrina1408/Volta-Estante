@@ -12,7 +12,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 from models.books import save_book, fetch_book, delete_book, update_book, delete_copy
-from models.users import save_user, delete_user
+from models.users import save_user, delete_user, fetch_user, update_user
 from services.google_books import fetch_book_by_isbn
 
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
@@ -33,7 +33,7 @@ def handle_general_error(e):
 
 """ como estruturar as requests
     GET: /book/<isbn>
-    POST: /book + json {isbn, price, conservation_state}
+    POST: /book + json {isbn, price, conservation_state, sebo_id}
     DELETE: /book/<isbn> - deleta TUDO, até as copias se tiver
     DELETE COPY: library/users/<user_id>/book/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
     PUT : /book/<isbn>/copies/<copy_id> + json {price, conservation_state} - atualiza apenas a copia do id dado
@@ -41,12 +41,13 @@ def handle_general_error(e):
 """
 
 
-@app.route("/books", methods=["POST"])
+@app.route("/books", methods=["POST"]) 
 def add_book_route():
     data = request.get_json()
     if not data or "isbn" not in data:
         raise ValueError("ISBN is required")
     isbn = data.get("isbn")
+    sebo_id = data.get("sebo_id")
     inventory_data = {
         "price": data.get("price", 0.0),
         "conservation_state": data.get("conservation_state", "unknown"),
@@ -58,12 +59,12 @@ def add_book_route():
     if not book_data:
         return jsonify({"error": "Book not found"}), 404
 
-    save_book(book_data, inventory_data)
+    save_book(sebo_id, book_data, inventory_data)
     return jsonify(book_data), 201
 
-@app.route("/books/<isbn>", methods=["GET"])
-def get_book_route(isbn): 
-    book = fetch_book(isbn)
+@app.route("/books/<sebo_id>/<isbn>", methods=["GET"]) 
+def get_book_route(sebo_id, isbn):
+    book = fetch_book(sebo_id, isbn)
     return jsonify(book), 200
     
 @app.route("/books/<isbn>", methods=["DELETE"])
@@ -110,20 +111,28 @@ Estrutura do usuario:
 def add_user_route():
     data = request.get_json()
     if not data or "user_id" not in data:
-        return jsonify({"error": "User ID is required"}), 400   
+        raise ValueError("User ID is required")
     save_user(data)
     return jsonify(data), 201
 
 @app.route("/users/<user_id>", methods=["DELETE"])
 def delete_user_route(user_id):
     if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
+        raise ValueError("User ID is required")
     deleted = delete_user({"user_id": user_id})
+    
     return jsonify({
         "message": "User deleted successfully",
         "data": deleted
         }), 200
 
+@app.route("/users/<user_id>", methods=["GET"])
+def get_user_route(user_id):
+    if not user_id:
+        raise ValueError("User ID is required")
+    
+    user = fetch_user(user_id)
+    return jsonify(user), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

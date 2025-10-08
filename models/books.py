@@ -1,44 +1,41 @@
 from firebase_admin import firestore
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 # TODO fazer pesquisa no db por nome e talvez por outras coisas
 
 db = firestore.client()
-def save_book(book_data, inventory_data): 
-    book_ref = db.collection('Books').document(book_data['isbn'])
-    book_doc = book_ref.get()
+def save_book(sebo_id, book_data, inventory_data): 
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    book_ref = sebo_ref.collection('Books').document(book_data['isbn'])
+    copy_id = str(uuid.uuid4())
     
-    inventory_data['registered_at'] = datetime.now().isoformat()
-    inventory_data['copy_id'] = str(uuid.uuid4())
-    copy_id = inventory_data['copy_id']
+    inventory_data['registered_at'] = datetime.now(timezone.utc).isoformat()
+    inventory_data['copy_id'] = copy_id
     
-    if book_doc.exists:
-        data = book_doc.to_dict()    
-        copies = data.get('copies', {})
-        copies[copy_id] = inventory_data
-        
-        book_ref.update({
-            "copies": copies,
-            "total_quantity": len(copies)
-        })
-    else:
-        book_data.update({
-            "copies": {copy_id: inventory_data},
-            "total_quantity": 1
-        })
+    if not book_ref.get().exists:
+        book_data['total_quantity'] = 1
         book_ref.set(book_data)
-    return book_data
+    copy_ref = book_ref.collection('Copies').document(copy_id)
+    copy_ref.set(inventory_data)
     
-def fetch_book(isbn): 
+    total_quantity = len(list(book_ref.collection('Copies').stream()))
+    book_ref.update({"total_quantity": total_quantity})
+    return book_data
+def fetch_book(sebo_id, isbn): 
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
     
-    book_ref = db.collection('Books').document(isbn).get()
-    if not book_ref.exists:
+    book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(isbn)
+    book_doc = book_ref.get()
+    if not book_doc.exists:
         raise LookupError(f"Book with ISBN {isbn} not found")
+    book_data = book_doc.to_dict()
     
-    return book_ref.to_dict()
+    copies_ref = book_ref.collection('Copies')
+    copies = [copy.to_dict() for copy in copies_ref.stream()]
+    book_data['copies'] = copies 
+    return book_data
 
 def delete_book(isbn):
     if not isbn:
