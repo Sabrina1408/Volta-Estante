@@ -6,8 +6,28 @@
   height: 50px;
   display: flex;
   align-items: center;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 20px;
+  
   text-align: center;
   background-color: var(--secondaryBackground);
+}
+
+.footer a {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espaço entre o ícone e o texto */
+  color: var(--navHoverColor); /* Ou a cor que preferir */
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer a:hover {
+  opacity: 0.8;
+}
+
+.footer svg {
+  width: 24px;
+  height: 24px;
 }

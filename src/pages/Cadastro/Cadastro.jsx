@@ -1,9 +1,13 @@
 import React from 'react';
 import styles from './Cadastro.module.css';
 
+
 const Cadastro = () => {
+
   return (
-    <div></div>
+    <div Cadastro={styles.sadastrod}>
+      <h1>Cadastro</h1>
+    </div>
   );
 };
 
