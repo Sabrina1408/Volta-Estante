@@ -7,6 +7,9 @@ from datetime import datetime, timezone
 db = firestore.client()
 def save_book(sebo_id, book_data, inventory_data): 
     sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise LookupError(f"Sebo with ID {sebo_id} not found")
+    
     book_ref = sebo_ref.collection('Books').document(book_data['isbn'])
     copy_id = str(uuid.uuid4())
     
@@ -25,29 +28,22 @@ def save_book(sebo_id, book_data, inventory_data):
 def fetch_book(sebo_id, isbn): 
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
+    if not sebo_id:
+        raise ValueError("Invalid book data: Missing Sebo ID")
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise LookupError(f"Sebo with ID {sebo_id} not found")
     
-    book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(isbn)
-    book_doc = book_ref.get()
-    if not book_doc.exists:
+    book_ref = sebo_ref.collection('Books').document(isbn)
+    if not book_ref.get().exists:  
         raise LookupError(f"Book with ISBN {isbn} not found")
-    book_data = book_doc.to_dict()
     
+    book_data = book_ref.get().to_dict()
     copies_ref = book_ref.collection('Copies')
     copies = [copy.to_dict() for copy in copies_ref.stream()]
     book_data['copies'] = copies 
     return book_data
 
-def delete_book(isbn):
-    if not isbn:
-        raise ValueError("Invalid book data: Missing ISBN")
-    
-    book_ref = db.collection('Books').document(isbn)
-    if not book_ref.get().exists:
-        raise LookupError(f"Book with ISBN {isbn} not found")
-    
-    book_ref.delete()
-    return {"isbn": isbn}
-    
 def update_book(isbn, copy_id, update_data): 
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
@@ -71,22 +67,45 @@ def update_book(isbn, copy_id, update_data):
     book_ref.update({"copies": copies})
     return book_doc.to_dict()
 
-def delete_copy(isbn, copy_id):
+def delete_book(sebo_id, isbn):
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
+    if not sebo_id:
+        raise ValueError("Invalid book data: Missing Sebo ID")
     
-    book_ref = db.collection('Books').document(isbn)
-    book_doc = book_ref.get()
-    if not book_doc.exists:
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise LookupError(f"Sebo with ID {sebo_id} not found")
+    book_ref = sebo_ref.collection('Books').document(isbn)
+    if not book_ref.get().exists:  
         raise LookupError(f"Book with ISBN {isbn} not found")
     
-    data = book_doc.to_dict()
-    copies = data.get('copies', {})
+    copies_ref = book_ref.collection('Copies')
+    copies = list(copies_ref.stream()) # deletando as copias pra limpar a entidade o livro inteiro
+    for copy in copies:
+        copies_ref.document(copy.id).delete()
+    
+    book_ref.delete()
+    return {"isbn": isbn}
+
+def delete_copy(sebo_id, isbn, copy_id):
+    if not isbn:
+        raise ValueError("Invalid book data: Missing ISBN")
+    if not sebo_id:
+        raise ValueError("Invalid book data: Missing Sebo ID")
+    
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise LookupError(f"Sebo with ID {sebo_id} not found")
+    book_ref = sebo_ref.collection('Books').document(isbn)
+    if not book_ref.get().exists:
+        raise LookupError(f"Book with ISBN {isbn} not found")
+    
+    copies_ref = book_ref.collection('Copies')
+    copies = {copy.id: copy.to_dict() for copy in copies_ref.stream()}
     if copy_id not in copies:
         raise LookupError(f"Copy with ID {copy_id} not found")
-    del copies[copy_id]
-    book_ref.update({
-        "copies": copies,
-        "total_quantity": len(copies)
-    })
+    copies_ref.document(copy_id).delete()
+    total_quantity = len(list(copies_ref.stream()))
+    book_ref.update({"total_quantity": total_quantity})
     return {"isbn": isbn, "deleted_copy": copy_id}

@@ -31,17 +31,17 @@ def handle_lookup_error(e):
 def handle_general_error(e):
     return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
-""" como estruturar as requests
-    GET: /book/<isbn>
-    POST: /book + json {isbn, price, conservation_state, sebo_id}
-    DELETE: /book/<isbn> - deleta TUDO, até as copias se tiver
-    DELETE COPY: library/users/<user_id>/book/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
-    PUT : /book/<isbn>/copies/<copy_id> + json {price, conservation_state} - atualiza apenas a copia do id dado
+""" como estruturar as requests 
+    GET: /book/<sebo_id>/<isbn>
+    POST: /book/<sebo_id> + json {isbn, price, conservation_state, sebo_id}
+    DELETE: /book/<sebo_id>/<isbn> - deleta TUDO, até as copias se tiver
+    DELETE COPY: /book/<sebo_id>/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
+    PUT : /book/<sebo_id>/<isbn>/copies/<copy_id> + json {price, conservation_state} - atualiza apenas a copia do id dado
 
 """
 
 
-@app.route("/books", methods=["POST"]) 
+@app.route("/books/", methods=["POST"]) 
 def add_book_route():
     data = request.get_json()
     if not data or "isbn" not in data:
@@ -67,12 +67,13 @@ def get_book_route(sebo_id, isbn):
     book = fetch_book(sebo_id, isbn)
     return jsonify(book), 200
     
-@app.route("/books/<isbn>", methods=["DELETE"])
-def delete_book_route(isbn):
-    deleted = delete_book(isbn)
+@app.route("/books/<sebo_id>/<isbn>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
+def delete_book_route(sebo_id, isbn):
+    deleted = delete_book(sebo_id, isbn)
     return jsonify({
         "message": "Book deleted successfully",
-        "isbn": deleted
+        "isbn": deleted,
+        "sebo_id": sebo_id
         }), 200
 
 @app.route("/books/<isbn>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
@@ -89,12 +90,13 @@ def update_book_route(isbn, copy_id):
         }), 200
     
 
-@app.route("/books/<isbn>/copies/<copy_id>", methods=["DELETE"])
-def delete_copy_route(isbn, copy_id):
-    deleted = delete_copy(isbn, copy_id)
+@app.route("/books/<sebo_id>/<isbn>/copies/<copy_id>", methods=["DELETE"])
+def delete_copy_route(sebo_id, isbn, copy_id):
+    deleted = delete_copy(sebo_id, isbn, copy_id)
     return jsonify({
         "message": "Book copy deleted successfully",
-        "data": deleted
+        "data": deleted,
+        "sebo_id": sebo_id,
         }), 200
     
 # user routes

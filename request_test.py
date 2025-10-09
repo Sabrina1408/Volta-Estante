@@ -5,7 +5,7 @@ from pprint import pprint
 BASE_URL = "http://127.0.0.1:5000"
 ISBN = "9780140449136"
 sebo_id = "4f74e8f0-3ed1-4da4-8361-8bd27ce62bdc"
-copy_id_to_update = None  # Will be set after adding a copy
+copy_id_to_update = "e6165860-f20f-4974-8757-6fa680dfdd3b"  # Will be set after adding a copy
 
 
 def print_section(title):
@@ -62,12 +62,16 @@ def test_add_book():
     print("Status:", response.status_code)
     try:
         data = response.json()
-        # pprint(data)
+        pprint(data)
+        # Assuming the response contains the copy_id of the newly created copy
+        if 'copy' in data and 'copy_id' in data['copy']:
+            copy_id_to_update = data['copy']['copy_id']
+            print(f"✅ Captured copy_id: {copy_id_to_update}")
+        else:
+            print("⚠ Could not find 'copy_id' in the response.")
 
-        # Grab the first copy_id to use in update test
-        copies = data.get("copies", {})
-        if copies:
-            copy_id_to_update = list(copies.keys())[0]
+        
+        
 
     except Exception:
         print("Response Text:", response.text)
@@ -138,7 +142,7 @@ def test_update_book():
 #  DELETE /books/<isbn>
 # -------------------------------
 def test_delete_book():
-    url = f"{BASE_URL}/books/{ISBN}"
+    url = f"{BASE_URL}/books/{sebo_id}/{ISBN}"
     print_request_info("DELETE", url)
     response = requests.delete(url)
     print("Status:", response.status_code)
@@ -147,13 +151,23 @@ def test_delete_book():
     except Exception:
         print("Response Text:", response.text)
 
-
+def test_delete_copy():
+    url = f"{BASE_URL}/books/{sebo_id}/{ISBN}/copies/{copy_id_to_update}"
+    print_request_info("DELETE", url)
+    response = requests.delete(url)
+    print("Status:", response.status_code)
+    try:
+        pprint(response.json())
+    except Exception:
+        print("Response Text:", response.text)
+    
 
 # -------------------------------
 #  Run All Tests
 # -------------------------------
 if __name__ == "__main__":
-    test_user_add()
+    test_delete_copy()
+    test_get_book()
     
     
     
