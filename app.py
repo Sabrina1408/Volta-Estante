@@ -33,21 +33,20 @@ def handle_general_error(e):
 
 """ como estruturar as requests 
     GET: /book/<sebo_id>/<isbn>
-    POST: /book/<sebo_id> + json {isbn, price, conservation_state, sebo_id}
+    POST: /book/<sebo_id> + json {isbn, price, conservation_state}
     DELETE: /book/<sebo_id>/<isbn> - deleta TUDO, até as copias se tiver
     DELETE COPY: /book/<sebo_id>/<isbn>/copies/<copy_id> - deleta apenas a copia do id dado
     PUT : /book/<sebo_id>/<isbn>/copies/<copy_id> + json {price, conservation_state} - atualiza apenas a copia do id dado
 
 """
 
-
-@app.route("/books/", methods=["POST"]) 
-def add_book_route():
+# Livros
+@app.route("/books/<sebo_id>", methods=["POST"]) 
+def add_book_route(sebo_id):
     data = request.get_json()
     if not data or "isbn" not in data:
         raise ValueError("ISBN is required")
     isbn = data.get("isbn")
-    sebo_id = data.get("sebo_id")
     inventory_data = {
         "price": data.get("price", 0.0),
         "conservation_state": data.get("conservation_state", "unknown"),
@@ -57,8 +56,7 @@ def add_book_route():
     
     book_data = fetch_book_by_isbn(isbn) 
     if not book_data:
-        return jsonify({"error": "Book not found"}), 404
-
+        raise ValueError(f"Book with ISBN {isbn} not found")
     save_book(sebo_id, book_data, inventory_data)
     return jsonify(book_data), 201
 
@@ -99,16 +97,8 @@ def delete_copy_route(sebo_id, isbn, copy_id):
         "sebo_id": sebo_id,
         }), 200
     
-# user routes
-""" 
-Estrutura do usuario:
-- uid
-- nome
-- email
-- funcao
-- data de criacao
-- id do sebo pra linkar o usuario ao sebo <- como implemnetar
-"""
+# User
+
 @app.route("/users", methods=["POST"])
 def add_user_route():
     data = request.get_json()
@@ -135,6 +125,8 @@ def get_user_route(user_id):
     
     user = fetch_user(user_id)
     return jsonify(user), 200
+
+# Vendas
 
 if __name__ == '__main__':
     app.run(debug=True)

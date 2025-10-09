@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 
 db = firestore.client()
 def save_book(sebo_id, book_data, inventory_data): 
+    if not sebo_id: 
+        raise ValueError("Invalid book data: Missing sebo_id")
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise LookupError(f"Sebo with ID {sebo_id} not found")
@@ -25,6 +27,7 @@ def save_book(sebo_id, book_data, inventory_data):
     total_quantity = len(list(book_ref.collection('Copies').stream()))
     book_ref.update({"total_quantity": total_quantity})
     return book_data
+
 def fetch_book(sebo_id, isbn): 
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
