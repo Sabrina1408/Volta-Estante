@@ -7,6 +7,7 @@ import "./App.css";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
+import RecuperarSenha from "./pages/RecuperarSenha/RecuperarSenha";
 import Perfil from "./pages/Perfil/Perfil";
 import Estoque from "./pages/Estoque/Estoque";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -26,6 +27,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/recuperarSenha" element={<RecuperarSenha />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/estoque" element={<Estoque />} />
             <Route path="/dashboard" element={<Dashboard />} />

@@ -1,12 +1,72 @@
-import React from 'react';
-import styles from './Cadastro.module.css';
-
+import { useState } from "react";
+import styles from "./Cadastro.module.css";
 
 const Cadastro = () => {
 
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [nomeSebo, setNomeSebo] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    console.log({
+      nome,
+      email,
+      senha,
+      nomeSebo
+    });
+    
+  };
+
   return (
-    <div Cadastro={styles.sadastrod}>
-      <h1>Cadastro</h1>
+    
+    <div className={styles.cadastro}>
+      <h1>Cadastre-se</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="nome">Nome:</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          required
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
+
+        <label htmlFor="email">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <label htmlFor="senha">Senha:</label>
+        <input
+          type="password"
+          id="senha"
+          name="senha"
+          required
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+        />
+
+        <label htmlFor="nomeSebo">Nome do Sebo:</label>
+        <input
+          type="text"
+          id="nomeSebo"
+          name="nomeSebo"
+          required
+          value={nomeSebo}
+          onChange={(e) => setNomeSebo(e.target.value)}
+        />
+
+        <button type="submit">Cadastrar</button>
+      </form>
     </div>
   );
 };
