@@ -1,35 +1,36 @@
 Sebos/
-  └── {sebo_id}/
-        ├── nomeSebo: string
-        ├── proprietarioId: string
-        ├── dataCadastro: timestamp = do usuario
+  └── {seboID}/
+        ├── nameSebo: string
+        ├── ownerID: string
+        ├── created_at: timestamp = do usuario
         └── Books/
-              └── {isbn}/
+              └── {ISBN}/
                     ├── title: string
-                    ├── author: string
+                    ├── authors: string
                     ├── publisher: string
                     └── Copies/
-                          └── {copy_id}/
+                          └── {copyID}/
                                 ├── price: number
                                 ├── conservation_state: string
+                                ├── copyID: string
                                 └── registered_at: timestamp
 
 
 Users/
-  └── {user_id}/
+  └── {userID}/
            ├── nome: string
            ├── email: string
            ├── seboId: string
-           ├── funcaoAdmin: (Admin, Editor, Leitor)
+           ├── funcao: (Admin, Editor, Leitor)
            ├── dataCadastro
            └── nomeSebo
            
 
 Vendas/
-   └── {sebo_id}/
+   └── {seboID}/
             └── {venda_id}/
                      ├── livro_id : string
-                     ├── user_id : string
+                     ├── userID : string
                      ├── title: string
                      ├── category: string
                      ├── price: number

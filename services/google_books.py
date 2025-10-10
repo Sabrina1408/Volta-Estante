@@ -7,9 +7,9 @@ load_dotenv()
 API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
 BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 
-def fetch_book_by_isbn(isbn):
+def fetch_book_by_ISBN(ISBN):
     params = {
-        "q": f"isbn:{isbn}",
+        "q": f"ISBN:{ISBN}",
         "key": API_KEY
     }
     try:
@@ -25,7 +25,7 @@ def fetch_book_by_isbn(isbn):
         search_info = book_data.get('searchInfo', {})
         # normalizar os dados da api do google
         normalized_data = {
-            "isbn": isbn,
+            "ISBN": ISBN,
             "title": volume_info.get("title"),
             "authors": volume_info.get("authors", []),
             "publisher": volume_info.get("publisher"),
