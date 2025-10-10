@@ -7,10 +7,17 @@ const Cadastro = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nomeSebo, setNomeSebo] = useState("");
+   const [error, setError] = useState(""); 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError(""); 
     
+    if (senha.length < 6) {
+      setError("A senha precisa ter no mínimo 6 caracteres.");
+      return; // Interrompe o envio do formulário
+    }
+
     console.log({
       nome,
       email,
@@ -18,6 +25,8 @@ const Cadastro = () => {
       nomeSebo
     });
     
+    alert("Cadastro realizado com sucesso!");
+
   };
 
   return (
@@ -65,6 +74,7 @@ const Cadastro = () => {
           onChange={(e) => setNomeSebo(e.target.value)}
         />
 
+        {error && <p className={styles.error}>{error}</p>}
         <button type="submit">Cadastrar</button>
       </form>
     </div>

@@ -39,7 +39,7 @@ const Login = () => {
         <button type="submit">Entrar</button>
 
         <p className={styles.forgotPassword}>
-          <Link to="/recuperar-senha">Esqueci minha senha</Link>
+          <Link to="/recuperarSenha">Esqueci minha senha</Link>
         </p>
       </form>
     </div>

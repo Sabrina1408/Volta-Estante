@@ -1,0 +1,56 @@
+.recuperarSenha {
+  max-width: 500px;
+  margin: 32px auto;
+  padding: 32px;
+  background-color: var(--secondaryBackground);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: var(--textColor);
+  text-align: center;
+}
+
+.recuperarSenha h1 {
+  margin-bottom: 16px;
+}
+
+.recuperarSenha p {
+  margin-bottom: 24px;
+  color: #c7c7c7;
+}
+
+.recuperarSenha form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.recuperarSenha label {
+  font-weight: bold;
+}
+
+.recuperarSenha input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: var(--tertiaryBackground);
+  color: var(--textColor);
+  box-sizing: border-box;
+}
+
+.recuperarSenha button {
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #1a1a1a;
+  transition: border-color 0.25s;
+}
+
+.recuperarSenha button:hover {
+  opacity: 0.9;
+  border-color: #646cff;
+}
