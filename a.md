@@ -33,4 +33,5 @@ Vendas/
                      ├── title: string
                      ├── category: string
                      ├── price: number
+                     ├── rating: number
                      └── timestamp: timestamp     

@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 # TODO fazer pesquisa no db por nome e talvez por outras coisas
 
 db = firestore.client()
+
 def save_book(sebo_id, book_data, inventory_data): 
     if not sebo_id: 
         raise ValueError("Invalid book data: Missing sebo_id")
@@ -47,28 +48,34 @@ def fetch_book(sebo_id, isbn):
     book_data['copies'] = copies 
     return book_data
 
-def update_book(isbn, copy_id, update_data): 
+def update_book(sebo_id, isbn, copy_id, update_data): 
     if not isbn:
         raise ValueError("Invalid book data: Missing ISBN")
+    if not copy_id:
+        raise ValueError("Invalid book data: Missing copy_id")
+    if not sebo_id:
+        raise ValueError("Invalid book data: Missing Sebo ID")
     
-    book_ref = db.collection('Books').document(isbn)
-    book_doc = book_ref.get()
-    if not book_doc.exists:
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise LookupError(f"Sebo with ID {sebo_id} not found")
+    
+    book_ref = sebo_ref.collection('Books').document(isbn)
+    if not book_ref.get().exists:
         raise LookupError(f"Book with ISBN {isbn} not found")
     
-    data = book_doc.to_dict()
-    copies = data.get('copies', {})
-    
-    if copy_id not in copies:
+    copy_ref = book_ref.collection('Copies').document(copy_id)
+    if not copy_ref.get().exists:
         raise LookupError(f"Copy with ID {copy_id} not found")
     
-    copy = copies[copy_id]
-    for keys in ["price", "conservation_state"]:
-        if keys in update_data:
-            copy[keys] = update_data[keys]
-    copies[copy_id] = copy
-    book_ref.update({"copies": copies})
-    return book_doc.to_dict()
+    allowed_updates = {
+        key: value for key, value in update_data.items() if key in {"price", "conservation_state"}
+    }
+    if not allowed_updates:
+        raise ValueError(f"No valid fields to update provided. Only 'price', 'conservation_state' can be updated.")
+
+    copy_ref.update(allowed_updates)
+    return fetch_book(sebo_id, isbn)
 
 def delete_book(sebo_id, isbn):
     if not isbn:

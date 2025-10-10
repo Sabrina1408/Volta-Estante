@@ -5,7 +5,7 @@ from pprint import pprint
 BASE_URL = "http://127.0.0.1:5000"
 ISBN = "9780140449136"
 sebo_id = "4f74e8f0-3ed1-4da4-8361-8bd27ce62bdc"
-copy_id_to_update = "e6165860-f20f-4974-8757-6fa680dfdd3b"  # Will be set after adding a copy
+copy_id_to_update = "51d8713c-c516-4e38-a237-1b044895792d"  # Will be set after adding a copy
 
 
 def print_section(title):
@@ -120,7 +120,7 @@ def test_update_book():
         print("\n⚠ No copy_id available to update.")
         return
 
-    url = f"{BASE_URL}/books/{ISBN}/copies/{copy_id_to_update}"
+    url = f"{BASE_URL}/books/{sebo_id}/{ISBN}/copies/{copy_id_to_update}"
     payload = {
         "price": 49.90,
         "conservation_state": "Excelente estado"
@@ -166,8 +166,10 @@ def test_delete_copy():
 #  Run All Tests
 # -------------------------------
 if __name__ == "__main__":
-    test_delete_copy()
     test_get_book()
+    test_update_book()
+    test_get_book()
+
     
     
     

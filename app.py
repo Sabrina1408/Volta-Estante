@@ -74,14 +74,13 @@ def delete_book_route(sebo_id, isbn):
         "sebo_id": sebo_id
         }), 200
 
-@app.route("/books/<isbn>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
-def update_book_route(isbn, copy_id):
+@app.route("/books/<sebo_id>/<isbn>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
+def update_book_route(sebo_id, isbn, copy_id):
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided, Copy_id or ISBN missing"}), 400
+    if not data: 
+        raise ValueError("Invalid JSON data")
     
-    
-    updated_book = update_book(isbn, copy_id, data)
+    updated_book = update_book(sebo_id, isbn, copy_id, data)
     return jsonify({
         "message": "Book updated successfully",
         "book": updated_book
@@ -127,6 +126,10 @@ def get_user_route(user_id):
     return jsonify(user), 200
 
 # Vendas
+
+@app.route("/sales/<sebo_id>", methods=["POST"])
+def create_sale_route(sebo_id):
+    data = request.get_json()
 
 if __name__ == '__main__':
     app.run(debug=True)
