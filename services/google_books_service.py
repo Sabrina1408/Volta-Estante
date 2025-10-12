@@ -7,7 +7,7 @@ load_dotenv()
 API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
 BASE_URL = "https://www.googleapis.com/books/v1/volumes"
 
-def fetch_book_by_ISBN(ISBN):
+def fetch_book_by_isbn(ISBN):
     params = {
         "q": f"ISBN:{ISBN}",
         "key": API_KEY

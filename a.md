@@ -1,38 +1,55 @@
 Sebos/
   └── {seboID}/
         ├── nameSebo: string
-        ├── ownerID: string
-        ├── created_at: timestamp = do usuario
+        ├── seboID: string
+        ├── userID: string
+        ├── createdAt: datetime
         └── Books/
               └── {ISBN}/
-                    ├── title: string
+                    ├── ISBN: string
+                    ├── title: string    
                     ├── authors: string
                     ├── publisher: string
+                    ├── categories: string
+                    ├── publishedDate: string
+                    ├── description: string
+                    ├── pageCount: number
+                    ├── ratingsCount: number
+                    ├── averageRating: number
+                    ├── language: string
+                    ├── maturityRating: string
+                    ├── thumbnail: string
+                    ├── smallThumbnail: string
+                    ├── textSnippet: string
+                    ├── totalQuantity: number
                     └── Copies/
                           └── {copyID}/
-                                ├── price: number
-                                ├── conservation_state: string
                                 ├── copyID: string
-                                └── registered_at: timestamp
+                                ├── conservationState: string
+                                ├── price: number
+                                └── registeredAt: datetime
 
 
 Users/
   └── {userID}/
-           ├── nome: string
+           ├── userID: string
+           ├── name: string
            ├── email: string
+           ├── nameSebo: string
            ├── seboId: string
-           ├── funcao: (Admin, Editor, Leitor)
-           ├── dataCadastro
-           └── nomeSebo
+           ├── userRole: (Admin, Editor, Reader) string
+           └── registeredAt: datetime
+           
            
 
-Vendas/
+Sales/
    └── {seboID}/
-            └── {venda_id}/
-                     ├── livro_id : string
+            └── {saleID}/
+                     ├── saleID: strING
                      ├── userID : string
-                     ├── title: string
-                     ├── category: string
-                     ├── price: number
-                     ├── rating: number
-                     └── timestamp: timestamp     
+                     ├── ISBN : string
+                     ├── bookTitle: string
+                     ├── bookCategory: string
+                     ├── bookPrice: number
+                     ├── bookRating: number
+                     └── saleDate: datetime
