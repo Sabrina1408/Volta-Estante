@@ -5,7 +5,8 @@ from models.copy import Copy
 from pydantic import ValidationError
 # TODO fazer pesquisa no db por nome e talvez por outras coisas
 
-db = firestore.client() # TODO atualizar pra tirar o sebo_id das requests -> pegar via auth
+db = firestore.client() # TODO atualizar pra tirar o sebo_id das requests -> pegar via auth 
+
 
 def save_book(sebo_id, book_data, inventory_data):
     try:
@@ -21,16 +22,24 @@ def save_book(sebo_id, book_data, inventory_data):
         raise BadRequest("Invalid book data: Missing ISBN")
     book_ref = sebo_ref.collection('Books').document(book_data['ISBN'])
     
-    if not book_ref.get().exists: # se não existe ainda, cria um novo com a copia enviada
-        book_data['total_quantity'] = 1
-        book = Book.model_validate(book_data)
-        book_ref.set(book.model_dump(by_alias=True))
-    else: # livro ja existe só atualizar a quantidade
-        book_ref.update({"totalQuantity": firestore.Increment(1)})
-    
-    copy_ref = book_ref.collection('Copies').document(copy.copy_id)
-    copy_ref.set(copy.model_dump(by_alias=True))
-    return fetch_book(sebo_id, ISBN)
+    transaction = db.transaction()
+    @firestore.transactional
+    def save_book_transaction(transaction, book_ref, copy):
+        book_doc = book_ref.get()
+        if not book_doc.exists:
+            book_data['totalQuantity'] = 1
+            book = Book.model_validate(book_data)
+            transaction.set(book_ref, book.model_dump(by_alias=True))
+        else:
+            transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
+        copy_ref = book_ref.collection('Copies').document()
+        transaction.set(copy_ref, copy.model_dump(by_alias=True))
+    try:
+        save_book_transaction(transaction, book_ref, copy)
+        return fetch_book(sebo_id, ISBN)
+    except Exception as e:
+        raise BadRequest(f"Data was not modified: failed to save book: {e}")
+                            
 
 
 
@@ -131,6 +140,14 @@ def delete_copy(sebo_id, ISBN, copy_id):
     if not copy_ref.get().exists:
         raise NotFound(f"Copy with ID {copy_id} not found")
     
-    copy_ref.delete()
-    book_ref.update({"totalQuantity": firestore.firestore.Increment(-1)})
-    return {"ISBN": ISBN, "deleted_copy": copy_id}
+    transaction = db.transaction() 
+    @firestore.transactional
+    def delete_copy_transaction(transaction, book_ref, copy_ref):
+        transaction.delete(copy_ref)
+        transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(-1)})
+    try:
+        delete_copy_transaction(transaction, book_ref, copy_ref)
+        return {"ISBN": ISBN, "copyID": copy_id}
+    except Exception as e:
+        raise BadRequest(f"Data was not modified: failed to delete copy: {e}")
+       

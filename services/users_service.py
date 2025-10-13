@@ -1,4 +1,4 @@
-from firebase_admin import firestore
+from firebase_admin import firestore, auth
 from models.users import User
 from models.sebos import Sebo
 from pydantic import ValidationError 
@@ -31,7 +31,15 @@ def save_user(user_data): #TODO tirar user_id, sebo_id das requests -> pegar via
             sebo_ref.set(sebo.model_dump(by_alias=True))
         except ValidationError as e:
             raise BadRequest(f"Invalid sebo data: {e}")
-
+    
+    try:
+        claims = {
+            "seboId": user.sebo_id,
+            "userRole": user.user_role.value
+        }
+        auth.set_custom_user_claims(user.user_id, claims)
+    except Exception as e:
+        raise BadRequest(f"Failed to set custom claims for user {user.user_id}: {e}")
     user_ref.set(user.model_dump(by_alias=True))
     return user.model_dump(by_alias=True)
 

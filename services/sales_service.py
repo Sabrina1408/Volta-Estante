@@ -42,13 +42,20 @@ def create_sale(user_id, ISBN, copy_id): #TODO tirar user_id e sebo_id das reque
         sale = Sales.model_validate(sale_data)
     except ValidationError as e:
         raise BadRequest(f"Invalid sale data: {e}")
-    
-    sale_ref = db.collection('Sales').document(sebo_id).collection('SeboSales').document(sale.sale_id)
-    sale_ref.set(sale.model_dump(by_alias=True))
-    copy_ref.delete()
-    book_ref.update({"totalQuantity": firestore.firestore.Increment(-1)})
-    
-    return {"saleId": sale.sale_id, "data": sale.model_dump(by_alias=True)}
+    transaction = db.transaction()
+    @firestore.transactional # transaction faz que essas operacoes sejam como se fosse uma
+    # caso uma de erro não tera dado sendo modificado pela metade
+    def sale_transaction(transaction, book_ref, copy_ref, sebo_id, sale):
+        sale_ref = db.collection('Sales').document(sebo_id).collection('SeboSales').document(sale.sale_id)
+        transaction.set(sale_ref, sale.model_dump(by_alias=True))
+        transaction.delete(copy_ref)
+        transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(-1)})
+    try:
+        sale_transaction(transaction, book_ref, copy_ref, sebo_id, sale)
+        return {"saleId": sale.sale_id, "data": sale.model_dump(by_alias=True)}
+    except Exception as e:
+        raise BadRequest(f"Data was not modified: failed to create sale: {e}")
+
 
 def fetch_sale(user_id, sale_id):
     return None

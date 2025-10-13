@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from firebase_admin import credentials, firestore
 import firebase_admin
-from werkzeug.exceptions import HTTPException, BadRequest, HTTPException
+from werkzeug.exceptions import HTTPException, BadRequest
 from pydantic import ValidationError
 
 load_dotenv()
@@ -24,12 +24,6 @@ from services.google_books_service import fetch_book_by_isbn
 
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
 CORS(app)
-
-
-@app.errorhandler(LookupError)
-def handle_lookup_error(e):
-    app.logger.warning(f"Resource not found: {e}")
-    return jsonify({"error": {"code": "NOT_FOUND", "message": str(e)}}), 404
 
 @app.errorhandler(ValidationError)
 def handle_validation_error(e: ValidationError):
@@ -60,8 +54,10 @@ def handle_general_error(e):
     PUT : /book/<seboID>/<ISBN>/copies/<copyID> + json {price, conservation_state} - atualiza apenas a copia do id dado
 
 """
-
-# Livros
+#TODO atualizar os endpoints e protege-los com o @permission_required(ROLE) 
+# ============================================
+#                   Livros  
+# ============================================
 @app.route("/books/<sebo_id>", methods=["POST"])
 def add_book_route(sebo_id):
     data = request.get_json()
@@ -114,9 +110,9 @@ def delete_copy_route(sebo_id, ISBN, copy_id):
         "data": deleted,
         "seboID": sebo_id,
         }), 200
-    
-# User
-
+# ============================================   
+#                   User
+# ============================================
 @app.route("/users", methods=["POST"])
 
 def add_user_route():
@@ -144,8 +140,9 @@ def get_user_route(user_id):
     user = fetch_user(user_id)
     return jsonify(user), 200
 
-# Vendas Log
-
+# ============================================
+#                   Vendas
+# ============================================
 @app.route("/sales/<user_id>/<ISBN>/<copy_id>", methods=["POST"])
 def create_sale_route(user_id, ISBN, copy_id):
     if not user_id:
