@@ -8,9 +8,9 @@ Sebos/
               └── {ISBN}/
                     ├── ISBN: string
                     ├── title: string    
-                    ├── authors: string
+                    ├── authors: list[string]
                     ├── publisher: string
-                    ├── categories: string
+                    ├── categories: list[string]
                     ├── publishedDate: string
                     ├── description: string
                     ├── pageCount: number
@@ -45,7 +45,7 @@ Users/
 Sales/
    └── {seboID}/
             └── {saleID}/
-                     ├── saleID: strING
+                     ├── saleID: string
                      ├── userID : string
                      ├── ISBN : string
                      ├── bookTitle: string
@@ -53,3 +53,14 @@ Sales/
                      ├── bookPrice: number
                      ├── bookRating: number
                      └── saleDate: datetime
+
+
+AlterationLog/ 
+      └── {seboID}/
+            └── {logId}/
+                  ├── logId: string
+                  ├── ISBN: string
+                  ├── userId: string
+                  ├── userEmail: string
+                  ├── action: (qual endpoint ele chamou (?))
+                  └── executedAt: datetime
