@@ -28,6 +28,15 @@ Sebos/
                                 ├── conservationState: string
                                 ├── price: number
                                 └── registeredAt: datetime
+          └── AlterationLog/
+                    └── {logId}/
+                           ├── logId: string
+                           ├── userId: string
+                           ├── userName: string
+                           ├── details: dict[str, Any]
+                           ├── action: (qual endpoint ele chamou (?))
+                           └── executedAt: datetime      
+            
 
 
 Users/
@@ -55,13 +64,3 @@ Sales/
                      ├── bookRating: number
                      └── saleDate: datetime
 
-
-AlterationLog/ 
-      └── {seboID}/
-            └── {logId}/
-                  ├── logId: string
-                  ├── ISBN: string
-                  ├── userId: string
-                  ├── userName: string
-                  ├── action: (qual endpoint ele chamou (?))
-                  └── executedAt: datetime
