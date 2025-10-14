@@ -13,7 +13,7 @@ cred = credentials.Certificate(path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-
+from services.alteration_log_service import log_action
 from services.auth_service import permission_required
 from models.users import UserRole
 from services.users_service import save_user, delete_user, fetch_user, update_user
@@ -61,6 +61,7 @@ def handle_general_error(e):
 # ============================================
 @app.route("/books", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@log_action("add_book")
 def add_book_route():
     data = request.get_json()
     if not data: 
@@ -81,12 +82,14 @@ def add_book_route():
 
 @app.route("/books/<ISBN>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@log_action("get_book")
 def get_book_route(ISBN):
     book = fetch_book(g.sebo_id, ISBN)
     return jsonify(book), 200
     
 @app.route("/books/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
 @permission_required(UserRole.ADMIN)
+@log_action("delete_book")
 def delete_book_route(ISBN):
     deleted = delete_book(g.sebo_id, ISBN)
     return jsonify({
@@ -96,6 +99,7 @@ def delete_book_route(ISBN):
 
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@log_action("update_book")
 def update_book_route(ISBN, copy_id):
     data = request.get_json()
     if not data: 
@@ -110,6 +114,7 @@ def update_book_route(ISBN, copy_id):
 
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@log_action("delete_book_copy")
 def delete_copy_route(ISBN, copy_id):
     deleted = delete_copy(g.sebo_id, ISBN, copy_id)
     return jsonify({

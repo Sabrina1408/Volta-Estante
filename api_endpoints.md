@@ -3,10 +3,12 @@
 
 ## Endpoints de Livros (`/books`)
 
+**Nota:** Para todos os endpoints de livros, o `sebo_id` é obtido automaticamente do token de autenticação do usuário.
+
 ### Adicionar Livro/Cópia
 **POST /books**
 
-Adiciona um novo livro ao acervo do sebo. Se o livro (identificado pelo ISBN) já existir, adiciona apenas uma nova cópia.
+Adiciona um novo livro ao acervo do sebo do usuário autenticado. Se o livro (identificado pelo ISBN) já existir, adiciona apenas uma nova cópia.
 
 **Payload (JSON):**
 ```json
@@ -22,7 +24,7 @@ Adiciona um novo livro ao acervo do sebo. Se o livro (identificado pelo ISBN) j�
 ---
 
 ### Buscar Livro
-**GET /books/<ISBN>**
+**GET /books/`<ISBN>`**
 
 Busca os detalhes de um livro específico no acervo do sebo, incluindo todas as suas cópias disponíveis.
 
@@ -31,7 +33,7 @@ Busca os detalhes de um livro específico no acervo do sebo, incluindo todas as 
 ---
 
 ### Deletar Livro
-**DELETE /books/<ISBN>**
+**DELETE /books/`<ISBN>`**
 
 Deleta um livro e **todas** as suas cópias do acervo. Esta é uma ação destrutiva.
 
@@ -40,7 +42,7 @@ Deleta um livro e **todas** as suas cópias do acervo. Esta é uma ação destru
 ---
 
 ### Atualizar Cópia de um Livro
-**PUT /books/<ISBN>/copies/<copy_id>**
+**PUT /books/`<ISBN>`/copies/`<copy_id>`**
 
 Atualiza as informações de uma cópia específica de um livro, como preço e estado de conservação.
 
@@ -57,7 +59,7 @@ Atualiza as informações de uma cópia específica de um livro, como preço e e
 ---
 
 ### Deletar Cópia de um Livro
-**DELETE /books/<ISBN>/copies/<copy_id>**
+**DELETE /books/`<ISBN>`/copies/`<copy_id>`**
 
 Deleta uma cópia específica de um livro do acervo. A quantidade total do livro é decrementada.
 
@@ -68,7 +70,7 @@ Deleta uma cópia específica de um livro do acervo. A quantidade total do livro
 ## Endpoints de Vendas (`/sales`)
 
 ### Registrar Venda
-**POST /sales/<ISBN>/<copy_id>**
+**POST /sales/`<ISBN>`/`<copy_id>`**
 
 Registra a venda de uma cópia específica de um livro. A cópia é removida do inventário e a quantidade total do livro é decrementada. O `user_id` do vendedor e o `sebo_id` são obtidos do token de autenticação.
 
@@ -80,16 +82,14 @@ Registra a venda de uma cópia específica de um livro. A cópia é removida do 
 
 ### Criar Usuário
 **POST /users**
-
-Cria um novo usuário e, se for o primeiro usuário de um sebo, cria o sebo associado. Endpoint público para registro.
+ 
+Cria um novo perfil de usuário no banco de dados após o registro no Firebase Auth. O `userId`, `email` e `name` são obtidos do token de autenticação. Se for o primeiro usuário de um sebo, cria o sebo associado.
 
 **Payload (JSON):**
 ```json
 {
-    "userId": "some-firebase-auth-uid",
-    "name" : "Nome do Usuário",
-    "email": "usuario@email.com",
-    "nameSebo" : "Nome do Sebo"
+    "nameSebo" : "Nome do Sebo",
+    "userRole": "ADMIN"
 }
 ```
 
