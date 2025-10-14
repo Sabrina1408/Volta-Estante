@@ -9,6 +9,7 @@ class Sales(BaseModel):
 
     sale_id: str = Field(default_factory=lambda: str(uuid4()))
     user_id: str
+    user_name: str
     ISBN: str
     book_title: str
     book_category: List[str] = Field(default_factory=list)

@@ -4,9 +4,13 @@ from models.sebos import Sebo
 from pydantic import ValidationError 
 from werkzeug.exceptions import NotFound, Conflict, BadRequest
 
+
 db = firestore.client()
 
-def save_user(user_data): #TODO tirar user_id, sebo_id das requests -> pegar via auth
+def save_user(user_id, email, name, user_data): 
+    user_data['user_id'] = user_id
+    user_data['email'] = email
+    user_data['name'] = name
     try:
         user = User.model_validate(user_data)
     except ValidationError as e:
@@ -44,9 +48,6 @@ def save_user(user_data): #TODO tirar user_id, sebo_id das requests -> pegar via
     return user.model_dump(by_alias=True)
 
 def fetch_user(user_id):
-    if not user_id:
-        raise BadRequest("Invalid user data: Missing User ID")
-    
     user_ref = db.collection('Users').document(user_id)
     user_doc = user_ref.get()
     if not user_doc.exists:
@@ -59,8 +60,6 @@ def fetch_user(user_id):
         raise BadRequest(f"User data in database is invalid: {e}")
     
 def delete_user(user_id): # Deletar usuario deve deletar o sebo em que ele é "dono"?
-    if not user_id:
-        raise BadRequest("User ID is required for deletion")
     user_ref = db.collection('Users').document(user_id)
     user_doc = user_ref.get()
     if not user_doc.exists:

@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, g
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from firebase_admin import credentials, firestore
 import firebase_admin
-from werkzeug.exceptions import HTTPException, BadRequest
+from werkzeug.exceptions import HTTPException, BadRequest, Forbidden
 from pydantic import ValidationError
 
 load_dotenv()
@@ -14,7 +14,8 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-
+from services.auth_service import permission_required
+from models.users import UserRole
 from services.users_service import save_user, delete_user, fetch_user, update_user
 from services.books_service import save_book, fetch_book, update_book, delete_book, delete_copy
 from services.sales_service import create_sale, fetch_sale
@@ -58,10 +59,13 @@ def handle_general_error(e):
 # ============================================
 #                   Livros  
 # ============================================
-@app.route("/books/<sebo_id>", methods=["POST"])
-def add_book_route(sebo_id):
+@app.route("/books", methods=["POST"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def add_book_route():
     data = request.get_json()
-    if not data or "ISBN" not in data:
+    if not data: 
+        raise BadRequest("Invalid JSON data")
+    if "ISBN" not in data:
         raise BadRequest("ISBN is required")
     ISBN = data.get("ISBN")
     inventory_data = {
@@ -72,87 +76,92 @@ def add_book_route(sebo_id):
     book_data = fetch_book_by_isbn(ISBN)
     if not book_data:
         raise BadRequest(f"Book with ISBN {ISBN} not found via Google Books API")
-    save_book(sebo_id, book_data, inventory_data)
+    save_book(g.sebo_id, book_data, inventory_data)
     return jsonify(book_data), 201
 
-@app.route("/books/<sebo_id>/<ISBN>", methods=["GET"])
-def get_book_route(sebo_id, ISBN):
-    book = fetch_book(sebo_id, ISBN)
+@app.route("/books/<ISBN>", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def get_book_route(ISBN):
+    book = fetch_book(g.sebo_id, ISBN)
     return jsonify(book), 200
     
-@app.route("/books/<sebo_id>/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
-def delete_book_route(sebo_id, ISBN):
-    deleted = delete_book(sebo_id, ISBN)
+@app.route("/books/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
+@permission_required(UserRole.ADMIN)
+def delete_book_route(ISBN):
+    deleted = delete_book(g.sebo_id, ISBN)
     return jsonify({
         "message": "Book deleted successfully",
         "ISBN": deleted,
-        "seboID": sebo_id
         }), 200
 
-@app.route("/books/<sebo_id>/<ISBN>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
-def update_book_route(sebo_id, ISBN, copy_id):
+@app.route("/books/<ISBN>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def update_book_route(ISBN, copy_id):
     data = request.get_json()
     if not data: 
         raise BadRequest("Invalid JSON data")
     
-    updated_book = update_book(sebo_id, ISBN, copy_id, data)
+    updated_book = update_book(g.sebo_id, ISBN, copy_id, data)
     return jsonify({
         "message": "Book updated successfully",
         "book": updated_book
         }), 200
     
 
-@app.route("/books/<sebo_id>/<ISBN>/copies/<copy_id>", methods=["DELETE"])
-def delete_copy_route(sebo_id, ISBN, copy_id):
-    deleted = delete_copy(sebo_id, ISBN, copy_id)
+@app.route("/books/<ISBN>/copies/<copy_id>", methods=["DELETE"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def delete_copy_route(ISBN, copy_id):
+    deleted = delete_copy(g.sebo_id, ISBN, copy_id)
     return jsonify({
         "message": "Book copy deleted successfully",
-        "data": deleted,
-        "seboID": sebo_id,
+        "book": deleted,
         }), 200
 # ============================================   
 #                   User
 # ============================================
 @app.route("/users", methods=["POST"])
-
+@permission_required(claims_required=False) # user novo n tem os required claims: seboId e userRole setados
 def add_user_route():
     data = request.get_json()
-    if not data or "userId" not in data:
-        raise BadRequest("User ID is required")
-    created_user = save_user(data)
+    if not data:
+        raise BadRequest("User data is required")
+    created_user = save_user(g.user_id, g.email, g.name, data)
     return jsonify(created_user), 201
 
 @app.route("/users/<user_id>", methods=["DELETE"])
+@permission_required(UserRole.ADMIN) 
 def delete_user_route(user_id):
-    if not user_id:
-        raise BadRequest("User ID is required")
+    if user_id == g.user_id:
+        raise BadRequest("You cannot delete yourself via the API")
+    target = fetch_user(user_id)
+    if target.get('seboId') != g.sebo_id:
+        raise Forbidden("You can only delete users from your own sebo")
     deleted_info = delete_user(user_id)
-    
     return jsonify({
         "message": "User deleted successfully",
         "data": deleted_info
         }), 200
 
 @app.route("/users/<user_id>", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 def get_user_route(user_id):
-    if not user_id:
-        raise BadRequest("User ID is required")
-    user = fetch_user(user_id)
+    if user_id == g.user_id:
+        user = fetch_user(user_id)
+    elif g.user_role == UserRole.ADMIN.value:
+        user = fetch_user(user_id)
+        if user.get('seboId') != g.sebo_id:
+            raise Forbidden("You can only get users from your own sebo")
+    else:
+        raise Forbidden("You can only view your own profile.")
     return jsonify(user), 200
 
 # ============================================
 #                   Vendas
 # ============================================
-@app.route("/sales/<user_id>/<ISBN>/<copy_id>", methods=["POST"])
-def create_sale_route(user_id, ISBN, copy_id):
-    if not user_id:
-        raise BadRequest("User ID is required")
-    if not ISBN:
-        raise BadRequest("ISBN is required")
-    if not copy_id:
-        raise BadRequest("Copy ID is required")
-    
-    sale_data = create_sale(user_id, ISBN, copy_id)
+@app.route("/sales/<ISBN>/<copy_id>", methods=["POST"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def create_sale_route(ISBN, copy_id):
+    sale_data = create_sale(g.user_id,g.sebo_id, ISBN, copy_id)
     return jsonify(sale_data), 201
 
 if __name__ == '__main__':

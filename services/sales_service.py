@@ -6,16 +6,12 @@ from werkzeug.exceptions import NotFound, BadRequest
 
 db = firestore.client()
 
-def create_sale(user_id, ISBN, copy_id): #TODO tirar user_id e sebo_id das requestas -> pegar via auth
+def create_sale(user_id, sebo_id, ISBN, copy_id): #TODO tirar user_id e sebo_id das requestas -> pegar via auth
     user_ref = db.collection('Users').document(user_id)
     user_doc = user_ref.get()
     if not user_doc.exists:
         raise NotFound(f"User with ID {user_id} not found")
-    
     user_data = user_doc.to_dict()
-    sebo_id = user_data.get('seboId')
-    if not sebo_id:
-        raise BadRequest(f"User with ID {user_id} has no sebo_id")
     
     book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(ISBN)
     book_doc = book_ref.get()
@@ -32,6 +28,7 @@ def create_sale(user_id, ISBN, copy_id): #TODO tirar user_id e sebo_id das reque
     
     sale_data = {
         "user_id": user_id,
+        "user_name": user_data.get('name', 'Unknown User'),
         "ISBN": ISBN,
         "book_title": book_data.get('title', 'Unknown'),
         "book_category": book_data.get('categories', ['Unknown']),

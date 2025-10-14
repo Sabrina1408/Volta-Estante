@@ -47,6 +47,7 @@ Sales/
             └── {saleID}/
                      ├── saleID: string
                      ├── userID : string
+                     ├── userName: string
                      ├── ISBN : string
                      ├── bookTitle: string
                      ├── bookCategory: string
@@ -61,6 +62,6 @@ AlterationLog/
                   ├── logId: string
                   ├── ISBN: string
                   ├── userId: string
-                  ├── userEmail: string
+                  ├── userName: string
                   ├── action: (qual endpoint ele chamou (?))
                   └── executedAt: datetime
