@@ -1,36 +1,71 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./Cadastro.module.css";
 
 const Cadastro = () => {
-
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nomeSebo, setNomeSebo] = useState("");
-   const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
+  const { signup } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); 
-    
+    setError("");
+
     if (senha.length < 6) {
       setError("A senha precisa ter no mínimo 6 caracteres.");
       return; // Interrompe o envio do formulário
     }
 
-    console.log({
-      nome,
-      email,
-      senha,
-      nomeSebo
-    });
-    
-    alert("Cadastro realizado com sucesso!");
+    try {
+      const cred = await signup(email, senha);
+      const firebaseUser = cred.user;
+      const idToken = await firebaseUser.getIdToken();
 
+      const payload = {
+        userId: firebaseUser.uid,
+        name: nome,
+        email,
+        nameSebo: nomeSebo,
+      };
+
+      const res = await fetch("http://localhost:5000/users", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + idToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        
+      });
+      console.log({idToken, payload});
+      
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        // rollback: remove o user criado no Firebase (cliente)
+        await firebaseUser.delete().catch(() => null);
+        throw new Error(err.message || "Erro ao salvar usuário no backend");
+      }
+
+      alert("Usuário cadastrado com sucesso!");
+      navigate("/login");
+    } catch (error) {
+      console.error("signup error:", error);
+      const friendly =
+        error?.code === "auth/email-already-in-use"
+          ? "Este e-mail já está em uso."
+          : error?.message || "Erro ao cadastrar";
+      setError(friendly);
+    }
+
+    alert("Cadastro realizado com sucesso!");
   };
 
   return (
-    
     <div className={styles.cadastro}>
       <h1>Cadastre-se</h1>
       <form onSubmit={handleSubmit}>
