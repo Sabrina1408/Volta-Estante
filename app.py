@@ -47,18 +47,11 @@ def handle_general_error(e):
     app.logger.exception("An unhandled exception occurred") 
     return jsonify({"error": {"code": "INTERNAL_SERVER_ERROR", "message": "An unexpected error occurred on the server."}}), 500
 
-""" como estruturar as requests 
-    GET: /book/<seboID>/<ISBN>
-    POST: /book/<seboID> + json {ISBN, price, conservation_state}
-    DELETE: /book/<seboID>/<ISBN> - deleta TUDO, até as copias se tiver
-    DELETE COPY: /book/<seboID>/<ISBN>/copies/<copyID> - deleta apenas a copia do id dado
-    PUT : /book/<seboID>/<ISBN>/copies/<copyID> + json {price, conservation_state} - atualiza apenas a copia do id dado
 
-"""
-#TODO atualizar os endpoints e protege-los com o @permission_required(ROLE) 
 # ============================================
 #                   Livros  
 # ============================================
+
 @app.route("/books", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 @log_action("add_book")
@@ -121,16 +114,20 @@ def delete_copy_route(ISBN, copy_id):
         "message": "Book copy deleted successfully",
         "book": deleted,
         }), 200
+
+
 # ============================================   
 #                   User
 # ============================================
+
 @app.route("/users", methods=["POST"])
 @permission_required(claims_required=False) # user novo n tem os required claims: seboId e userRole setados
 def add_user_route():
     data = request.get_json()
     if not data:
         raise BadRequest("User data is required")
-    created_user = save_user(g.user_id, g.email, g.name, data)
+    name = data.get("name") or g.name
+    created_user = save_user(g.user_id, g.email, name, data)
     return jsonify(created_user), 201
 
 @app.route("/users/<user_id>", methods=["DELETE"])
@@ -160,9 +157,11 @@ def get_user_route(user_id):
         raise Forbidden("You can only view your own profile.")
     return jsonify(user), 200
 
+
 # ============================================
 #                   Vendas
 # ============================================
+
 @app.route("/sales/<ISBN>/<copy_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 def create_sale_route(ISBN, copy_id):

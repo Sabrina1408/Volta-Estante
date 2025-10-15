@@ -4,10 +4,14 @@ from pprint import pprint
 
 BASE_URL = "http://127.0.0.1:5000"
 ISBN = "9780140449136"
-seboID = None  # Will be set after creating a user
-copyID = None  # Will be set after adding a copy
-userID = "firebase-auth-uid2"
 
+# ==============================================================================
+# IMPORTANT: You must replace this with a valid Firebase ID token for the tests.
+# You can get this from your client application after a user signs in.
+# ==============================================================================
+AUTH_TOKEN = "PASTE_YOUR_FIREBASE_ID_TOKEN_HERE"
+HEADERS = {"Content-Type": "application/json", "Authorization": f"Bearer {AUTH_TOKEN}"}
+copyID = None  # Will be set after adding a copy
 
 def print_section(title):
     print("\n" + "=" * 60)
@@ -20,65 +24,49 @@ def print_request_info(method, url, payload=None):
     if payload:
         print(f"Payload: {json.dumps(payload)}")
 
-
-# -------------------------------
-#  POST /books — Add first copy
-# -------------------------------
-
 def test_add_user():
-    global seboID
     url = f"{BASE_URL}/users"
+    # The user's ID, email, and name are now taken from the auth token.
+    # We only need to provide application-specific data.
     payload = {
-        "userId": userID, # isso é gerado pelo firebase auth
-        "name" : "Mistério",
-        "email": "Ocultando-userRole@email.com",
         "nameSebo" : "Testing Pydantic"
     }
     print_request_info("POST", url, payload)
-    response = requests.post(
-        url,
-        headers={"Content-Type": "application/json"},
-        data=json.dumps(payload)
-    )
+    response = requests.post(url, headers=HEADERS, data=json.dumps(payload))
     print("Status:", response.status_code)
     try:
         data = response.json()
         pprint(data)
         if response.status_code == 201 and data.get("seboId"):
-            seboID = data["seboId"]
-            print(f"✅ User and Sebo created. Captured seboID: {seboID}")
+            print("✅ User and Sebo created successfully.")
     except Exception:
         print("Response Text:", response.text)
 
 def test_delete_user():
-    url = f"{BASE_URL}/users/{userID}"
+    # Note: This requires the user in the token to have an ADMIN role.
+    # The user ID to delete would typically come from another source,
+    # but for this test, we'll assume we want to delete a different user.
+    user_to_delete_id = "some-other-user-id"
+    url = f"{BASE_URL}/users/{user_to_delete_id}"
     print_request_info("DELETE", url)
-    response = requests.delete(url)
+    response = requests.delete(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
         pprint(response.json())
     except Exception:
         print("Response Text:", response.text)
 
-
 def test_add_book_copy():
     global copyID
-    if not seboID:
-        print("\n⚠ No seboID available to add a book. Run 'add user' test first.")
-        return
-
-    url = f"{BASE_URL}/books/{seboID}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books"
     payload = {
         "ISBN": ISBN,
         "price": 39.90,
         "conservationState": "Ótimo estado"
     }
     print_request_info("POST", url, payload)
-    response = requests.post(
-        url,
-        headers={"Content-Type": "application/json"},
-        data=json.dumps(payload)
-    )
+    response = requests.post(url, headers=HEADERS, data=json.dumps(payload))
     print("Status:", response.status_code)
     try:
         data = response.json()
@@ -92,27 +80,16 @@ def test_add_book_copy():
     except Exception as e:
         print("Response Text:", response.text)
 
-
-# -------------------------------
-#  POST /books — Add second copy
-# -------------------------------
 def test_add_second_book_copy():
-    if not seboID:
-        print("\n⚠ No seboID available to add a book. Run 'add user' test first.")
-        return
-
-    url = f"{BASE_URL}/books/{seboID}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books"
     payload = {
         "ISBN": ISBN,
         "price": 29.90,
         "conservationState": "Mediano"
     }
     print_request_info("POST", url, payload)
-    response = requests.post(
-        url,
-        headers={"Content-Type": "application/json"},
-        data=json.dumps(payload)
-    )
+    response = requests.post(url, headers=HEADERS, data=json.dumps(payload))
     print("Status:", response.status_code)
     try:
         data = response.json()
@@ -122,19 +99,12 @@ def test_add_second_book_copy():
     except Exception:
         print("Response Text:", response.text)
 
-
-# -------------------------------
-#  GET /books/<ISBN>
-# -------------------------------
 def test_get_book_and_capture_copy_id():
     global copyID
-    if not seboID:
-        print("\n⚠ No seboID available to get a book. Run 'add user' test first.")
-        return
-
-    url = f"{BASE_URL}/books/{seboID}/{ISBN}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books/{ISBN}"
     print_request_info("GET", url)
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
         data = response.json()
@@ -148,47 +118,30 @@ def test_get_book_and_capture_copy_id():
     except Exception:
         print("Response Text:", response.text)
 
-
-# -------------------------------
-#  PUT /books/<ISBN>/copies/<copyID>
-# -------------------------------
 def test_update_book_copy():
-    if not seboID:
-        print("\n⚠ No seboID available to update a book. Run 'add user' test first.")
-        return
     if not copyID:
         print("\n⚠ No copyID available to update. Run 'get book' test first.")
         return
 
-    url = f"{BASE_URL}/books/{seboID}/{ISBN}/copies/{copyID}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books/{ISBN}/copies/{copyID}"
     payload = {
         "price": 49.90,
         "conservationState": "Excelente estado"
     }
     print_request_info("PUT", url, payload)
-    response = requests.put(
-        url,
-        headers={"Content-Type": "application/json"},
-        data=json.dumps(payload)
-    )
+    response = requests.put(url, headers=HEADERS, data=json.dumps(payload))
     print("Status:", response.status_code)
     try:
         pprint(response.json())
     except Exception:
         print("Response Text:", response.text)
 
-
-# -------------------------------
-#  DELETE /books/<ISBN>
-# -------------------------------
 def test_delete_book():
-    if not seboID:
-        print("\n⚠ No seboID available to delete a book. Skipping initial cleanup.")
-        return
-
-    url = f"{BASE_URL}/books/{seboID}/{ISBN}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books/{ISBN}"
     print_request_info("DELETE", url)
-    response = requests.delete(url)
+    response = requests.delete(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
         pprint(response.json())
@@ -196,33 +149,28 @@ def test_delete_book():
         print("Response Text:", response.text)
 
 def test_delete_copy():
-    if not seboID:
-        print("\n⚠ No seboID available to delete a copy. Run 'add user' test first.")
-        return
     if not copyID:
         print("\n⚠ No copyID available to delete. Run 'get book' test first.")
         return
 
-    url = f"{BASE_URL}/books/{seboID}/{ISBN}/copies/{copyID}"
+    # The seboID is now inferred from the user's token on the backend.
+    url = f"{BASE_URL}/books/{ISBN}/copies/{copyID}"
     print_request_info("DELETE", url)
-    response = requests.delete(url)
+    response = requests.delete(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
         pprint(response.json())
     except Exception:
         print("Response Text:", response.text)
-    
+
 def test_create_sale():
-    if not seboID:
-        print("\n⚠ No seboID available to create a sale. Run 'add user' test first.")
-        return
     if not copyID:
         print("\n⚠ No copyID available to create a sale. Run 'get book' test first.")
         return
-    url = f"{BASE_URL}/sales/{userID}/{ISBN}/{copyID}"
+    url = f"{BASE_URL}/sales/{ISBN}/{copyID}"
 
     print_request_info("POST", url)
-    response = requests.post(url)
+    response = requests.post(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
         pprint(response.json())
@@ -230,18 +178,15 @@ def test_create_sale():
         print("Response Text:", response.text)
 
 
-
-# -------------------------------
-#  Run All Tests
-# -------------------------------
 if __name__ == "__main__":
-    print_section("Initial Cleanup")
-    print("--- Deleting User (if it exists) ---")
-    test_delete_user()
-    # seboID is now None, so we must create a user to get a new one.
-    # The old book is tied to the old sebo, so it's effectively gone.
+    if "PASTE_YOUR_FIREBASE_ID_TOKEN_HERE" in AUTH_TOKEN:
+        print("🛑 Please replace 'PASTE_YOUR_FIREBASE_ID_TOKEN_HERE' in the script with a real token.")
+        exit(1)
 
-    print_section("Step 1: Create User and Sebo")
+    print_section("Initial Cleanup")
+    test_delete_book()
+
+    print_section("Step 1: Create User Profile (if it doesn't exist)")
     test_add_user()
 
     print_section("Step 2: Add First Copy of the Book")
