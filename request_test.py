@@ -9,7 +9,7 @@ ISBN = "9780140449136"
 # IMPORTANT: You must replace this with a valid Firebase ID token for the tests.
 # You can get this from your client application after a user signs in.
 # ==============================================================================
-AUTH_TOKEN = "PASTE_YOUR_FIREBASE_ID_TOKEN_HERE"
+AUTH_TOKEN = "PASTE_YOUR_COMPLETE_FIREBASE_ID_TOKEN_HERE"
 HEADERS = {"Content-Type": "application/json", "Authorization": f"Bearer {AUTH_TOKEN}"}
 copyID = None  # Will be set after adding a copy
 
@@ -26,9 +26,10 @@ def print_request_info(method, url, payload=None):
 
 def test_add_user():
     url = f"{BASE_URL}/users"
-    # The user's ID, email, and name are now taken from the auth token.
-    # We only need to provide application-specific data.
+    # The user's ID and email are taken from the auth token.
+    # We need to provide the user's name and sebo name.
     payload = {
+        "name": "Test User",
         "nameSebo" : "Testing Pydantic"
     }
     print_request_info("POST", url, payload)
@@ -52,7 +53,9 @@ def test_delete_user():
     response = requests.delete(url, headers=HEADERS)
     print("Status:", response.status_code)
     try:
-        pprint(response.json())
+        if response.status_code == 200:
+            pprint(response.json())
+            print("✅ Book deleted successfully for cleanup.")
     except Exception:
         print("Response Text:", response.text)
 
