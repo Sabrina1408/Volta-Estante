@@ -10,7 +10,9 @@ db = firestore.client()
 def save_user(user_id, email, name, user_data): 
     user_data['user_id'] = user_id
     user_data['email'] = email
-    user_data['name'] = name
+    if name:
+        user_data['name'] = name
+
     try:
         user = User.model_validate(user_data)
     except ValidationError as e:

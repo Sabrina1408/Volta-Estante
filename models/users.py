@@ -17,7 +17,7 @@ class User(BaseModel):
     email: str
     name_sebo: str
     sebo_id: str = Field(default_factory=lambda: str(uuid4()))
-    user_role: UserRole = UserRole.READER
+    user_role: UserRole = UserRole.ADMIN
     registered_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     
     

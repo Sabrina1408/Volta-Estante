@@ -19,7 +19,7 @@ def _verify_token(token, claims_required=True):
         decoded_token = auth.verify_id_token(token)
         g.user_id = decoded_token['uid']
         g.email = decoded_token['email']
-        g.name = decoded_token['name']          
+        g.name = decoded_token.get('name')
         if claims_required:
             g.sebo_id = decoded_token['seboId']
             g.user_role = decoded_token['userRole'] # extrai as custons clains que criei no save_user e o uid que o firebase fornce !! não é o id token!! 
@@ -46,7 +46,7 @@ def permission_required(*required_role, claims_required=True):
         @wraps(func)
         def decorated_function(*args, **kwargs):
             token = _get_token_from_header()
-            _verify_token(token)
+            _verify_token(token, claims_required=claims_required)
             if claims_required:
                 _authorize_user_role(required_role)
             return func(*args, **kwargs)

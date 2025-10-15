@@ -28,7 +28,7 @@ Sebos/
                                 ├── conservationState: string
                                 ├── price: number
                                 └── registeredAt: datetime
-          └── AlterationLog/
+            └── AlterationLog/
                     └── {logId}/
                            ├── logId: string
                            ├── userId: string
