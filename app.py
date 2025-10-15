@@ -134,7 +134,7 @@ def add_user_route():
 @permission_required(UserRole.ADMIN) 
 def delete_user_route(user_id):
     if user_id == g.user_id:
-        raise BadRequest("You cannot delete yourself via the API")
+        raise Forbidden("You cannot delete yourself via the API")
     target = fetch_user(user_id)
     if target.get('seboId') != g.sebo_id:
         raise Forbidden("You can only delete users from your own sebo")

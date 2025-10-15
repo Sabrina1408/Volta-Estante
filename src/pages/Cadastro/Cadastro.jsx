@@ -42,7 +42,6 @@ const Cadastro = () => {
         body: JSON.stringify(payload),
         
       });
-      console.log({idToken, payload});
       
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -62,7 +61,6 @@ const Cadastro = () => {
       setError(friendly);
     }
 
-    alert("Cadastro realizado com sucesso!");
   };
 
   return (
