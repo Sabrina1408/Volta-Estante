@@ -1,12 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useApi } from "../../lib/api";
 import styles from "./Perfil.module.css";
 
 const Perfil = () => {
   const [role, setRole] = useState("leitor");
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { user, logout } = useAuth();
+  const { authFetch } = useApi();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await authFetch(`http://localhost:5000/users/${user.uid}`);
+        if (!res.ok) {
+          throw new Error("Falha ao buscar dados do perfil.");
+        }
+        const data = await res.json();
+        setProfileData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user, authFetch]);
 
   const handleLogout = async () => {
     try {
@@ -17,18 +45,26 @@ const Perfil = () => {
     }
   };
 
+  if (loading) {
+    return <div className={styles.perfil}>Carregando perfil...</div>;
+  }
+
+  if (error) {
+    return <div className={`${styles.perfil} ${styles.error}`}>{error}</div>;
+  }
+
   return (
-    <div className={styles.roleSelection}>
-      {user && (
+    <div className={styles.perfil}>
+      <h1>Seu Perfil</h1>
+      {profileData && (
         <>
-          <div>
-            <button className={styles.linkButton} onClick={handleLogout}>
-              Sair
-            </button>
-          </div>
-          <p>{user.email}</p>
+          <p><strong>Nome:</strong> {profileData.name}</p>
+          <p><strong>Email:</strong> {profileData.email}</p>
+          <p><strong>Nome do Sebo:</strong> {profileData.nameSebo}</p>
+          <p><strong>Função:</strong> {profileData.role}</p>
         </>
       )}
+      <button className={styles.logoutButton} onClick={handleLogout}>Sair</button>
 
       <p>Tipo de usuário:</p>
       <div>

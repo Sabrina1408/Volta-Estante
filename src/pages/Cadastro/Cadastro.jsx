@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Cadastro.module.css";
+import { useApi } from "../../lib/api";
 
 const Cadastro = () => {
   const [nome, setNome] = useState("");
@@ -10,6 +11,7 @@ const Cadastro = () => {
   const [nomeSebo, setNomeSebo] = useState("");
   const [error, setError] = useState("");
   const { signup } = useAuth();
+  const { authFetch } = useApi();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,13 +20,12 @@ const Cadastro = () => {
 
     if (senha.length < 6) {
       setError("A senha precisa ter no mínimo 6 caracteres.");
-      return; // Interrompe o envio do formulário
+      return;
     }
 
     try {
       const cred = await signup(email, senha);
       const firebaseUser = cred.user;
-      const idToken = await firebaseUser.getIdToken();
 
       const payload = {
         userId: firebaseUser.uid,
@@ -33,10 +34,9 @@ const Cadastro = () => {
         nameSebo: nomeSebo,
       };
 
-      const res = await fetch("http://localhost:5000/users", {
+      const res = await authFetch("http://localhost:5000/users", {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + idToken,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),

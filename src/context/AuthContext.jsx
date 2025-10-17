@@ -21,7 +21,11 @@ export const AuthProvider = ({ children }) => {
   const signup = (email, password) => createUserWithEmailAndPassword(auth, email, password);
   const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
   const logout = () => signOut(auth);
-  const getToken = async () => (await auth.currentUser?.getIdToken()) || null;
+  
+  // Força a atualização do token para garantir que ele seja sempre válido.
+  // Isso resolve problemas de token expirado ou não propagado após o login.
+  const getToken = async () => 
+    auth.currentUser ? await auth.currentUser.getIdToken(true) : null;
 
   return (
     <AuthContext.Provider value={{ user, loading, signup, login, logout, getToken }}>
