@@ -1,11 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./NavBar.module.css";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const NavBar = () => {
   const [search, setSearch] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para o menu
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,12 +27,10 @@ const NavBar = () => {
 
   return (
     <nav className={styles.navbar}>
-
       <NavLink to="/" className={styles.brand} onClick={handleLinkClick}>
         Volta à Estante
       </NavLink>
 
-      {/* Botão Hambúrguer (visível apenas em telas pequenas) */}
       <button
         className={styles.hamburger}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -48,17 +48,23 @@ const NavBar = () => {
               Home
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/estoque" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Estoque
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Dashboard
-            </NavLink>
-          </li>
+
+          {user && (
+            <>
+              <li>
+                <NavLink to="/estoque" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Estoque
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Dashboard
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -75,22 +81,30 @@ const NavBar = () => {
             </svg>
           </button>
         </form>
+
         <ul>
-          <li>
-            <NavLink to="/perfil" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Perfil
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/login" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Login
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/cadastro" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Cadastre-se
-            </NavLink>
-          </li>
+          {user ? (
+            <>
+              <li>
+                <NavLink to="/perfil" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Perfil
+                </NavLink>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <NavLink to="/login" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Login
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/cadastro" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Cadastre-se
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>

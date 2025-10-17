@@ -54,3 +54,13 @@
   opacity: 0.9;
   border-color: #646cff;
 }
+
+.recuperarSenha .success {
+  color: #4BB543;
+  margin-top: 16px;
+}
+
+.recuperarSenha .error {
+  color: #FF3333;
+  margin-top: 16px;
+}

@@ -1,7 +1,8 @@
 // React Router
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
-import { AuthProvider } from "./context/AuthContext";
+// Hook/Context
+import { useAuth, AuthProvider } from "./context/AuthContext";
 // CSS
 import "./App.css";
 // Pages
@@ -13,10 +14,52 @@ import Perfil from "./pages/Perfil/Perfil";
 import Estoque from "./pages/Estoque/Estoque";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
-
 // Components
 import Footer from "./components/Footer";
 import NavBar from "./components/NavBar";
+
+function AppRoutes() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route
+        path="/login"
+        element={!user ? <Login /> : <Navigate to="/perfil" replace />}
+      />
+      <Route
+        path="/cadastro"
+        element={!user ? <Cadastro /> : <Navigate to="/" replace />}
+      />
+      <Route
+        path="/recuperarSenha"
+        element={!user ? <RecuperarSenha /> : <Navigate to="/perfil" replace />}
+      />
+      <Route
+        path="/perfil"
+        element={user ? <Perfil /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/estoque"
+        element={user ? <Estoque /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/dashboard"
+        element={user ? <Dashboard /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/search"
+        element={user ? <Search /> : <Navigate to="/login" replace />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
@@ -25,16 +68,7 @@ function App() {
         <BrowserRouter>
           <NavBar />
           <div className="container">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/cadastro" element={<Cadastro />} />
-              <Route path="/recuperarSenha" element={<RecuperarSenha />} />
-              <Route path="/perfil" element={<Perfil />} />
-              <Route path="/estoque" element={<Estoque />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/search" element={<Search />} />
-            </Routes>
+            <AppRoutes />
           </div>
           <Footer />
         </BrowserRouter>
