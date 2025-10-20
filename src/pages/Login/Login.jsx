@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
-import { useAuth } from '../../context/AuthContext'; // Importar o Link
+import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Login.module.css';
+import { getFriendlyFirebaseError } from '../../utils/firebaseErrors';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,23 +12,23 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const { mutate, isLoading } = useMutation({
+    mutationFn: ({ email, password }) => login(email, password),
+    onSuccess: () => {
+      navigate("/");
+    },
+    onError: (err) => {
+      console.error("login error:", err);
+      const friendlyError = getFriendlyFirebaseError(err?.code, "Erro ao efetuar login.");
+      setError(friendlyError);
+    }
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    try {
-      await login(email, senha);
-      navigate("/");
-    } catch (err) {
-      console.error("login error:", err);
-      const friendly =
-        err?.code === "auth/wrong-password"
-          ? "Senha incorreta."
-          : err?.code === "auth/user-not-found"
-          ? "Usuário não encontrado."
-          : err?.message || "Erro ao efetuar login.";
-      setError(friendly);
-    }
+    if (!email || !senha) return;
+    mutate({ email, password: senha });
   };
 
   return (
@@ -53,9 +55,11 @@ const Login = () => {
           onChange={(e) => setSenha(e.target.value)}
         />
 
-        <button type="submit">Entrar</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Entrando..." : "Entrar"}
+        </button>
 
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <p className="error">{error}</p>}
 
         <p className={styles.forgotPassword}>
           <Link to="/recuperarSenha">Esqueci minha senha</Link>

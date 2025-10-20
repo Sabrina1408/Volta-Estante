@@ -75,3 +75,13 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+.error {
+  color: #ffffff;
+  background-color: rgb(165, 62, 62);
+  border: 1px solid #e74c3c;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}

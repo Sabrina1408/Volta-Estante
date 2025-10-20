@@ -1,40 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query"; // Importa o useQuery
 import { useAuth } from "../../context/AuthContext";
-import { useApi } from "../../lib/api";
+import { useApi } from "../../hooks/useApi"; // Usaremos o useApi como fetcher
 import styles from "./Perfil.module.css";
 
 const Perfil = () => {
-  const [role, setRole] = useState("leitor");
-  const [profileData, setProfileData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [role, setRole] = useState("admin");
   const { user, logout } = useAuth();
-  const { authFetch } = useApi();
   const navigate = useNavigate();
+  const { authFetch } = useApi();
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!user) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await authFetch(`http://localhost:5000/users/${user.uid}`);
-        if (!res.ok) {
-          throw new Error("Falha ao buscar dados do perfil.");
-        }
-        const data = await res.json();
-        setProfileData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-  }, [user, authFetch]);
+  const { data: profileData, isLoading, error } = useQuery({
+    queryKey: ['userProfile', user?.uid], // Chave única para o cache
+    queryFn: () => authFetch(`/users/${user.uid}`).then(res => res.json()),
+    enabled: !!user, // Só executa a query se o 'user' existir
+  });
 
   const handleLogout = async () => {
     try {
@@ -45,12 +26,16 @@ const Perfil = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div className={styles.perfil}>Carregando perfil...</div>;
   }
 
-  if (error) {
-    return <div className={`${styles.perfil} ${styles.error}`}>{error}</div>;
+  if (error) { // O objeto de erro do React Query já tem a mensagem
+    return (
+      <div className={styles.perfil}>
+        <p className="error">Erro ao carregar o perfil: {error.message}</p>
+      </div>
+    );
   }
 
   return (

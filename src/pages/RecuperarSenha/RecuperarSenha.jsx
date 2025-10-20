@@ -1,13 +1,27 @@
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import styles from './RecuperarSenha.module.css';
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { app } from '../../firebase/config';
+import { useAuth } from '../../context/AuthContext';
+import { getFriendlyFirebaseError } from '../../utils/firebaseErrors';
 
 const RecuperarSenha = () => {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { resetPassword } = useAuth();
+
+  const { mutate, isLoading } = useMutation({
+    mutationFn: (emailToReset) => resetPassword(emailToReset),
+    onSuccess: () => {
+      setSuccess("E-mail de recuperação enviado com sucesso!");
+      setEmail("");
+    },
+    onError: (err) => {
+      console.error("reset password error:", err);
+      const friendlyError = getFriendlyFirebaseError(err?.code, "Erro ao enviar e-mail de recuperação.");
+      setError(friendlyError);
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,25 +32,7 @@ const RecuperarSenha = () => {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const auth = getAuth(app);
-      await sendPasswordResetEmail(auth, email);
-      setSuccess("Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.");
-      setEmail("");
-    } catch (err) {
-      console.error("reset password error:", err);
-      const friendly =
-        err?.code === "auth/user-not-found"
-          ? "E-mail não cadastrado."
-          : err?.code === "auth/invalid-email"
-          ? "E-mail inválido."
-          : err?.message || "Erro ao enviar e-mail de recuperação.";
-      setError(friendly);
-    } finally {
-      setLoading(false);
-    }
+    mutate(email);
   };
 
   return (
@@ -53,13 +49,13 @@ const RecuperarSenha = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button type="submit" disabled={loading}>
-          {loading ? "Enviando..." : "Enviar"}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Enviando..." : "Enviar"}
         </button>
       </form>
 
       {success && <p className={styles.success}>{success}</p>}
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }

@@ -1,61 +1,33 @@
 import styles from './Search.module.css';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchBook = async (query) => {
+  const response = await fetch(`http://127.0.0.1:5000/books/${query}`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      return null; // Retorna nulo se o livro não for encontrado, para tratar na UI.
+    }
+    throw new Error(`Erro na busca (status: ${response.status})`);
+  }
+  return response.json();
+};
 
 const Search = () => {
   const [searchParams] = useSearchParams();
-  const query = searchParams.get("q").trim();
+  const query = searchParams.get("q")?.trim() || "";
 
-  const [book, setBook] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  /* const fetchFromApi = async () => {
-    try {
-      const response = await fetch(`http://127.0.0.1:5000/books/${search}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setApiMessage(`API Response: ${JSON.stringify(data, null, 2)}`);
-    } catch (error) {
-      console.error("Error fetching from API:", error);
-      setApiMessage(`Error connecting to API: ${error.message}`);
-    }
-  }; */
-
-  useEffect(() => {
-    const fetchFromApi = async () => {
-      setLoading(true);
-      setError(null);
-      setBook(null);
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/books/${query}`);
-        if (!response.ok) {
-          throw new Error(`Livro não encontrado ou erro na busca (status: ${response.status})`);
-        }
-        const data = await response.json();
-        setBook(data);
-      } catch (error) {
-        console.error("Error fetching from API:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (query) {
-      fetchFromApi();
-    } else {
-        setLoading(false);
-    }
-  }, [query]); // A busca é refeita sempre que o 'query' mudar
+  const { data: book, isLoading, error, isSuccess } = useQuery({
+    queryKey: ['bookSearch', query],
+    queryFn: () => fetchBook(query),
+    enabled: !!query, // A query só será executada se 'query' não for uma string vazia.
+  });
 
   return (
     <div className={styles.search}>
       <h1>Resultados para: {query}</h1>
-      {loading && <p>Carregando...</p>}
-      {error && <p className={styles.error}>{error}</p>}
+      {isLoading && <p>Carregando...</p>}
+      {error && <p className="error">Ocorreu um erro: {error.message}</p>}
       {book && (
         <div>
           <h2>{book.title}</h2>
@@ -64,7 +36,7 @@ const Search = () => {
           {/* Adicione mais detalhes do livro conforme necessário */}
         </div>
       )}
-       {!book && !loading && !error && <p>Nenhum resultado encontrado.</p>}
+       {isSuccess && !book && <p>Nenhum resultado encontrado para "{query}".</p>}
     </div>
   );
 }

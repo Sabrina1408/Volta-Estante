@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Cadastro.module.css";
-import { useApi } from "../../lib/api";
+import { useApi } from "../../hooks/useApi";
+import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
 
 const Cadastro = () => {
   const [nome, setNome] = useState("");
@@ -14,6 +16,18 @@ const Cadastro = () => {
   const { authFetch } = useApi();
   const navigate = useNavigate();
 
+  // React Query mutation hook
+  const { mutateAsync: createUser, isLoading } = useMutation({
+    mutationFn: (payload) =>
+      authFetch("/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }).then(res => { if (!res.ok) throw new Error('Failed to create user in backend'); return res.json() }),
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -23,42 +37,31 @@ const Cadastro = () => {
       return;
     }
 
+    let cred = null; // Declarar fora para ser acessível no catch
     try {
-      const cred = await signup(email, senha);
-      const firebaseUser = cred.user;
+      cred = await signup(email, senha);
 
+      // Payload para o seu backend
       const payload = {
-        userId: firebaseUser.uid,
+        userId: cred.user.uid,
         name: nome,
         email,
         nameSebo: nomeSebo,
       };
 
-      const res = await authFetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        
-      });
-      
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        // rollback: remove o user criado no Firebase (cliente)
-        await firebaseUser.delete().catch(() => null);
-        throw new Error(err.message || "Erro ao salvar usuário no backend");
-      }
-
+      await createUser(payload);
       alert("Usuário cadastrado com sucesso!");
       navigate("/login");
+
     } catch (error) {
-      console.error("signup error:", error);
-      const friendly =
-        error?.code === "auth/email-already-in-use"
-          ? "Este e-mail já está em uso."
-          : error?.message || "Erro ao cadastrar";
-      setError(friendly);
+      // Se a criação no backend falhar, o usuário do Firebase já foi criado.
+      // Precisamos deletá-lo para manter a consistência (rollback).
+      if (cred?.user) {
+        await cred.user.delete().catch(err => console.error("Falha ao fazer rollback do usuário no Firebase:", err));
+      }
+
+      const friendlyError = getFriendlyFirebaseError(error?.code, "Erro ao cadastrar");
+      setError(friendlyError);
     }
 
   };
@@ -107,8 +110,10 @@ const Cadastro = () => {
           onChange={(e) => setNomeSebo(e.target.value)}
         />
 
-        {error && <p className={styles.error}>{error}</p>}
-        <button type="submit">Cadastrar</button>
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Cadastrando..." : "Cadastrar"}
+        </button>
       </form>
     </div>
   );
