@@ -1,8 +1,8 @@
 from firebase_admin import firestore, auth
-from models.users import User
+from models.users import User, UserRole
 from models.sebos import Sebo
 from pydantic import ValidationError 
-from werkzeug.exceptions import NotFound, Conflict, BadRequest
+from werkzeug.exceptions import NotFound, Conflict, BadRequest, Forbidden
 
 
 db = firestore.client()
@@ -61,13 +61,7 @@ def fetch_user(user_id):
     except ValidationError as e:
         raise BadRequest(f"User data in database is invalid: {e}")
     
-def delete_user(user_id): # Deletar usuario deve deletar o sebo em que ele é "dono"?
-    user_ref = db.collection('Users').document(user_id)
-    user_doc = user_ref.get()
-    if not user_doc.exists:
-        raise NotFound(f"User with ID {user_id} not found")
-    user_ref.delete()
-    return {"userId": user_id, "status": "deleted"}
+
 
 def add_new_employee(user_id, sebo_id, employee_data): 
     employee_data['sebo_id'] = sebo_id
@@ -94,4 +88,35 @@ def add_new_employee(user_id, sebo_id, employee_data):
     return employee.model_dump(by_alias=True)
 
 def update_user(user_id, update_data):
-    return None
+    user_ref = db.collection('Users').document(user_id)
+    user_doc = user_ref.get()
+    if not user_doc.exists:
+        raise NotFound(f"User with ID {user_id} not found")
+    try:
+        user_data = user_doc.to_dict()
+        validaded_user = User.model_validate(user_data)
+        updated_fields = validaded_user.model_copy(update=update_data)
+        user_ref.update(updated_fields.model_dump(by_alias=True))
+        return updated_fields.model_dump(by_alias=True)
+    except ValidationError as e:
+        raise BadRequest(f"Invalid user data: {e}")
+
+    
+
+def delete_user(user_id, sebo_id): 
+    user_ref = db.collection('Users').document(user_id)
+    user_doc = user_ref.get()
+    if not user_doc.exists:
+        raise NotFound(f"User with ID {user_id} not found")
+    user_data = user_doc.to_dict()
+    try:
+        validated_user = User.model_validate(user_data)
+    except ValidationError as e:
+        raise BadRequest(f"User data in database is invalid: {e}")
+    if validated_user.sebo_id != sebo_id:
+        raise Forbidden("You can only delete users from your own sebo.")
+    try:
+        user_ref.delete()
+    except Exception as e:
+        raise BadRequest(f"Failed to delete user {user_id}: {e}")
+    return validated_user.model_dump(by_alias=True)

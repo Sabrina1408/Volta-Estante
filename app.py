@@ -132,20 +132,6 @@ def add_user_route():
     created_user = save_user(g.user_id, g.email, name, data)
     return jsonify(created_user), 201
 
-@app.route("/users/<user_id>", methods=["DELETE"])
-@permission_required(UserRole.ADMIN) 
-def delete_user_route(user_id):
-    if user_id == g.user_id:
-        raise Forbidden("You cannot delete yourself via the API")
-    target = fetch_user(user_id)
-    if target.get('seboId') != g.sebo_id:
-        raise Forbidden("You can only delete users from your own sebo")
-    deleted_info = delete_user(user_id)
-    return jsonify({
-        "message": "User deleted successfully",
-        "data": deleted_info
-        }), 200
-
 @app.route("/users/<user_id>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 def get_user_route(user_id):
@@ -159,6 +145,67 @@ def get_user_route(user_id):
         raise Forbidden("You can only view your own profile.")
     return jsonify(user), 200
 
+@app.route("/users/<user_id>", methods=["DELETE"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def delete_user_route(user_id):
+    """
+    Deletion rules:
+    - Non-admin (Editor/Reader): can ONLY delete their own account.
+    - Admin: can delete anyone in their sebo.
+      - If Admin is deleting themselves, they must provide an Editor to promote to Admin first.
+        Pass JSON body: { "promoteToUserId": "<editorId>" }
+    Cross-sebo deletions are forbidden.
+    """
+    
+    target = fetch_user(user_id)
+    if target.get('seboId') != g.sebo_id:
+        raise Forbidden("You can only delete users from your own sebo")
+
+    is_self = (user_id == g.user_id)
+    is_admin = (g.user_role == UserRole.ADMIN.value)
+
+    if not is_admin: # editor e reader so podem se deletar
+        
+        if not is_self:
+            raise Forbidden("You can only delete your own account")
+        deleted_info = delete_user(user_id, g.sebo_id)
+        return jsonify({
+            "message": "User deleted successfully",
+            "data": deleted_info
+        }), 200
+
+    
+    if is_self: # admin se deletando e tendo que promover um editor (via json)
+        body = request.get_json()
+        if not body:
+            raise BadRequest("Invalid JSON data")
+        promote_to = body.get("editorID")
+        if not promote_to:
+            raise BadRequest("editorID is required to delete yourself as Admin")
+        if promote_to == user_id:
+            raise BadRequest("editorID cannot be the same as the deleting admin")
+
+        candidate = fetch_user(promote_to) # checa se o editor existe, pertence ao sebo e tem a role de editor
+        if candidate.get('seboId') != g.sebo_id:
+            raise Forbidden("editorID must belong to your sebo")
+        if candidate.get('userRole') != UserRole.EDITOR.value:
+            raise BadRequest("editorID must currently have role Editor")
+
+        
+        update_user(promote_to, {"userRole": UserRole.ADMIN.value}) 
+        deleted_info = delete_user(user_id, g.sebo_id)
+        return jsonify({
+            "message": "Admin deleted; editor promoted to Admin",
+            "editorID": promote_to,
+            "data": deleted_info
+        }), 200
+
+    # Admin deleting someone else in the same sebo
+    deleted_info = delete_user(user_id, g.sebo_id)
+    return jsonify({
+        "message": "User deleted successfully",
+        "data": deleted_info
+    }), 200
 @app.route("/users/employees/<user_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN)
 def add_new_employee_route(user_id): # <- id do user criado pelo admin
@@ -167,9 +214,23 @@ def add_new_employee_route(user_id): # <- id do user criado pelo admin
         raise BadRequest("Employee User ID is required")
     if not data:
         raise BadRequest("Employee data is required")
+    # user_id here is the new employee's Firebase UID
     new_employee = add_new_employee(user_id, g.sebo_id, data)
     return jsonify(new_employee), 201
 
+@app.route("/users/<user_id>", methods=["PUT"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, editor apenas ele mesmo
+    if g.user_role != UserRole.ADMIN.value and g.user_id != user_id:
+        raise Forbidden("You can only update your own profile.")
+    update_data = request.get_json()
+    if not update_data:
+        raise BadRequest("Invalid JSON data")
+    updated_user = update_user(user_id, update_data)
+    return jsonify({
+        "message": "User updated successfully",
+        "user": updated_user
+    }), 200
 
 # ============================================
 #                   Vendas
