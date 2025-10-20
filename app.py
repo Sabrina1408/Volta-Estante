@@ -13,7 +13,7 @@ cred = credentials.Certificate(path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-from services.alteration_log_service import log_action
+from services.alteration_log_service import fetch_log, log_action, update_log
 from services.auth_service import permission_required
 from models.users import UserRole
 from services.users_service import add_new_employee, save_user, delete_user, fetch_user, update_user
@@ -178,6 +178,26 @@ def add_new_employee_route(user_id): # <- id do user criado pelo admin
 def create_sale_route(ISBN, copy_id):
     sale_data = create_sale(g.user_id,g.sebo_id, ISBN, copy_id)
     return jsonify(sale_data), 201
+
+
+# ============================================
+#                   Logs
+# ============================================
+
+@app.route("/logs/<log_id>", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def get_log_route(log_id):
+    log = fetch_log(g.sebo_id, log_id) # o g.sebo_id garante que o log do proprio user
+    return jsonify(log), 200
+
+@app.route("/logs/<log_id>", methods=["PUT"])
+@permission_required(UserRole.ADMIN)
+def update_log_route(log_id):
+    update_data = request.get_json()
+    if not update_data:
+        raise BadRequest("Invalid JSON data")
+    updated_log = update_log(g.sebo_id, log_id, update_data)
+    return jsonify(updated_log), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

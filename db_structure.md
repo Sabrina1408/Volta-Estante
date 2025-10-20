@@ -36,9 +36,7 @@ Sebos/
                            ├── details: dict[str, Any]
                            ├── action: (qual endpoint ele chamou (?))
                            └── executedAt: datetime      
-            └── Employee/
-                  └── {employee_id} (user_id dele)
-                            ├── ...  
+             
 
 
 Users/

@@ -69,9 +69,6 @@ def delete_user(user_id): # Deletar usuario deve deletar o sebo em que ele é "d
     user_ref.delete()
     return {"userId": user_id, "status": "deleted"}
 
-def update_user(user_id, update_data):
-    return None
-
 def add_new_employee(user_id, sebo_id, employee_data): 
     employee_data['sebo_id'] = sebo_id
     employee_data['user_id'] = user_id
@@ -95,3 +92,6 @@ def add_new_employee(user_id, sebo_id, employee_data):
     employee_ref = db.collection('Users').document(employee.user_id)
     employee_ref.set(employee.model_dump(by_alias=True))
     return employee.model_dump(by_alias=True)
+
+def update_user(user_id, update_data):
+    return None
