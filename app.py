@@ -13,12 +13,14 @@ cred = credentials.Certificate(path)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-from services.alteration_log_service import fetch_log, log_action, update_log
-from services.auth_service import permission_required
 from models.users import UserRole
-from services.users_service import add_new_employee, save_user, delete_user, fetch_user, update_user
-from services.books_service import save_book, fetch_book, update_book, delete_book, delete_copy
-from services.sales_service import create_sale, fetch_sale
+
+# == SERVICES == 
+from services.alteration_log_service import *
+from services.auth_service import permission_required
+from services.users_service import *
+from services.books_service import *
+from services.sales_service import * 
 from services.google_books_service import fetch_book_by_isbn
 
 # Via auth vou ter o user_id, sebo_id e user_role
@@ -179,6 +181,29 @@ def create_sale_route(ISBN, copy_id):
     sale_data = create_sale(g.user_id,g.sebo_id, ISBN, copy_id)
     return jsonify(sale_data), 201
 
+@app.route("/sales/<sale_id>", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def fetch_sale_route(sale_id):
+    sale = fetch_sale(sale_id, g.sebo_id)
+    return jsonify(sale), 200
+
+@app.route("/sales/<sale_id>", methods=["DELETE"])
+@permission_required(UserRole.ADMIN)
+def delete_sale_route(sale_id):
+    sale = delete_sale(g.sebo_id, sale_id)
+    return jsonify({"message": "Sale deleted successfully", "data": sale}), 200
+
+@app.route("/sales/<sale_id>", methods=["PUT"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+def update_sale_route(sale_id):
+    update_data = request.get_json()
+    if not update_data:
+        raise BadRequest("Invalid JSON data")
+    updated_sale = update_sale(g.sebo_id, sale_id, update_data)
+    return jsonify({
+        "message": "Sale updated successfully",
+        "sale": updated_sale
+        }), 200
 
 # ============================================
 #                   Logs

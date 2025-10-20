@@ -6,7 +6,7 @@ from werkzeug.exceptions import NotFound, BadRequest
 
 db = firestore.client()
 
-def create_sale(user_id, sebo_id, ISBN, copy_id): #TODO tirar user_id e sebo_id das requestas -> pegar via auth
+def create_sale(user_id, sebo_id, ISBN, copy_id): 
     user_ref = db.collection('Users').document(user_id)
     user_doc = user_ref.get()
     if not user_doc.exists:
@@ -54,5 +54,31 @@ def create_sale(user_id, sebo_id, ISBN, copy_id): #TODO tirar user_id e sebo_id 
         raise BadRequest(f"Data was not modified: failed to create sale: {e}")
 
 
-def fetch_sale(user_id, sale_id):
-    return None
+def fetch_sale(sale_id, sebo_id):
+    sale_ref = db.collection('Sales').document(sebo_id).collection('saleId').document(sale_id)
+    sale_doc = sale_ref.get()
+    if not sale_doc.exists:
+        raise NotFound(f"Sale with ID {sale_id} not found")
+    return sale_doc.to_dict()
+
+def delete_sale(sale_id, sebo_id):
+    sale_ref = db.collection('Sales').document(sebo_id).collection('saleId').document(sale_id)
+    sale_doc = sale_ref.get()
+    if not sale_doc.exists:
+        raise NotFound(f"Sale with ID {sale_id} not found")
+    sale_ref.delete()
+    return sale_doc.to_dict()
+
+def update_sale(sebo_id, sale_id, update_data):
+    sale_ref = db.collection('Sales').document(sebo_id).collection('saleId').document(sale_id)
+    sale_doc = sale_ref.get()
+    if not sale_doc.exists:
+        raise NotFound(f"Sale with ID {sale_id} not found")
+    try:
+        sale_data = sale_doc.to_dict()
+        validated_sale = Sales.model_validate(sale_data)
+        updated_fields = validated_sale.model_copy(update=update_data)
+        sale_ref.update(updated_fields.model_dump(by_alias=True))
+        return updated_fields.model_dump(by_alias=True)    
+    except (ValidationError, Exception) as e:
+        raise BadRequest(f"Invalid sale data: {e}")
