@@ -16,7 +16,7 @@ db = firestore.client()
 from services.alteration_log_service import log_action
 from services.auth_service import permission_required
 from models.users import UserRole
-from services.users_service import save_user, delete_user, fetch_user, update_user
+from services.users_service import add_new_employee, save_user, delete_user, fetch_user, update_user
 from services.books_service import save_book, fetch_book, update_book, delete_book, delete_copy
 from services.sales_service import create_sale, fetch_sale
 from services.google_books_service import fetch_book_by_isbn
@@ -156,6 +156,17 @@ def get_user_route(user_id):
     else:
         raise Forbidden("You can only view your own profile.")
     return jsonify(user), 200
+
+@app.route("/users/employees/<user_id>", methods=["POST"])
+@permission_required(UserRole.ADMIN)
+def add_new_employee_route(user_id): # <- id do user criado pelo admin
+    data = request.get_json()
+    if not user_id:
+        raise BadRequest("Employee User ID is required")
+    if not data:
+        raise BadRequest("Employee data is required")
+    new_employee = add_new_employee(user_id, g.sebo_id, data)
+    return jsonify(new_employee), 201
 
 
 # ============================================

@@ -43,7 +43,7 @@ def create_sale(user_id, sebo_id, ISBN, copy_id): #TODO tirar user_id e sebo_id 
     @firestore.transactional # transaction faz que essas operacoes sejam como se fosse uma
     # caso uma de erro não tera dado sendo modificado pela metade
     def sale_transaction(transaction, book_ref, copy_ref, sebo_id, sale):
-        sale_ref = db.collection('Sales').document(sebo_id).collection('SeboSales').document(sale.sale_id)
+        sale_ref = db.collection('Sales').document(sebo_id).collection('saleId').document(sale.sale_id)
         transaction.set(sale_ref, sale.model_dump(by_alias=True))
         transaction.delete(copy_ref)
         transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(-1)})

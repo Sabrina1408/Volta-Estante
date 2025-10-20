@@ -71,3 +71,27 @@ def delete_user(user_id): # Deletar usuario deve deletar o sebo em que ele é "d
 
 def update_user(user_id, update_data):
     return None
+
+def add_new_employee(user_id, sebo_id, employee_data): 
+    employee_data['sebo_id'] = sebo_id
+    employee_data['user_id'] = user_id
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    sebo_doc = sebo_ref.get()
+    if not sebo_doc.exists:
+        raise NotFound(f"Sebo with ID {sebo_id} not found")
+    employee_data['name_sebo'] = sebo_doc.to_dict().get('name_sebo', 'Unknown Sebo')
+    try:
+        employee = User.model_validate(employee_data)
+    except ValidationError as e:
+        raise BadRequest(f"Invalid employee data: {e}")
+    try:
+        claims = {
+            "seboId": employee.sebo_id,
+            "userRole": employee.user_role.value
+        }
+        auth.set_custom_user_claims(employee.user_id, claims)
+    except Exception as e:
+        raise BadRequest(f"Failed to set custom claims for user {employee.user_id}: {e}")
+    employee_ref = db.collection('Users').document(employee.user_id)
+    employee_ref.set(employee.model_dump(by_alias=True))
+    return employee.model_dump(by_alias=True)
