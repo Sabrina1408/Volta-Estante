@@ -200,7 +200,6 @@ def delete_user_route(user_id):
             "data": deleted_info
         }), 200
 
-    # Admin deleting someone else in the same sebo
     deleted_info = delete_user(user_id, g.sebo_id)
     return jsonify({
         "message": "User deleted successfully",
