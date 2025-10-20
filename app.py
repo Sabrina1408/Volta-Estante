@@ -148,15 +148,6 @@ def get_user_route(user_id):
 @app.route("/users/<user_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 def delete_user_route(user_id):
-    """
-    Deletion rules:
-    - Non-admin (Editor/Reader): can ONLY delete their own account.
-    - Admin: can delete anyone in their sebo.
-      - If Admin is deleting themselves, they must provide an Editor to promote to Admin first.
-        Pass JSON body: { "promoteToUserId": "<editorId>" }
-    Cross-sebo deletions are forbidden.
-    """
-    
     target = fetch_user(user_id)
     if target.get('seboId') != g.sebo_id:
         raise Forbidden("You can only delete users from your own sebo")
