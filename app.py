@@ -66,14 +66,15 @@ def add_book_route():
     ISBN = data.get("ISBN")
     inventory_data = {
         "price": data.get("price", 0.0),
-        "conservation_state": data.get("conservationState", "unknown"),
     }
+    if "conservationState" in data:
+        inventory_data["conservation_state"] = data.get("conservationState")
     
     book_data = fetch_book_by_isbn(ISBN)
     if not book_data:
         raise BadRequest(f"Book with ISBN {ISBN} not found via Google Books API")
-    save_book(g.sebo_id, book_data, inventory_data)
-    return jsonify(book_data), 201
+    created = save_book(g.sebo_id, book_data, inventory_data)
+    return jsonify(created), 201
 
 @app.route("/books/<ISBN>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)

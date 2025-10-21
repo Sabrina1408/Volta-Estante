@@ -1,5 +1,5 @@
 from firebase_admin import firestore, auth
-from models.users import User, UserRole
+from models.users import User
 from models.sebos import Sebo
 from pydantic import ValidationError 
 from werkzeug.exceptions import NotFound, Conflict, BadRequest, Forbidden

@@ -3,9 +3,9 @@ from werkzeug.exceptions import NotFound, BadRequest
 from models.books import Book
 from models.copy import Copy
 from pydantic import ValidationError
-# TODO fazer pesquisa no db por nome e talvez por outras coisas
 
-db = firestore.client() # TODO atualizar pra tirar o sebo_id das requests -> pegar via auth 
+
+db = firestore.client() 
 
 
 def save_book(sebo_id, book_data, inventory_data):
@@ -29,7 +29,7 @@ def save_book(sebo_id, book_data, inventory_data):
         if not book_doc.exists:
             book_data['totalQuantity'] = 1
             book = Book.model_validate(book_data)
-            transaction.set(book_ref, book.model_dump(by_alias=True))
+            transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
         else:
             transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
         copy_ref = book_ref.collection('Copies').document()
@@ -100,7 +100,7 @@ def update_book(sebo_id, ISBN, copy_id, update_data):
 
     return fetch_book(sebo_id, ISBN)
 
-def delete_book(sebo_id, ISBN): # att
+def delete_book(sebo_id, ISBN): 
     if not ISBN:
         raise BadRequest("Invalid book data: Missing ISBN")
     if not sebo_id:

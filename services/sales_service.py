@@ -31,9 +31,11 @@ def create_sale(user_id, sebo_id, ISBN, copy_id):
         "user_name": user_data.get('name', 'Unknown User'),
         "ISBN": ISBN,
         "book_title": book_data.get('title', 'Unknown'),
+        "authors": book_data.get('authors', ['Unknown']),
         "book_category": book_data.get('categories', ['Unknown']),
-        "book_rating": book_data.get('averageRating', 0.0),
+        "average_rating": book_data.get('averageRating', 0.0),
         "book_price": copy_data.get('price', 0.0),
+        "conservation_state": copy_data.get('conservationState', 'Novo'),
     }
     try:
         sale = Sales.model_validate(sale_data)
