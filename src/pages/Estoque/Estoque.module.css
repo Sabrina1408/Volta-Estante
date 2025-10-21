@@ -1,0 +1,60 @@
+/* Adicione ao final de Estoque.module.css */
+
+.addBookForm {
+  margin-top: 32px;
+  padding: 24px;
+  background-color: var(--secondaryBackground);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.addBookForm h2 {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.addBookForm label {
+  font-weight: bold;
+}
+
+.addBookForm input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: var(--tertiaryBackground);
+  color: var(--textColor);
+}
+
+.addBookForm button {
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--quaternaryBackground);
+  transition: border-color 0.25s;
+  color: var(--textColor);
+}
+
+.addBookForm button:hover {
+  opacity: 0.9;
+  border-color: var(--sixnaryBackground);
+}
+
+.addBookForm button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.success {
+  color: #ffffff;
+  background-color: #28a745;
+  border: 1px solid #218838;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}

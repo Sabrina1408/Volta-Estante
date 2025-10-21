@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { app } from "../firebase/config"; 
 
 const AuthContext = createContext();
@@ -19,7 +19,16 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, [auth]);
 
-  const signup = (email, password) => createUserWithEmailAndPassword(auth, email, password);
+  const signup = async (email, password, name) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Após criar o usuário, atualiza o perfil com o nome
+    if (userCredential.user && name) {
+      await updateProfile(userCredential.user, {
+        displayName: name
+      });
+    }
+    return userCredential;
+  };
   const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
   const logout = () => signOut(auth);
   const resetPassword = (email) => sendPasswordResetEmail(auth, email);

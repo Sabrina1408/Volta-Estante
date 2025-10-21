@@ -39,7 +39,7 @@ const Cadastro = () => {
 
     let cred = null; // Declarar fora para ser acessível no catch
     try {
-      cred = await signup(email, senha);
+      cred = await signup(email, senha, nome);
 
       // Payload para o seu backend
       const payload = {

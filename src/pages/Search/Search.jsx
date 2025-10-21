@@ -1,25 +1,21 @@
 import styles from './Search.module.css';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-
-const fetchBook = async (query) => {
-  const response = await fetch(`http://127.0.0.1:5000/books/${query}`);
-  if (!response.ok) {
-    if (response.status === 404) {
-      return null; // Retorna nulo se o livro não for encontrado, para tratar na UI.
-    }
-    throw new Error(`Erro na busca (status: ${response.status})`);
-  }
-  return response.json();
-};
+import { useApi } from '../../hooks/useApi';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
+  const { authFetch } = useApi();
   const query = searchParams.get("q")?.trim() || "";
 
   const { data: book, isLoading, error, isSuccess } = useQuery({
     queryKey: ['bookSearch', query],
-    queryFn: () => fetchBook(query),
+    queryFn: async () => {
+      const response = await authFetch(`/books/${query}`);
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error(`Erro na busca (status: ${response.status})`);
+      return response.json();
+    },
     enabled: !!query, // A query só será executada se 'query' não for uma string vazia.
   });
 
@@ -31,8 +27,9 @@ const Search = () => {
       {book && (
         <div>
           <h2>{book.title}</h2>
-          <p>Autor: {book.author}</p>
+          <p>Autor: {book.authors}</p>
           <p>Código: {book.id}</p>
+          <p>Descrição: {book.description}</p>
           {/* Adicione mais detalhes do livro conforme necessário */}
         </div>
       )}
