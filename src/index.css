@@ -4,21 +4,27 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--black);
+  background-color: var(--secondaryBackground);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primaryBackground: #121212;
-  --secondaryBackground: #363636;
-  --tertiaryBackground: #818181;
-  --quaternaryBackground: #1a1a1a;
-  --quinaryBackground: #535bf2;
+  --white: #FFFFFF;
+  --black: #000000;
+  --primaryBackground: #F9FAFB;
+  --secondaryBackground: #F9FAFB;
+  --tertiaryBackground: #ECECF0;
+  --quaternaryBackground: #818181;
+  --quinaryBackground: #030213;
   --sixnaryBackground: #646cff;
-  --navHoverColor: #ffffff;
+  --navHoverColor: #2c2c2c;
+  --error: rgb(165, 62, 62);
+  --errorBorder: #e74c3c;
+  --successBackground: #218838;
+  --successBorder: #218838;
 }
 
 * {
@@ -33,11 +39,11 @@
 
 a {
   font-weight: 500;
-  color: var(--sixnaryBackground);
+  color: var(--quinaryBackground);
   text-decoration: inherit;
 }
 a:hover {
-  color: var(--quinaryBackground);
+  opacity: 0.7;
 }
 
 /* body {
@@ -64,12 +70,12 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: var(--quaternaryBackground);
+  background-color: var(--quinaryBackground);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: var(--quinaryBackground);
+  opacity: 0.7;
 }
 button:focus,
 button:focus-visible {
@@ -77,9 +83,19 @@ button:focus-visible {
 }
 
 .error {
-  color: #ffffff;
-  background-color: rgb(165, 62, 62);
-  border: 1px solid #e74c3c;
+  color: var(--white);
+  background-color: var(--error);
+  border: 1px solid var(--errorBorder);
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.success {
+  color: var(--white);
+  background-color: var(--successBackground);
+  border: 1px solid var(--successBorder);
   padding: 10px;
   border-radius: 4px;
   text-align: center;

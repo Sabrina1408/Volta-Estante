@@ -11,14 +11,15 @@
   padding: 0 20px;
   
   text-align: center;
-  background-color: var(--secondaryBackground);
+  background-color: var(--white);
+  border: 1px solid var(--tertiaryBackground);
 }
 
 .footer a {
   display: flex;
   align-items: center;
   gap: 8px; /* Espaço entre o ícone e o texto */
-  color: var(--navHoverColor); /* Ou a cor que preferir */
+  color: var(--black); /* Ou a cor que preferir */
   text-decoration: none;
   font-size: 14px;
 }
