@@ -34,14 +34,11 @@
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  background-color: var(--quaternaryBackground);
   transition: border-color 0.25s;
-  color: var(--textColor);
 }
 
 .addBookForm button:hover {
-  opacity: 0.9;
-  border-color: var(--sixnaryBackground);
+  opacity: 0.7;
 }
 
 .addBookForm button:disabled {

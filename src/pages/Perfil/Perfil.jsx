@@ -11,9 +11,13 @@ const Perfil = () => {
   const navigate = useNavigate();
   const { authFetch } = useApi();
 
-  const { data: profileData, isLoading, error } = useQuery({
-    queryKey: ['userProfile', user?.uid], // Chave única para o cache
-    queryFn: () => authFetch(`/users/${user.uid}`).then(res => res.json()),
+  const {
+    data: profileData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["userProfile", user?.uid], // Chave única para o cache
+    queryFn: () => authFetch(`/users/${user.uid}`).then((res) => res.json()),
     enabled: !!user, // Só executa a query se o 'user' existir
   });
 
@@ -30,7 +34,8 @@ const Perfil = () => {
     return <div className={styles.perfil}>Carregando perfil...</div>;
   }
 
-  if (error) { // O objeto de erro do React Query já tem a mensagem
+  if (error) {
+    // O objeto de erro do React Query já tem a mensagem
     return (
       <div className={styles.perfil}>
         <p className="error">Erro ao carregar o perfil: {error.message}</p>
@@ -40,17 +45,48 @@ const Perfil = () => {
 
   return (
     <div className={styles.perfil}>
-      <h1>Seu Perfil</h1>
-      {profileData && (
-        <>
-          <p><strong>Nome:</strong> {profileData.name}</p>
-          <p><strong>Email:</strong> {profileData.email}</p>
-          <p><strong>Nome do Sebo:</strong> {profileData.nameSebo}</p>
-          <p><strong>Função:</strong> {profileData.role}</p>
-        </>
-      )}
-      <button className={styles.logoutButton} onClick={handleLogout}>Sair</button>
-
+      <h1>Gerenciamento de Estoque e Funcionários</h1>
+      <section>
+        <h2>Informações do Perfil</h2>
+        <p>Visualize e edite suas informações pessoais</p>
+        {profileData && (
+          <>
+            <p>
+              <strong>Nome:</strong> {profileData.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {profileData.email}
+            </p>
+            <p>
+              <strong>Nome do Sebo:</strong> {profileData.nameSebo}
+            </p>
+            <p>
+              <strong>Função:</strong> {profileData.role}
+            </p>
+          </>
+        )}
+        <button className={styles.logoutButton} onClick={handleLogout}>
+          Sair
+        </button>
+      </section>
+      <section>
+        <div className={styles.textEmployees}>
+          <h2>Gerenciar Funcionários</h2>
+          <p>Adicione, edite ou remova funcionários do sistema</p>
+        </div>
+        <button>Adicionar Funcionário</button>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Email</th>
+              <th>Função</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          {/* <tbody> */}
+        </table>
+      </section>
       <p>Tipo de usuário:</p>
       <div>
         <input
