@@ -1,0 +1,32 @@
+.logContainer {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.logTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logTable th,
+.logTable td {
+    border: 1px solid var(--tertiaryBackground);
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.logTable th {
+    background-color: var(--secondaryBackground);
+    color: var(--textColor);
+    font-weight: bold;
+}
+
+.logTable tbody tr:nth-of-type(even) {
+    background-color: var(--secondaryBackground);
+}
+
+.loading {
+    margin-top: 1rem;
+}

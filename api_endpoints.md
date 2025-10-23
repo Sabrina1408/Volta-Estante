@@ -69,12 +69,32 @@ Deleta uma cópia específica de um livro do acervo. A quantidade total do livro
 
 ## Endpoints de Vendas (`/sales`)
 
+**Nota:** Para todos os endpoints de vendas, o `sebo_id` é obtido automaticamente do token de autenticação do usuário.
+
 ### Registrar Venda
 **POST /sales/`<ISBN>`/`<copy_id>`**
 
-Registra a venda de uma cópia específica de um livro. A cópia é removida do inventário e a quantidade total do livro é decrementada. O `user_id` do vendedor e o `sebo_id` são obtidos do token de autenticação.
+Registra a venda de uma cópia específica de um livro. A cópia é removida do inventário, a quantidade total do livro é decrementada e um registro de venda é criado na coleção `Sales`. O `user_id` do vendedor e o `sebo_id` são obtidos do token de autenticação.
 
 **Permissões:** `ADMIN`, `EDITOR`
+
+---
+
+### Listar Vendas
+**GET /sales**
+
+Retorna uma lista de todas as vendas registradas para o sebo.
+
+**Permissões:** `ADMIN`
+
+---
+
+### Buscar Venda Específica
+**GET /sales/`<sale_id>`**
+
+Busca os detalhes de uma venda específica.
+
+**Permissões:** `ADMIN`
 
 ---
 
@@ -97,18 +117,53 @@ Cria um novo perfil de usuário no banco de dados após o registro no Firebase A
 
 ---
 
+### Listar Usuários do Sebo
+**GET /users**
+
+Retorna uma lista de todos os usuários associados ao sebo do administrador autenticado.
+
+**Permissões:** `ADMIN`
+
+---
+
 ### Buscar Usuário
-**GET /users/<user_id>**
+**GET /users/`<user_id>`**
 
 Busca os detalhes de um usuário específico.
 
 **Permissões:** Qualquer usuário autenticado pode ver seu próprio perfil. `ADMIN` pode ver qualquer perfil.
 
 ---
+### Atualizar Usuário
+**PUT /users/`<user_id>`**
+
+Atualiza as informações de um usuário, como seu papel no sistema.
+
+**Payload (JSON):**
+```json
+{
+  "userRole": "EDITOR"
+}
+```
+
+**Permissões:** `ADMIN`
+
+---
 
 ### Deletar Usuário
-**DELETE /users/<user_id>**
+**DELETE /users/`<user_id>`**
 
 Deleta um usuário do sistema.
+
+**Permissões:** `ADMIN`
+
+---
+
+## Endpoints de Log de Alterações (`/logs`)
+
+### Listar Logs de Alterações
+**GET /logs**
+
+Retorna o histórico de alterações (log) para o sebo. Útil para auditoria.
 
 **Permissões:** `ADMIN`

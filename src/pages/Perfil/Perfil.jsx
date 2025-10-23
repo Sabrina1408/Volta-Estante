@@ -61,7 +61,7 @@ const Perfil = () => {
               <strong>Nome do Sebo:</strong> {profileData.nameSebo}
             </p>
             <p>
-              <strong>Função:</strong> {profileData.role}
+              <strong>Função:</strong> {profileData.user_role}
             </p>
           </>
         )}
