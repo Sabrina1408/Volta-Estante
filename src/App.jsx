@@ -15,8 +15,8 @@ import Estoque from "./pages/Estoque/Estoque";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
 // Components
-import Footer from "./components/Footer";
-import NavBar from "./components/NavBar";
+import Footer from "./components/Footer/Footer";
+import NavBar from "./components/NavBar/NavBar";
 
 function AppRoutes() {
   const { user, loading } = useAuth();

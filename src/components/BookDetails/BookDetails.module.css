@@ -1,0 +1,57 @@
+.bookDetails {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--tertiaryBackground);
+    border-radius: 8px;
+    background-color: var(--primaryBackground);
+}
+
+.bookInfo {
+    flex: 1; /* Ocupa o espaço restante */
+}
+
+.thumbnail {
+    width: 180px; /* Largura fixa para a imagem */
+    flex-shrink: 0; /* Impede que a imagem encolha */
+    height: auto;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    align-self: start; /* Alinha a imagem no topo da sua célula do grid */
+}
+
+.bookDetails h2 {
+    margin-top: 0;
+    color: var(--sixnaryBackground);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.bookDetails p {
+    margin: 0.4rem 0;
+    line-height: 1.6;
+    color: var(--navHoverColor);
+}
+
+.bookDetails h3 {
+    margin-top: 1.5rem;
+    border-bottom: 1px solid var(--tertiaryBackground);
+    padding-bottom: 0.5rem;
+    color: var(--navHoverColor);
+}
+
+.bookDetails p strong {
+    color: var(--quaternaryBackground);
+    min-width: 160px; /* Garante um alinhamento visual dos valores */
+    display: inline-block;
+    font-weight: 600;
+}
+
+.bookDetails p em {
+    color: var(--quaternaryBackground);
+    font-style: italic;
+    display: block;
+    margin-top: 0.5rem;
+}

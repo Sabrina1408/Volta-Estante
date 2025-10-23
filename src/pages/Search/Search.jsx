@@ -2,6 +2,7 @@ import styles from './Search.module.css';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
+import BookDetails from '../../components/BookDetails/BookDetails';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -24,15 +25,7 @@ const Search = () => {
       <h1>Resultados para: {query}</h1>
       {isLoading && <p>Carregando...</p>}
       {error && <p className="error">Ocorreu um erro: {error.message}</p>}
-      {book && (
-        <div>
-          <h2>{book.title}</h2>
-          <p>Autor: {book.authors}</p>
-          <p>Código: {book.id}</p>
-          <p>Descrição: {book.description}</p>
-          {/* Adicione mais detalhes do livro conforme necessário */}
-        </div>
-      )}
+      {isSuccess && book && <BookDetails book={book} />}
        {isSuccess && !book && <p>Nenhum resultado encontrado para "{query}".</p>}
     </div>
   );

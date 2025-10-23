@@ -48,7 +48,7 @@
 
 .addBookForm button {
   padding: 0.75rem;
-  background-color: var(--primary);
+  background-color: var(--quinaryBackground);
   color: var(--white);
   border: none;
   border-radius: 4px;
@@ -59,7 +59,7 @@
 }
 
 .addBookForm button:hover:not(:disabled) {
-  background-color: var(--primaryHover);
+  opacity: 0.7;
 }
 
 .addBookForm button:disabled {

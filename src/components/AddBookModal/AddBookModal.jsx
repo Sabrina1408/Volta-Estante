@@ -1,8 +1,8 @@
 import styles from "./AddBookModal.module.css";
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useApi } from "../hooks/useApi";
-import { getFriendlyFirebaseError } from "../utils/firebaseErrors";
+import { useApi } from "../../hooks/useApi";
+import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
 
 const AddBookModal = ({ isOpen, onClose }) => {
   const [isbn, setIsbn] = useState("");

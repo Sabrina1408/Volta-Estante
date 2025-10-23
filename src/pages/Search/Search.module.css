@@ -1,0 +1,16 @@
+.search {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.search h1 {
+    margin-bottom: 1.5rem;
+    color: var(--navHoverColor);
+    border-bottom: 2px solid var(--tertiaryBackground);
+    padding-bottom: 1rem;
+    font-weight: 600;
+}
