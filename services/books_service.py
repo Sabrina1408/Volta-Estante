@@ -77,8 +77,11 @@ def fetch_all_books(sebo_id):
     books_ref = sebo_ref.collection('Books')
     all_books_docs = books_ref.stream()
     
-    books_list = [doc.to_dict() for doc in all_books_docs]
-        
+    books_list = []
+    for doc in all_books_docs:
+        book_data = doc.to_dict()
+        book_data['ISBN'] = doc.id 
+        books_list.append(book_data)
     return books_list
 
 def update_book(sebo_id, ISBN, copy_id, update_data):
