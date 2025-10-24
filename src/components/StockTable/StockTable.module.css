@@ -125,3 +125,28 @@
 .deleteButton {
     background-color: var(--deleteBookBackground); 
 }
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
+}
+
+/* --- Estilos Responsivos --- */
+@media screen and (max-width: 768px) {
+    .filterControls {
+        flex-direction: column; /* Empilha os filtros verticalmente */
+        align-items: stretch; /* Faz os filtros ocuparem a largura total */
+    }
+
+    .filterInput, .filterSelect {
+        width: 100%; /* Garante que os inputs e selects ocupem todo o espaço */
+    }
+
+    .stockTable {
+        min-width: 700px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+    }
+
+    .stockTable th, .stockTable td {
+        white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
+    }
+}

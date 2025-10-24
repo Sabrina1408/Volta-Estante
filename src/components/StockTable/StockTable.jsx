@@ -131,55 +131,57 @@ const StockTable = () => {
           </select>
         </div>
       </div>
-      <table className={styles.stockTable}>
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Autor(es)</th>
-            <th>Categorias</th>
-            <th>ISBN</th>
-            <th>Quantidade</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBooks.length > 0 ? (
-            filteredBooks.map((book) => (
-              <tr key={book.ISBN}>
-                <td>
-                  <Link to={`/search?q=${book.ISBN}`} className={styles.titleLink}>
-                    {book.title}
-                  </Link>
-                </td>
-                <td>{book.authors?.join(", ") || "N/A"}</td>
-                <td>{book.categories?.join(", ") || "N/A"}</td>
-                <td>{book.ISBN}</td>
-                <td>{book.totalQuantity}</td>
-                <td>
-                  <div className={styles.actions}>
-                    <button
-                      onClick={() => handleEdit(book)}
-                      className={styles.editButton}
-                    >
-                      <FaPencilAlt />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(book.ISBN)}
-                      className={styles.deleteButton}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          ) : (
+      <div className={styles.tableWrapper}>
+        <table className={styles.stockTable}>
+          <thead>
             <tr>
-              <td colSpan="6">Nenhum livro encontrado.</td>
+              <th>Título</th>
+              <th>Autor(es)</th>
+              <th>Categorias</th>
+              <th>ISBN</th>
+              <th>Quantidade</th>
+              <th>Ações</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredBooks.length > 0 ? (
+              filteredBooks.map((book) => (
+                <tr key={book.ISBN}>
+                  <td>
+                    <Link to={`/search?q=${book.ISBN}`} className={styles.titleLink}>
+                      {book.title}
+                    </Link>
+                  </td>
+                  <td>{book.authors?.join(", ") || "N/A"}</td>
+                  <td>{book.categories?.join(", ") || "N/A"}</td>
+                  <td>{book.ISBN}</td>
+                  <td>{book.totalQuantity}</td>
+                  <td>
+                    <div className={styles.actions}>
+                      <button
+                        onClick={() => handleEdit(book)}
+                        className={styles.editButton}
+                      >
+                        <FaPencilAlt />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(book.ISBN)}
+                        className={styles.deleteButton}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6">Nenhum livro encontrado.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
