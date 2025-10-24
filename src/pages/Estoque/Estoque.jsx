@@ -1,7 +1,9 @@
 import styles from "./Estoque.module.css";
 import { useState } from "react";
+import { FaHistory, FaPlus } from "react-icons/fa";
 import AddBookModal from "../../components/AddBookModal/AddBookModal";
 import LogTable from "../../components/LogTable/LogTable";
+import StockTable from "../../components/StockTable/StockTable";
 
 const Estoque = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,14 +16,15 @@ const Estoque = () => {
           <h1>Estoque</h1>
           <div className={styles.actions}>
             <button onClick={() => setShowLogs(!showLogs)} className={styles.logButton}>
-              {showLogs ? "Ocultar Histórico" : "Ver Histórico"}
+              <FaHistory /> {showLogs ? "Ocultar Histórico" : "Ver Histórico"}
             </button>
             <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>
-              Adicionar Livro
+              <FaPlus /> Adicionar Livro
             </button>
           </div>
         </div>
         {showLogs && <LogTable />}
+        {!showLogs && <StockTable />}
       </div>
       <AddBookModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>

@@ -9,7 +9,6 @@
 
 .search h1 {
     margin-bottom: 1.5rem;
-    color: var(--navHoverColor);
     border-bottom: 2px solid var(--tertiaryBackground);
     padding-bottom: 1rem;
     font-weight: 600;

@@ -32,14 +32,14 @@
 .bookDetails p {
     margin: 0.4rem 0;
     line-height: 1.6;
-    color: var(--navHoverColor);
+    color: var(--inputColor);
 }
 
 .bookDetails h3 {
     margin-top: 1.5rem;
     border-bottom: 1px solid var(--tertiaryBackground);
     padding-bottom: 0.5rem;
-    color: var(--navHoverColor);
+    color: var(--inputColor);
 }
 
 .bookDetails p strong {

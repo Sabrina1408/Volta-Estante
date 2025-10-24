@@ -76,6 +76,13 @@ def add_book_route():
     created = save_book(g.sebo_id, book_data, inventory_data)
     return jsonify(created), 201
 
+@app.route("/books", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@log_action("list_books")
+def list_books_route():
+    all_books = fetch_all_books(g.sebo_id)
+    return jsonify(all_books), 200
+
 @app.route("/books/<ISBN>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 @log_action("get_book")

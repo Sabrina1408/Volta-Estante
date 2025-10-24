@@ -20,11 +20,15 @@
   --quaternaryBackground: #818181;
   --quinaryBackground: #030213;
   --sixnaryBackground: #646cff;
-  --navHoverColor: #2c2c2c;
+  --inputColor: #2c2c2c;
   --error: rgb(165, 62, 62);
   --errorBorder: #e74c3c;
   --successBackground: #218838;
   --successBorder: #218838;
+  --addBookBackground: #00A63E;
+  --logButtonBackground: #2B7FFF;
+  --deleteBookBackground: #d9534f;
+  --editBookBackground: #2B7FFF;
 }
 
 * {
@@ -56,7 +60,8 @@ a:hover {
 
 h1 {
   font-size: 32px;
-  line-height: 1.1;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 p {

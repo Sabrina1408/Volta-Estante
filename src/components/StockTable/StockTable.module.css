@@ -1,0 +1,127 @@
+.stockContainer {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.topActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+
+.filterControls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.filterInput {
+    flex-grow: 1; /* Ocupa o espaço restante */
+    padding: 10px;
+    border: 1px solid var(--tertiaryBackground);
+    background-color: var(--tertiaryBackground);
+    color: var(--inputColor);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.selectWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.selectIcon {
+    position: absolute;
+    left: 10px;
+    color: var(--inputColor);
+    pointer-events: none; /* Permite clicar no select através do ícone */
+}
+
+.filterSelect {
+    padding: 10px;
+    padding-left: 35px; /* Espaço para o ícone */
+    border: 1px solid var(--tertiaryBackground);
+    background-color: var(--tertiaryBackground);
+    color: var(--inputColor);
+    border-radius: 5px;
+    font-size: 1rem;
+    min-width: 150px; /* Largura mínima para evitar que fiquem muito pequenos */
+    appearance: none;
+}
+
+.filterSelect:hover {
+    cursor: pointer;
+}
+
+.stockTable {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stockTable th,
+.stockTable td {
+    border: 1px solid var(--tertiaryBackground);
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.stockTable th {
+    background-color: var(--secondaryBackground);
+    color: var(--textColor);
+    font-weight: bold;
+}
+
+.stockTable tbody tr:nth-of-type(even) {
+    background-color: var(--secondaryBackground);
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actions button {    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+}
+
+.actions button:hover {
+    opacity: 0.8;
+}
+
+.editButton {
+    background-color: var(--editBookBackground);
+    padding: 8px; 
+}
+
+.deleteButton {
+    background-color: var(--deleteBookBackground); 
+}

@@ -66,6 +66,21 @@ def fetch_book(sebo_id, ISBN):
     validated_book = Book.model_validate(book_data)
     return validated_book.model_dump(by_alias=True)
 
+def fetch_all_books(sebo_id):
+    if not sebo_id:
+        raise BadRequest("Invalid data: Missing Sebo ID")
+
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise NotFound(f"Sebo with ID {sebo_id} not found")
+
+    books_ref = sebo_ref.collection('Books')
+    all_books_docs = books_ref.stream()
+    
+    books_list = [doc.to_dict() for doc in all_books_docs]
+        
+    return books_list
+
 def update_book(sebo_id, ISBN, copy_id, update_data):
     if not ISBN:
         raise BadRequest("Invalid book data: Missing ISBN")

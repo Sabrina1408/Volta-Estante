@@ -23,6 +23,15 @@ Adiciona um novo livro ao acervo do sebo do usuário autenticado. Se o livro (id
 
 ---
 
+### Listar Livros do Estoque
+**GET /books**
+
+Retorna uma lista de todos os livros no acervo do sebo, incluindo a quantidade total de cópias de cada um.
+
+**Permissões:** `ADMIN`, `EDITOR`, `READER`
+
+---
+
 ### Buscar Livro
 **GET /books/`<ISBN>`**
 

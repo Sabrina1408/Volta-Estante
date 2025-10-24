@@ -5,7 +5,7 @@
   padding: 10px 20px;
   background-color: var(--white);
   border: 1px solid var(--tertiaryBackground);
-  color: var(--navHoverColor);
+  color: var(--inputColor);
 }
 
 .navbar ul {
@@ -14,12 +14,12 @@
 }
 
 a {
-  color: var(--navHoverColor);
+  color: var(--inputColor);
   padding: 5px 10px;
 }
 
 a:hover {
-  color: var(--navHoverColor);
+  color: var(--inputColor);
   opacity: 0.7;
 }
 
@@ -31,13 +31,13 @@ a:hover {
   padding: 5px 10px;
   border: 1px solid #ccc;
   background-color: var(--tertiaryBackground);
-  color: var(--navHoverColor);
+  color: var(--inputColor);
   border-right: none;
   border-radius: 4px 0 0 4px;
 }
 
 .searchInput::placeholder {
-  color: var(--navHoverColor);
+  color: var(--inputColor);
 }
 
 .searchButton {
@@ -45,7 +45,7 @@ a:hover {
   border-radius: 0 4px 4px 0;
   border: 1px solid #ccc;
   background-color: var(--secondaryBackground);
-  color: var(--navHoverColor);
+  color: var(--inputColor);
 }
 
 .active {
@@ -55,7 +55,7 @@ a:hover {
 
 .brand {
   display: none;
-  color: var(--navHoverColor);
+  color: var(--inputColor);
   font-size: 25px;
   font-weight: bold;
 }
@@ -77,7 +77,7 @@ a:hover {
   width: 25px;
   height: 3px;
   margin: 5px auto;
-  background-color: var(--navHoverColor);
+  background-color: var(--inputColor);
 }
 
 @media (max-width: 775px) {
