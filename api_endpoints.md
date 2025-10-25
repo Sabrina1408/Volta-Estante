@@ -41,6 +41,14 @@ Busca os detalhes de um livro específico no acervo do sebo, incluindo todas as 
 
 ---
 
+### Listar Cópias de um Livro
+**GET /books/`<ISBN>`/copies**
+
+Retorna uma lista de todas as cópias disponíveis para um livro específico.
+
+**Permissões:** `ADMIN`, `EDITOR`, `READER`
+---
+
 ### Deletar Livro
 **DELETE /books/`<ISBN>`**
 

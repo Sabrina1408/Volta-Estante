@@ -90,6 +90,14 @@ def get_book_route(ISBN):
     book = fetch_book(g.sebo_id, ISBN)
     return jsonify(book), 200
     
+@app.route("/books/<ISBN>/copies", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@log_action("get_book_copies")
+def get_book_copies_route(ISBN):
+    copies = fetch_book_copies(g.sebo_id, ISBN)
+    return jsonify(copies), 200
+
+
 @app.route("/books/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
 @permission_required(UserRole.ADMIN)
 @log_action("delete_book")

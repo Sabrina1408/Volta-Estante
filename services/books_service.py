@@ -64,7 +64,9 @@ def fetch_book(sebo_id, ISBN):
     book_data['copies'] = copies
 
     validated_book = Book.model_validate(book_data)
-    return validated_book.model_dump(by_alias=True)
+    final_book_data = validated_book.model_dump(by_alias=True)
+    final_book_data['ISBN'] = book_doc.id # Adiciona o ISBN aqui, após a validação
+    return final_book_data
 
 def fetch_all_books(sebo_id):
     if not sebo_id:
@@ -82,6 +84,28 @@ def fetch_all_books(sebo_id):
         book_data = doc.to_dict()
         book_data['ISBN'] = doc.id 
         books_list.append(book_data)
+    return books_list
+
+def fetch_book_copies(sebo_id, ISBN):
+    if not ISBN:
+        raise BadRequest("Invalid book data: Missing ISBN")
+    if not sebo_id:
+        raise BadRequest("Invalid book data: Missing Sebo ID")
+
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise NotFound(f"Sebo with ID {sebo_id} not found")
+    
+    book_ref = sebo_ref.collection('Books').document(ISBN)
+    if not book_ref.get().exists:
+        raise NotFound(f"Book with ISBN {ISBN} not found")
+    
+    copies_ref = book_ref.collection('Copies')
+    books_list = [] # Esta lista conterá as cópias
+    for copy_doc in copies_ref.stream():
+        copy_data = copy_doc.to_dict()
+        copy_data['id'] = copy_doc.id # Adiciona o ID do documento da cópia
+        books_list.append(copy_data)
     return books_list
 
 def update_book(sebo_id, ISBN, copy_id, update_data):
