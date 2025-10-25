@@ -33,11 +33,11 @@ export const AuthProvider = ({ children }) => {
   const logout = () => signOut(auth);
   const resetPassword = (email) => sendPasswordResetEmail(auth, email);
   
-  const getToken = async () => {
-    // A lógica de loading agora garante que `auth.currentUser` estará disponível.
+  const getToken = async (force = false) => {
+    // Retorna o ID token do usuário atual. `force` controla se força refresh.
     const currentUser = auth.currentUser;
     if (!currentUser) return null;
-    return await currentUser.getIdToken(true); // Força a atualização do token.
+    return await currentUser.getIdToken(force);
   };
 
   return (
