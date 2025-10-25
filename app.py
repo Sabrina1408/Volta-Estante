@@ -283,5 +283,10 @@ def update_log_route(log_id):
     updated_log = update_log(g.sebo_id, log_id, update_data)
     return jsonify(updated_log), 200
 
+@app.route("/logs", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def fetch_all_logs_route():
+    logs = fetch_all_logs(g.sebo_id)
+    return jsonify(logs), 200
 if __name__ == '__main__':
     app.run(debug=True)

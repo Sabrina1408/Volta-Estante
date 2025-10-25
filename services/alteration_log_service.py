@@ -33,6 +33,19 @@ def fetch_log(sebo_id, log_id):
     except ValidationError:
         raise BadRequest(f"Invalid log data for log ID {log_id}")
 
+def fetch_all_logs(sebo_id):
+    logs_ref = db.collection('Sebos').document(sebo_id).collection('AlterationLogs')
+    logs_docs = logs_ref.stream()
+    logs = []
+    for log_doc in logs_docs:
+        log_data = log_doc.to_dict()
+        try:
+            validated_log = AlterationLog.model_validate(log_data)
+            logs.append(validated_log.model_dump(by_alias=True))
+        except ValidationError:
+            continue
+    return logs
+
 def update_log(sebo_id, log_id, update_data):
     log_ref = db.collection('Sebos').document(sebo_id).collection('AlterationLogs').document(log_id)
     log_doc = log_ref.get()
