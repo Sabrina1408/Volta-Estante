@@ -28,6 +28,28 @@ from services.google_books_service import fetch_book_by_isbn
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
 CORS(app)
 
+# Simple request timing to help diagnose slow endpoints (logs duration in ms)
+@app.before_request
+def _start_timer():
+    request._start_time = None
+    try:
+        import time
+        request._start_time = time.time()
+    except Exception:
+        request._start_time = None
+
+
+@app.after_request
+def _log_request_time(response):
+    try:
+        import time
+        if getattr(request, '_start_time', None):
+            duration = (time.time() - request._start_time) * 1000.0
+            app.logger.info(f"Request: {request.method} {request.path} completed in {duration:.1f}ms")
+    except Exception:
+        pass
+    return response
+
 @app.errorhandler(ValidationError)
 def handle_validation_error(e: ValidationError):
     app.logger.warning(f"Validation Error: {e.errors()}")
