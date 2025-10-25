@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, List
+from models.copy import Copy
 from pydantic.alias_generators import to_camel
 
 class Book(BaseModel):
@@ -21,4 +22,5 @@ class Book(BaseModel):
     small_thumbnail: Optional[str] = None
     text_snippet: Optional[str] = None
     total_quantity: int
+    copies: List[Copy] = Field(default_factory=list)
     
