@@ -78,39 +78,37 @@ def save_book(sebo_id, book_data, inventory_data):
     
     transaction = db.transaction()
     @firestore.transactional
-    def save_book_transaction(transaction, book_ref, copy, existing_doc):
-        # Reuse the doc we already fetched if available
-        if existing_doc is None:
-            book_doc = book_ref.get()
-        else:
-            book_doc = existing_doc
+    def save_book_transaction(transaction, book_ref, copy):
+        # Transaction must read within transaction context
+        book_doc = book_ref.get(transaction=transaction)
             
         if not book_doc.exists:
             book_data['totalQuantity'] = 1
             book_data['ISBN'] = book_ref.id
             book = Book.model_validate(book_data)
             transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
+            new_quantity = 1
         else:
             transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
+            new_quantity = book_doc.get('totalQuantity') + 1
         
         copy_ref = book_ref.collection('Copies').document()
         copy_data = copy.model_dump(by_alias=True, exclude={'copyId'})
         copy_data['copyId'] = copy_ref.id  
         transaction.set(copy_ref, copy_data)
         
-        # Return the new copy_id so we can build response without fetching
-        return copy_ref.id
+        # Return copy_id and quantity for response
+        return copy_ref.id, new_quantity
         
     try:
-        new_copy_id = save_book_transaction(transaction, book_ref, copy, existing_book_doc)
+        new_copy_id, total_quantity = save_book_transaction(transaction, book_ref, copy)
         
         # Build response without expensive fetch_book call
-        # Return lightweight response - client can refetch if needed
         return {
             "ISBN": book_ref.id,
             "message": "Book and copy saved successfully",
             "copyId": new_copy_id,
-            "totalQuantity": (existing_book_doc.get('totalQuantity') + 1) if existing_book_doc and existing_book_doc.exists else 1
+            "totalQuantity": total_quantity
         }
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
