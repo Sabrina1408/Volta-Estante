@@ -3,9 +3,32 @@ from werkzeug.exceptions import NotFound, BadRequest
 from models.books import Book
 from models.copy import Copy
 from pydantic import ValidationError
+from services.isbn_utils import to_isbn13, to_isbn10, sanitize_isbn
 
 
 db = firestore.client() 
+
+
+
+def _resolve_book_ref(sebo_ref, isbn: str):
+    original = sanitize_isbn(isbn)
+    doc_id_13 = to_isbn13(original)
+    books_coll = sebo_ref.collection('Books')
+
+    # preferencia ao isbn13
+    ref13 = books_coll.document(doc_id_13)
+    doc13 = ref13.get()
+    if doc13.exists:
+        return ref13, True
+
+    # se n tiver 13 vai no 10
+    alt10 = to_isbn10(original) if len(original) == 13 else original if len(original) == 10 else None
+    if alt10:
+        ref10 = books_coll.document(alt10)
+        doc10 = ref10.get()
+        if doc10.exists:
+            return ref10, True
+    return ref13, False
 
 
 def save_book(sebo_id, book_data, inventory_data):
@@ -20,7 +43,8 @@ def save_book(sebo_id, book_data, inventory_data):
     ISBN = book_data['ISBN']
     if not ISBN:
         raise BadRequest("Invalid book data: Missing ISBN")
-    book_ref = sebo_ref.collection('Books').document(book_data['ISBN'])
+    
+    book_ref, _exists = _resolve_book_ref(sebo_ref, ISBN)
     
     transaction = db.transaction()
     @firestore.transactional
@@ -28,6 +52,8 @@ def save_book(sebo_id, book_data, inventory_data):
         book_doc = book_ref.get()
         if not book_doc.exists:
             book_data['totalQuantity'] = 1
+            
+            book_data['ISBN'] = book_ref.id
             book = Book.model_validate(book_data)
             transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
         else:
@@ -56,17 +82,13 @@ def fetch_book(sebo_id, ISBN):
         raise BadRequest("Invalid book data: Missing Sebo ID")
 
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    book_ref = sebo_ref.collection('Books').document(ISBN)
-    
-    docs = db.get_all([sebo_ref, book_ref]) # pega o sebo e o livro numa unica requisicao
-    sebo_doc, book_doc = docs
-    
-    if not sebo_doc.exists:
+    if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    if not book_doc.exists:
+    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
+    if not exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
-    book_data = book_doc.to_dict()
+    book_data = book_ref.get().to_dict()
     copies_ref = book_ref.collection('Copies')
     copies = [copy.to_dict() for copy in copies_ref.stream()]
     book_data['copies'] = copies
@@ -102,8 +124,8 @@ def update_book(sebo_id, ISBN, copy_id, update_data):
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
     
-    book_ref = sebo_ref.collection('Books').document(ISBN)
-    if not book_ref.get().exists:
+    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
+    if not exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     copy_ref = book_ref.collection('Copies').document(copy_id)
@@ -133,8 +155,8 @@ def delete_book(sebo_id, ISBN):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    book_ref = sebo_ref.collection('Books').document(ISBN)
-    if not book_ref.get().exists:
+    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
+    if not exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     batch = db.batch()
@@ -156,8 +178,8 @@ def delete_copy(sebo_id, ISBN, copy_id):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    book_ref = sebo_ref.collection('Books').document(ISBN)
-    if not book_ref.get().exists:
+    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
+    if not exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     copy_ref = book_ref.collection('Copies').document(copy_id)
