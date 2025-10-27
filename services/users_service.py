@@ -55,11 +55,7 @@ def fetch_user(user_id):
     if not user_doc.exists:
         raise NotFound(f"User with ID {user_id} not found")
     user_data = user_doc.to_dict()
-    try: 
-        validated_user = User.model_validate(user_data)
-        return validated_user.model_dump(by_alias=True)
-    except ValidationError as e:
-        raise BadRequest(f"User data in database is invalid: {e}")
+    return user_data
     
 
 
@@ -67,10 +63,12 @@ def add_new_employee(user_id, sebo_id, employee_data):
     employee_data['sebo_id'] = sebo_id
     employee_data['user_id'] = user_id
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    sebo_doc = sebo_ref.get()
+    sebo_doc = sebo_ref.get(['nameSebo'])  
     if not sebo_doc.exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    employee_data['name_sebo'] = sebo_doc.to_dict().get('name_sebo', 'Unknown Sebo')
+    
+    sebo_data = sebo_doc.to_dict()
+    employee_data['name_sebo'] = sebo_data.get('nameSebo', 'Unknown Sebo') if sebo_data else 'Unknown Sebo'
     try:
         employee = User.model_validate(employee_data)
     except ValidationError as e:

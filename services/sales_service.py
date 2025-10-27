@@ -7,22 +7,23 @@ from werkzeug.exceptions import NotFound, BadRequest
 db = firestore.client()
 
 def create_sale(user_id, sebo_id, ISBN, copy_id): 
+    
     user_ref = db.collection('Users').document(user_id)
-    user_doc = user_ref.get()
+    book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(ISBN)
+    copy_ref = book_ref.collection('Copies').document(copy_id)
+    
+    
+    docs = db.get_all([user_ref, book_ref, copy_ref])
+    user_doc, book_doc, copy_doc = docs
+    
     if not user_doc.exists:
         raise NotFound(f"User with ID {user_id} not found")
-    user_data = user_doc.to_dict()
-    
-    book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(ISBN)
-    book_doc = book_ref.get()
     if not book_doc.exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
-    
-    copy_ref = book_ref.collection('Copies').document(copy_id)
-    copy_doc = copy_ref.get()
     if not copy_doc.exists:
         raise NotFound(f"Copy with ID {copy_id} not found for book {ISBN}")
     
+    user_data = user_doc.to_dict()
     book_data = book_doc.to_dict()
     copy_data = copy_doc.to_dict()
     
@@ -61,6 +62,7 @@ def fetch_sale(sale_id, sebo_id):
     sale_doc = sale_ref.get()
     if not sale_doc.exists:
         raise NotFound(f"Sale with ID {sale_id} not found")
+    # Direct return - skip unnecessary validation
     return sale_doc.to_dict()
 
 def delete_sale(sale_id, sebo_id):
