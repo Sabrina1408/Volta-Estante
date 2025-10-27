@@ -3,12 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./StockTable.module.css";
-import {
-  FaFilter,
-  FaLayerGroup,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
+import { FaFilter, FaLayerGroup, FaPencilAlt, FaTrash } from "react-icons/fa";
 
 const StockTable = () => {
   const [filter, setFilter] = useState("");
@@ -31,8 +26,7 @@ const StockTable = () => {
 
   // Mutação para deletar um livro
   const { mutate: deleteBook } = useMutation({
-    mutationFn: (isbn) =>
-      authFetch(`/books/${isbn}`, { method: "DELETE" }),
+    mutationFn: (isbn) => authFetch(`/books/${isbn}`, { method: "DELETE" }),
     onSuccess: () => {
       // Invalida a query do estoque para atualizar a lista
       queryClient.invalidateQueries(["stock"]);
@@ -44,7 +38,11 @@ const StockTable = () => {
   });
 
   const handleDelete = (isbn) => {
-    if (window.confirm("Tem certeza que deseja excluir este livro e todas as suas cópias? Esta ação não pode ser desfeita.")) {
+    if (
+      window.confirm(
+        "Tem certeza que deseja excluir este livro e todas as suas cópias? Esta ação não pode ser desfeita."
+      )
+    ) {
       deleteBook(isbn);
     }
   };
@@ -52,11 +50,14 @@ const StockTable = () => {
   const handleEdit = (book) => {
     // Lógica para abrir um modal de edição.
     // Por enquanto, apenas um alerta.
-    alert(`Funcionalidade de edição para o livro "${book.title}" a ser implementada.`);
+    alert(
+      `Funcionalidade de edição para o livro "${book.title}" a ser implementada.`
+    );
   };
 
   if (isLoading) return <p>Carregando estoque...</p>;
-  if (error) return <p className="error">Erro ao carregar o estoque: {error.message}</p>;
+  if (error)
+    return <p className="error">Erro ao carregar o estoque: {error.message}</p>;
 
   // Extrai categorias únicas para o dropdown de filtro
   const allCategories = books
@@ -68,23 +69,40 @@ const StockTable = () => {
         const filterText = filter.toLowerCase();
         const authorFilterText = authorFilter.toLowerCase();
 
+        // Filtro por título ou ISBN
+        const titleIsbnMatch =
+          !filterText ||
+          book.title.toLowerCase().includes(filterText) ||
+          book.isbn.toLowerCase().includes(filterText);
 
         // Filtro por autor
         const authorFilterMatch =
           !authorFilterText ||
-          book.authors?.some((author) => author.toLowerCase().includes(authorFilterText));
+          book.authors?.some((author) =>
+            author.toLowerCase().includes(authorFilterText)
+          );
 
         // Filtro por categoria
         const categoryFilterMatch =
           categoryFilter === "all" || book.categories?.includes(categoryFilter);
 
-        // Filtro por nível de estoque
-        const stockLevelMatch = stockLevelFilter === "all" ||
-          (stockLevelFilter === "low" && book.totalQuantity >= 1 && book.totalQuantity <= 5) ||
-          (stockLevelFilter === "medium" && book.totalQuantity >= 6 && book.totalQuantity <= 10) ||
+        // Filtro por quantidade em estoque
+        const stockLevelMatch =
+          stockLevelFilter === "all" ||
+          (stockLevelFilter === "low" &&
+            book.totalQuantity >= 1 &&
+            book.totalQuantity <= 5) ||
+          (stockLevelFilter === "medium" &&
+            book.totalQuantity >= 6 &&
+            book.totalQuantity <= 10) ||
           (stockLevelFilter === "high" && book.totalQuantity > 10);
 
-        return authorFilterMatch && categoryFilterMatch && stockLevelMatch;
+        return (
+          titleIsbnMatch &&
+          authorFilterMatch &&
+          categoryFilterMatch &&
+          stockLevelMatch
+        );
       })
     : [];
 
@@ -107,7 +125,11 @@ const StockTable = () => {
         />
         <div className={styles.selectWrapper}>
           <FaFilter className={styles.selectIcon} />
-          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={styles.filterSelect}>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
             <option value="all">Categorias</option>
             {allCategories.map((category) => (
               <option key={category} value={category}>
@@ -118,7 +140,11 @@ const StockTable = () => {
         </div>
         <div className={styles.selectWrapper}>
           <FaLayerGroup className={styles.selectIcon} />
-          <select value={stockLevelFilter} onChange={(e) => setStockLevelFilter(e.target.value)} className={styles.filterSelect}>
+          <select
+            value={stockLevelFilter}
+            onChange={(e) => setStockLevelFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
             <option value="all">Quantidade</option>
             <option value="low">Baixo (1-5)</option>
             <option value="medium">Médio (6-10)</option>
@@ -143,7 +169,10 @@ const StockTable = () => {
               filteredBooks.map((book) => (
                 <tr key={book.isbn}>
                   <td>
-                    <Link to={`/search?q=${book.isbn}`} className={styles.titleLink}>
+                    <Link
+                      to={`/search?q=${book.isbn}`}
+                      className={styles.titleLink}
+                    >
                       {book.title}
                     </Link>
                   </td>
