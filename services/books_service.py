@@ -23,7 +23,7 @@ def _resolve_book_ref(sebo_ref, isbn: str):
     if alt10:
         ref10 = books_coll.document(alt10)
         # Parallel batch read - 1 network round trip instead of 2!
-        docs = db.get_all([ref13, ref10])
+        docs = list(db.get_all([ref13, ref10]))
         doc13, doc10 = docs
         
         if doc13.exists:
@@ -59,7 +59,8 @@ def save_book(sebo_id, book_data, inventory_data):
         book_ref_10 = sebo_ref.collection('Books').document(alt10)
         refs_to_check.append(book_ref_10)
     
-    docs = db.get_all(refs_to_check)
+    # Firestore get_all returns a generator; convert to list to preserve order and allow indexing
+    docs = list(db.get_all(refs_to_check))
     sebo_doc = docs[0]
     
     if not sebo_doc.exists:
