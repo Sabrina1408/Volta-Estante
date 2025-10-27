@@ -50,11 +50,13 @@ def fetch_book(sebo_id, ISBN):
         raise BadRequest("Invalid book data: Missing Sebo ID")
 
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    if not sebo_ref.get().exists:
-        raise NotFound(f"Sebo with ID {sebo_id} not found")
-    
     book_ref = sebo_ref.collection('Books').document(ISBN)
-    book_doc = book_ref.get()
+    
+    docs = db.get_all([sebo_ref, book_ref]) # pega o sebo e o livro numa unica requisicao
+    sebo_doc, book_doc = docs
+    
+    if not sebo_doc.exists:
+        raise NotFound(f"Sebo with ID {sebo_id} not found")
     if not book_doc.exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
@@ -62,9 +64,7 @@ def fetch_book(sebo_id, ISBN):
     copies_ref = book_ref.collection('Copies')
     copies = [copy.to_dict() for copy in copies_ref.stream()]
     book_data['copies'] = copies
-
-    validated_book = Book.model_validate(book_data)
-    return validated_book.model_dump(by_alias=True)
+    return book_data
 
 def fetch_all_books(sebo_id):
     if not sebo_id:
