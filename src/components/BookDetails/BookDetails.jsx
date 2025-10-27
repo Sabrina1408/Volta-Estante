@@ -88,38 +88,40 @@ const BookDetails = ({ book }) => {
         <div className={styles.copiesSection}>
           <h3>Cópias Disponíveis ({book.totalQuantity})</h3>
           {copies?.length > 0 ? (
-              <table className={styles.copiesTable}>
-                <thead>
-                  <tr>
-                    <th>ID da Cópia</th>
-                    <th>Estado</th>
-                    <th>Preço</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {copies.map((copy) => (
-                    <tr key={copy.id}>
-                      <td data-label="ID da Cópia">{copy.copyId}</td>
-                      <td data-label="Estado">{copy.conservationState}</td>
-                      <td data-label="Preço">{`R$ ${copy.price.toFixed(2).replace('.', ',')}`}</td>
-                      <td data-label="Ações">
-                        <div className={styles.actions}>
-                          <button onClick={() => handleSellCopy(copy.copyId)} className={styles.sellButton} title="Registrar Venda">
-                            <FaDollarSign />
-                          </button>
-                          <button onClick={() => handleEditCopy(copy.copyId)} className={styles.editButton} title="Editar Cópia">
-                            <FaEdit />
-                          </button>
-                          <button onClick={() => handleDeleteCopy(copy.copyId)} className={styles.deleteButton} title="Excluir Cópia">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
+              <div className={styles.tableWrapper}>
+                <table className={styles.copiesTable}>
+                  <thead>
+                    <tr>
+                      <th>ID da Cópia</th>
+                      <th>Estado</th>
+                      <th>Preço</th>
+                      <th>Ações</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {copies.map((copy) => (
+                      <tr key={copy.id}>
+                        <td data-label="ID da Cópia">{copy.copyId}</td>
+                        <td data-label="Estado">{copy.conservationState}</td>
+                        <td data-label="Preço">{`R$ ${copy.price.toFixed(2).replace('.', ',')}`}</td>
+                        <td data-label="Ações">
+                          <div className={styles.actions}>
+                            <button onClick={() => handleSellCopy(copy.copyId)} className={styles.saleButton} title="Registrar Venda">
+                              <FaDollarSign />
+                            </button>
+                            <button onClick={() => handleEditCopy(copy.copyId)} className={styles.editButton} title="Editar Cópia">
+                              <FaEdit />
+                            </button>
+                            <button onClick={() => handleDeleteCopy(copy.copyId)} className={styles.deleteButton} title="Excluir Cópia">
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
           ) : (
             <p>Não há cópias deste livro em estoque no momento.</p>
           )}

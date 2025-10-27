@@ -1,57 +1,128 @@
 .bookDetails {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border: 1px solid var(--tertiaryBackground);
-    border-radius: 8px;
-    background-color: var(--primaryBackground);
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--tertiaryBackground);
+  border-radius: 8px;
+  background-color: var(--primaryBackground);
 }
 
 .bookInfo {
-    flex: 1; /* Ocupa o espaço restante */
+  flex: 1; /* Ocupa o espaço restante */
+  min-width: 0; /* Impede que o conteúdo interno (como a tabela) force o container a expandir além do limite */
 }
 
 .thumbnail {
-    width: 180px; /* Largura fixa para a imagem */
-    flex-shrink: 0; /* Impede que a imagem encolha */
-    height: auto;
-    object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    align-self: start; /* Alinha a imagem no topo da sua célula do grid */
+  width: 180px; /* Largura fixa para a imagem */
+  flex-shrink: 0; /* Impede que a imagem encolha */
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  align-self: start; /* Alinha a imagem no topo da sua célula do grid */
 }
 
 .bookDetails h2 {
-    margin-top: 0;
-    color: var(--sixnaryBackground);
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
+  margin-top: 0;
+  color: var(--sixnaryBackground);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
 }
 
 .bookDetails p {
-    margin: 0.4rem 0;
-    line-height: 1.6;
-    color: var(--inputColor);
+  margin: 0.4rem 0;
+  line-height: 1.6;
+  color: var(--inputColor);
 }
 
 .bookDetails h3 {
-    margin-top: 1.5rem;
-    border-bottom: 1px solid var(--tertiaryBackground);
-    padding-bottom: 0.5rem;
-    color: var(--inputColor);
+  margin-top: 1.5rem;
+  border-bottom: 1px solid var(--tertiaryBackground);
+  padding-bottom: 0.5rem;
+  color: var(--inputColor);
 }
 
 .bookDetails p strong {
-    color: var(--quaternaryBackground);
-    min-width: 160px; /* Garante um alinhamento visual dos valores */
-    display: inline-block;
-    font-weight: 600;
+  color: var(--quaternaryBackground);
+  min-width: 160px; /* Garante um alinhamento visual dos valores */
+  display: inline-block;
+  font-weight: 600;
 }
 
 .bookDetails p em {
-    color: var(--quaternaryBackground);
-    font-style: italic;
-    display: block;
-    margin-top: 0.5rem;
+  color: var(--quaternaryBackground);
+  font-style: italic;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.editButton {
+  background-color: var(--editBookBackground);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.deleteButton {
+  background-color: var(--deleteBookBackground);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.saleButton {
+  background-color: var(--sellBookBackground);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.copiesSection {
+  margin-top: 2rem;
+}
+
+.copiesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  table-layout: fixed; /* Essencial para alinhar as colunas */
+}
+
+.copiesTable th,
+.copiesTable td {
+  border: 1px solid var(--tertiaryBackground);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+  word-wrap: break-word; /* Quebra palavras longas para evitar overflow */
+}
+
+.copiesTable th {
+  background-color: var(--secondaryBackground);
+}
+
+/* Definindo larguras para as colunas */
+.copiesTable th:nth-child(1), .copiesTable td:nth-child(1) { width: 40%; } /* ID da Cópia */
+.copiesTable th:nth-child(2), .copiesTable td:nth-child(2) { width: 25%; } /* Estado */
+.copiesTable th:nth-child(3), .copiesTable td:nth-child(3) { width: 20%; } /* Preço */
+.copiesTable th:nth-child(4), .copiesTable td:nth-child(4) { width: 15%; } /* Ações */
+
+.copiesTable .actions {
+  display: flex;
+  flex-wrap: nowrap; /* Permite que os botões quebrem a linha */
+  justify-content: flex-start; /* Alinha os botões de ação */
+  gap: 0.5rem; /* Reduz o espaçamento entre os botões */
+}
+
+.copiesTable .actions button {
+  padding: 6px 10px;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
+}
+
+@media (max-width: 1200px) {
+  .copiesTable {
+    min-width: 600px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+  }
 }

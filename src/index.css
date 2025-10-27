@@ -29,6 +29,8 @@
   --logButtonBackground: #2B7FFF;
   --deleteBookBackground: #d9534f;
   --editBookBackground: #2B7FFF;
+  --linkGeneralColor: #888eff;
+  --sellBookBackground: #28a745;
 }
 
 * {

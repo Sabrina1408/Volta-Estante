@@ -117,6 +117,17 @@
     opacity: 0.8;
 }
 
+.titleLink {
+  color: var(--linkGeneralColor);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.titleLink:hover {
+  text-decoration: underline;
+}
+
+
 .editButton {
     background-color: var(--editBookBackground);
     padding: 8px; 
