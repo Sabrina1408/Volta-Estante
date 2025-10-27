@@ -4,6 +4,7 @@ from models.alteration_log import AlterationLog
 from pydantic import ValidationError
 from werkzeug.exceptions import BadRequest
 from functools import wraps
+import threading
 
 db = firestore.client()
 
@@ -67,6 +68,9 @@ def log_action(action):
         @wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
+            sebo_id = getattr(g, 'sebo_id', None)
+            user_id = getattr(g, 'user_id', None)
+            user_name = getattr(g, 'name', 'Unknown User')
             details = kwargs.copy()
             if not details and request.is_json:
                 json_data = request.get_json()
@@ -74,8 +78,14 @@ def log_action(action):
                     details = {}
                     for key, value in json_data.items():
                         if isinstance(value, (str, int, float, bool)):
-                            details[key] = value                
-            save_log(g.sebo_id, g.user_id, g.name, action, details)
+                            details[key] = value
+            if sebo_id and user_id:
+                thread = threading.Thread(
+                    target=save_log,
+                    args=(sebo_id, user_id, user_name, action, details),
+                    daemon=True 
+                )
+                thread.start()
             return result
         return wrapper
     return decorator
