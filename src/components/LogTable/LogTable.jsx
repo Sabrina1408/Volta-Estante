@@ -26,6 +26,15 @@ const LogTable = () => {
     return <p>Nenhum registro de alteração encontrado.</p>;
   }
 
+  // order logs by timestamp descending (most recent first)
+  const sortedLogs = Array.isArray(logs)
+    ? [...logs].sort((a, b) => {
+        const ta = a?.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const tb = b?.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return tb - ta;
+      })
+    : [];
+
   return (
     <div className={styles.logContainer}>
       <div className={styles.tableWrapper}>
@@ -39,10 +48,10 @@ const LogTable = () => {
             </tr>
           </thead>
           <tbody>
-            {logs.map((log, index) => (
+            {sortedLogs.map((log, index) => (
               // Usando o índice + timestamp para garantir uma chave única, resolvendo o warning.
               <tr key={`${log.timestamp}-${index}`}>
-                <td>{new Date(log.timestamp).toLocaleString("pt-BR")}</td>
+                <td>{log.timestamp ? new Date(log.timestamp).toLocaleString("pt-BR") : "-"}</td>
                 <td>{log.userName}</td>
                 <td>{log.action}</td>
                 {/* Verifica se 'details' é um objeto e o converte para string se for, corrigindo o erro de renderização. */}
