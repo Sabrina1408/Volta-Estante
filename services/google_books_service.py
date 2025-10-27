@@ -1,7 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
-from services.isbn_utils import sanitize_isbn, to_isbn10
+from services.isbn_utils import sanitize_isbn
 
 
 load_dotenv()
@@ -45,23 +45,17 @@ def _normalize_google_volume(ISBN: str, book_data: dict) -> dict:
 def fetch_book_by_isbn(ISBN: str):
     try:
         original_isbn = sanitize_isbn(ISBN)
-        if not original_isbn:
+        if not original_isbn or len(original_isbn) != 13:
             return None
 
-        queries = [f"isbn:{original_isbn}"]
-        alt = to_isbn10(original_isbn)
-        if alt:
-            queries.append(f"isbn:{alt}")
-
-        for query in queries:
-            response = requests.get(BASE_URL, params=_build_params(query))
-            response.raise_for_status()
-            data = response.json() or {}
-            items = data.get("items") or []
-            if not items:
-                continue
-            return _normalize_google_volume(ISBN, items[0])
-        return None
+        query = f"isbn:{original_isbn}"
+        response = requests.get(BASE_URL, params=_build_params(query))
+        response.raise_for_status()
+        data = response.json() or {}
+        items = data.get("items") or []
+        if not items:
+            return None
+        return _normalize_google_volume(ISBN, items[0])
 
     except Exception as e:
         print(f"Error fetching book: {str(e)}")
