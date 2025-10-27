@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./StockTable.module.css";
-import { FaFilter, FaLayerGroup, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaFilter, FaLayerGroup, FaTrash } from "react-icons/fa";
 
 const StockTable = () => {
   const [filter, setFilter] = useState("");
@@ -45,14 +45,6 @@ const StockTable = () => {
     ) {
       deleteBook(isbn);
     }
-  };
-
-  const handleEdit = (book) => {
-    // Lógica para abrir um modal de edição.
-    // Por enquanto, apenas um alerta.
-    alert(
-      `Funcionalidade de edição para o livro "${book.title}" a ser implementada.`
-    );
   };
 
   if (isLoading) return <p>Carregando estoque...</p>;
@@ -182,12 +174,6 @@ const StockTable = () => {
                   <td>{book.totalQuantity}</td>
                   <td>
                     <div className={styles.actions}>
-                      <button
-                        onClick={() => handleEdit(book)}
-                        className={styles.editButton}
-                      >
-                        <FaPencilAlt />
-                      </button>
                       <button
                         onClick={() => handleDelete(book.ISBN)}
                         className={styles.deleteButton}
