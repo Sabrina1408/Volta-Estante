@@ -3,32 +3,10 @@ from werkzeug.exceptions import NotFound, BadRequest
 from models.books import Book
 from models.copy import Copy
 from pydantic import ValidationError
-from services.isbn_utils import to_isbn13, to_isbn10, sanitize_isbn
+from services.isbn_utils import sanitize_isbn
 
 
 db = firestore.client() 
-
-
-
-def _resolve_book_ref(sebo_ref, isbn: str):
-    original = sanitize_isbn(isbn)
-    doc_id_13 = to_isbn13(original)
-    books_coll = sebo_ref.collection('Books')
-
-    # preferencia ao isbn13
-    ref13 = books_coll.document(doc_id_13)
-    doc13 = ref13.get()
-    if doc13.exists:
-        return ref13, True
-
-    # se n tiver 13 vai no 10
-    alt10 = to_isbn10(original) if len(original) == 13 else original if len(original) == 10 else None
-    if alt10:
-        ref10 = books_coll.document(alt10)
-        doc10 = ref10.get()
-        if doc10.exists:
-            return ref10, True
-    return ref13, False
 
 
 def save_book(sebo_id, book_data, inventory_data):
@@ -38,42 +16,39 @@ def save_book(sebo_id, book_data, inventory_data):
         raise BadRequest(f"Invalid inventory data: {e}")
     
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    if not sebo_ref.get().exists:
-        raise NotFound(f"Sebo with ID {sebo_id} not found")
-    ISBN = book_data['ISBN']
-    if not ISBN:
-        raise BadRequest("Invalid book data: Missing ISBN")
+    ISBN = sanitize_isbn(book_data['ISBN'])
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    book_ref = sebo_ref.collection('Books').document(ISBN)
     
-    book_ref, _exists = _resolve_book_ref(sebo_ref, ISBN)
+    book_doc = book_ref.get()
+    book_exists = book_doc.exists
     
     transaction = db.transaction()
     @firestore.transactional
-    def save_book_transaction(transaction, book_ref, copy):
-        book_doc = book_ref.get()
-        if not book_doc.exists:
+    def save_book_transaction(transaction, book_ref, copy, book_exists):
+        if not book_exists:
             book_data['totalQuantity'] = 1
-            
             book_data['ISBN'] = book_ref.id
             book = Book.model_validate(book_data)
             transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
         else:
             transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
         
-        
         copy_ref = book_ref.collection('Copies').document()
-        
         copy_data = copy.model_dump(by_alias=True, exclude={'copyId'})
         copy_data['copyId'] = copy_ref.id  
-        
         transaction.set(copy_ref, copy_data)
     try:
-        save_book_transaction(transaction, book_ref, copy)
-        return fetch_book(sebo_id, ISBN)
+        save_book_transaction(transaction, book_ref, copy, book_exists)
+        return {
+            "ISBN": ISBN,
+            "title": book_data.get('title'),
+            "message": "Book saved successfully"
+        }
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
                             
-
-
 
 def fetch_book(sebo_id, ISBN):
     if not ISBN:
@@ -84,34 +59,21 @@ def fetch_book(sebo_id, ISBN):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
-    if not exists:
-        raise NotFound(f"Book with ISBN {ISBN} not found")
     
-    book_data = book_ref.get().to_dict()
+    ISBN = sanitize_isbn(ISBN)
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    books_coll = sebo_ref.collection('Books')
+    book_ref = books_coll.document(ISBN)
+    book_doc = book_ref.get()
+    if not book_doc.exists:
+        raise NotFound(f"Book with ISBN {ISBN} not found")
+    book_data = book_doc.to_dict()
     copies_ref = book_ref.collection('Copies')
     copies = [copy.to_dict() for copy in copies_ref.stream()]
     book_data['copies'] = copies
     return book_data
-
-def fetch_all_books(sebo_id):
-    if not sebo_id:
-        raise BadRequest("Invalid data: Missing Sebo ID")
-
-    sebo_ref = db.collection('Sebos').document(sebo_id)
-    if not sebo_ref.get().exists:
-        raise NotFound(f"Sebo with ID {sebo_id} not found")
-
-    books_ref = sebo_ref.collection('Books')
-    all_books_docs = books_ref.stream()
     
-    books_list = []
-    for doc in all_books_docs:
-        book_data = doc.to_dict()
-        book_data['ISBN'] = doc.id 
-        books_list.append(book_data)
-    return books_list
-
 def update_book(sebo_id, ISBN, copy_id, update_data):
     if not ISBN:
         raise BadRequest("Invalid book data: Missing ISBN")
@@ -123,9 +85,14 @@ def update_book(sebo_id, ISBN, copy_id, update_data):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    
-    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
-    if not exists:
+
+    ISBN = sanitize_isbn(ISBN)
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    books_coll = sebo_ref.collection('Books')
+    book_ref = books_coll.document(ISBN)
+    book_doc = book_ref.get()
+    if not book_doc.exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     copy_ref = book_ref.collection('Copies').document(copy_id)
@@ -155,8 +122,12 @@ def delete_book(sebo_id, ISBN):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
-    if not exists:
+    ISBN = sanitize_isbn(ISBN)
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    book_ref = sebo_ref.collection('Books').document(ISBN)
+    book_doc = book_ref.get()
+    if not book_doc.exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     batch = db.batch()
@@ -178,8 +149,12 @@ def delete_copy(sebo_id, ISBN, copy_id):
     sebo_ref = db.collection('Sebos').document(sebo_id)
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
-    book_ref, exists = _resolve_book_ref(sebo_ref, ISBN)
-    if not exists:
+    ISBN = sanitize_isbn(ISBN)
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    book_ref = sebo_ref.collection('Books').document(ISBN)
+    book_doc = book_ref.get()
+    if not book_doc.exists:
         raise NotFound(f"Book with ISBN {ISBN} not found")
     
     copy_ref = book_ref.collection('Copies').document(copy_id)
@@ -196,4 +171,16 @@ def delete_copy(sebo_id, ISBN, copy_id):
         return {"ISBN": ISBN, "copyID": copy_id}
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to delete copy: {e}")
+
+def fetch_all_books(sebo_id):
+    books_ref = db.collection('Sebos').document(sebo_id).collection('Books').select(
+        ['title', 'authors', 'categories', 'totalQuantity', 'isbn']
+    )
+    books_docs = books_ref.stream()
+    books = []
+    for book_doc in books_docs:
+        data = book_doc.to_dict()
+        books.append(data)
+    return books
+
        

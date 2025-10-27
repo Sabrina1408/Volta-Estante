@@ -100,7 +100,6 @@ def add_book_route():
 
 @app.route("/books", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
-@log_action("list_books")
 def list_books_route():
     all_books = fetch_all_books(g.sebo_id)
     return jsonify(all_books), 200
