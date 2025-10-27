@@ -78,15 +78,12 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: var(--quinaryBackground);
+  color: var(--white);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
   opacity: 0.7;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 .error {
