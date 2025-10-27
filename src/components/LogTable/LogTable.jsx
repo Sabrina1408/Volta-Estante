@@ -38,12 +38,14 @@ const LogTable = () => {
           </tr>
         </thead>
         <tbody>
-          {logs.map((log) => (
-            <tr key={log.id}>
+          {logs.map((log, index) => (
+            // Usando o índice + timestamp para garantir uma chave única, resolvendo o warning.
+            <tr key={`${log.timestamp._seconds}-${index}`}>
               <td>{new Date(log.timestamp._seconds * 1000).toLocaleString("pt-BR")}</td>
               <td>{log.userEmail}</td>
               <td>{log.action}</td>
-              <td>{log.details}</td>
+              {/* Verifica se 'details' é um objeto e o converte para string se for, corrigindo o erro de renderização. */}
+              <td>{typeof log.details === 'object' && log.details !== null ? JSON.stringify(log.details) : log.details}</td>
             </tr>
           ))}
         </tbody>
