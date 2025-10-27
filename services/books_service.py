@@ -11,18 +11,18 @@ db = firestore.client()
 
 
 def _resolve_book_ref(sebo_ref, isbn: str):
-    """Resolve book reference. Returns (ref, exists, doc_snapshot)."""
+    
     original = sanitize_isbn(isbn)
     doc_id_13 = to_isbn13(original)
     books_coll = sebo_ref.collection('Books')
 
-    # Batch read both possible docs in parallel
+    
     ref13 = books_coll.document(doc_id_13)
     alt10 = to_isbn10(original) if len(original) == 13 else original if len(original) == 10 else None
     
     if alt10:
         ref10 = books_coll.document(alt10)
-        # Parallel batch read - 1 network round trip instead of 2!
+        
         docs = list(db.get_all([ref13, ref10]))
         doc13, doc10 = docs
         
@@ -38,7 +38,7 @@ def _resolve_book_ref(sebo_ref, isbn: str):
     return ref13, False, None
 
 
-def save_book(sebo_id, book_data, inventory_data):
+def save_book(sebo_id, book_data, inventory_data, include_copies: bool = False, resolved_isbn_doc_id: str | None = None):
     try:
         copy = Copy.model_validate(inventory_data)
     except ValidationError as e:
@@ -48,35 +48,39 @@ def save_book(sebo_id, book_data, inventory_data):
     if not ISBN:
         raise BadRequest("Invalid book data: Missing ISBN")
     
-    # Batch read sebo + book resolution in parallel - saves ~200-400ms
+    # Prepare references
     sebo_ref = db.collection('Sebos').document(sebo_id)
     clean_isbn = sanitize_isbn(ISBN)
     book_ref_13 = sebo_ref.collection('Books').document(to_isbn13(clean_isbn))
-    
-    # Try to batch read sebo + potential book docs
     alt10 = to_isbn10(clean_isbn) if len(clean_isbn) == 13 else None
-    refs_to_check = [sebo_ref, book_ref_13]
-    if alt10:
-        book_ref_10 = sebo_ref.collection('Books').document(alt10)
-        refs_to_check.append(book_ref_10)
-    
-    # Firestore get_all returns a generator; convert to list to preserve order and allow indexing
-    docs = list(db.get_all(refs_to_check))
-    sebo_doc = docs[0]
-    
-    if not sebo_doc.exists:
-        raise NotFound(f"Sebo with ID {sebo_id} not found")
-    
-    # Determine which book ref to use
-    if len(docs) > 2 and docs[2].exists:  # ISBN-10 exists
-        book_ref = book_ref_10
-        existing_book_doc = docs[2]
-    elif docs[1].exists:  # ISBN-13 exists
-        book_ref = book_ref_13
-        existing_book_doc = docs[1]
+
+    # Fast path: if caller already resolved existing doc id, avoid prefetching
+    if resolved_isbn_doc_id:
+        book_ref = sebo_ref.collection('Books').document(resolved_isbn_doc_id)
+        existing_book_doc = None  # we don't need the snapshot here
     else:
-        book_ref = book_ref_13  # default to ISBN-13 for new books
-        existing_book_doc = None
+        refs_to_check = [sebo_ref, book_ref_13]
+        if alt10:
+            book_ref_10 = sebo_ref.collection('Books').document(alt10)
+            refs_to_check.append(book_ref_10)
+
+        # Firestore get_all returns a generator; convert to list to preserve order and allow indexing
+        docs = list(db.get_all(refs_to_check))
+        sebo_doc = docs[0]
+
+        if not sebo_doc.exists:
+            raise NotFound(f"Sebo with ID {sebo_id} not found")
+
+        # Determine which book ref to use
+        if len(docs) > 2 and docs[2].exists:  # ISBN-10 exists
+            book_ref = book_ref_10
+            existing_book_doc = docs[2]
+        elif docs[1].exists:  # ISBN-13 exists
+            book_ref = book_ref_13
+            existing_book_doc = docs[1]
+        else:
+            book_ref = book_ref_13  # default to ISBN-13 for new books
+            existing_book_doc = None
     
     transaction = db.transaction()
     @firestore.transactional
@@ -105,32 +109,49 @@ def save_book(sebo_id, book_data, inventory_data):
     try:
         new_copy_id, total_quantity = save_book_transaction(transaction, book_ref, copy)
         
-        # Build full book response with all fields and copies
+        # Build book response
         if existing_book_doc:
-            full_book = existing_book_doc.to_dict()
-            # ensure updated fields
-            full_book['ISBN'] = book_ref.id
-            full_book['totalQuantity'] = total_quantity
+            base_book = existing_book_doc.to_dict()
         else:
-            # New book just created: use validated/normalized payload
-            full_book = Book.model_validate(book_data).model_dump(by_alias=True, exclude={'copies'})
-            full_book['ISBN'] = book_ref.id
-            full_book['totalQuantity'] = total_quantity
+            base_book = Book.model_validate(book_data).model_dump(by_alias=True, exclude={'copies'})
 
-        # Include all copies
-        copies_ref = book_ref.collection('Copies')
-        copies_docs = list(copies_ref.stream())
-        copies_list = []
-        for cdoc in copies_docs:
-            cdata = cdoc.to_dict()
-            if 'copyId' not in cdata:
-                cdata['copyId'] = cdoc.id
-            copies_list.append(cdata)
-        full_book['copies'] = copies_list
+        base_book['ISBN'] = book_ref.id
+        base_book['totalQuantity'] = total_quantity
 
-        return full_book
+        if include_copies:
+            # Include all copies when explicitly requested
+            copies_ref = book_ref.collection('Copies')
+            copies_docs = list(copies_ref.stream())
+            copies_list = []
+            for cdoc in copies_docs:
+                cdata = cdoc.to_dict()
+                if 'copyId' not in cdata:
+                    cdata['copyId'] = cdoc.id
+                copies_list.append(cdata)
+            base_book['copies'] = copies_list
+        else:
+            # Include only the newly created copy metadata for quick UI updates
+            base_book['newCopy'] = {**copy.model_dump(by_alias=True), "copyId": new_copy_id}
+
+        return base_book
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
+
+
+def peek_book(sebo_id, ISBN):
+    """Lightweight existence check and fetch of a single book doc (no copies). Returns dict or None."""
+    if not ISBN:
+        raise BadRequest("Invalid book data: Missing ISBN")
+    if not sebo_id:
+        raise BadRequest("Invalid book data: Missing Sebo ID")
+
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    book_ref, exists, doc_snapshot = _resolve_book_ref(sebo_ref, ISBN)
+    if not exists:
+        return None
+    data = doc_snapshot.to_dict()
+    data['ISBN'] = book_ref.id
+    return data
                             
 
 
@@ -157,7 +178,7 @@ def fetch_book(sebo_id, ISBN):
     book_data['copies'] = copies
     return book_data
 
-def fetch_all_books(sebo_id):
+def fetch_all_books(sebo_id, limit: int | None = None):
     if not sebo_id:
         raise BadRequest("Invalid data: Missing Sebo ID")
 
@@ -166,7 +187,10 @@ def fetch_all_books(sebo_id):
         raise NotFound(f"Sebo with ID {sebo_id} not found")
 
     books_ref = sebo_ref.collection('Books')
-    all_books_docs = books_ref.stream()
+    query = books_ref
+    if limit and limit > 0:
+        query = query.limit(int(limit))
+    all_books_docs = query.stream()
     
     books_list = []
     for doc in all_books_docs:

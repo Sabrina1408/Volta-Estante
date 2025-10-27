@@ -86,23 +86,37 @@ def add_book_route():
     if "ISBN" not in data:
         raise BadRequest("ISBN is required")
     ISBN = data.get("ISBN")
+    include_copies = str(request.args.get("includeCopies", "false")).lower() == "true"
     inventory_data = {
         "price": data.get("price", 0.0),
     }
     if "conservationState" in data:
         inventory_data["conservation_state"] = data.get("conservationState")
-    
-    book_data = fetch_book_by_isbn(ISBN)
-    if not book_data:
-        raise BadRequest(f"Book with ISBN {ISBN} not found via Google Books API")
-    created = save_book(g.sebo_id, book_data, inventory_data)
+    # Fast path: if the book already exists in our DB, skip Google Books fetch
+    existing = peek_book(g.sebo_id, ISBN)
+    if existing is None:
+        book_data = fetch_book_by_isbn(ISBN)
+        if not book_data:
+            raise BadRequest(f"Book with ISBN {ISBN} not found via Google Books API")
+    else:
+        book_data = existing
+
+    # If we already know the existing doc id, pass it to avoid extra lookups inside save
+    resolved_id = book_data.get("ISBN") if existing is not None else None
+    created = save_book(g.sebo_id, book_data, inventory_data, include_copies=include_copies, resolved_isbn_doc_id=resolved_id)
     return jsonify(created), 201
 
 @app.route("/books", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 @log_action("list_books")
 def list_books_route():
-    all_books = fetch_all_books(g.sebo_id)
+    try:
+        limit = request.args.get("limit")
+        limit_val = int(limit) if limit is not None else None
+    except ValueError:
+        raise BadRequest("limit must be an integer if provided")
+
+    all_books = fetch_all_books(g.sebo_id, limit=limit_val)
     return jsonify(all_books), 200
 
 @app.route("/books/<ISBN>", methods=["GET"])
