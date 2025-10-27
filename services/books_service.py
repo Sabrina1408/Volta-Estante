@@ -6,6 +6,12 @@ from pydantic import ValidationError
 
 
 db = firestore.client() 
+import time
+
+# Simple in-memory cache to speed up repeated reads for the same sebo
+# cache structure: { sebo_id: { 'ts': unix_seconds, 'data': [...] } }
+_books_cache = {}
+_BOOKS_CACHE_TTL = 30  # seconds - keep short to remain fresh
 
 
 def save_book(sebo_id, book_data, inventory_data):
@@ -36,6 +42,11 @@ def save_book(sebo_id, book_data, inventory_data):
         transaction.set(copy_ref, copy.model_dump(by_alias=True))
     try:
         save_book_transaction(transaction, book_ref, copy)
+        # Invalidate cache for this sebo so subsequent list calls get fresh data
+        try:
+            _books_cache.pop(sebo_id, None)
+        except Exception:
+            pass
         return fetch_book(sebo_id, ISBN)
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
@@ -74,14 +85,39 @@ def fetch_all_books(sebo_id):
     if not sebo_ref.get().exists:
         raise NotFound(f"Sebo with ID {sebo_id} not found")
 
+    # Try cache first (fast path)
+    cached = _books_cache.get(sebo_id)
+    now = time.time()
+    if cached and (now - cached.get('ts', 0) < _BOOKS_CACHE_TTL):
+        return cached['data']
+
     books_ref = sebo_ref.collection('Books')
     all_books_docs = books_ref.stream()
-    
+
     books_list = []
     for doc in all_books_docs:
         book_data = doc.to_dict()
-        book_data['ISBN'] = doc.id 
-        books_list.append(book_data)
+        # normalize and return only commonly used fields to reduce payload size
+        minimal = {
+            'ISBN': doc.id,
+            'title': book_data.get('title'),
+            'authors': book_data.get('authors', []),
+            'categories': book_data.get('categories', []),
+            'totalQuantity': book_data.get('totalQuantity', 0),
+            'thumbnail': book_data.get('thumbnail'),
+            'averageRating': book_data.get('averageRating'),
+            'publisher': book_data.get('publisher'),
+            'language': book_data.get('language')
+        }
+        books_list.append(minimal)
+
+    # store in cache
+    try:
+        _books_cache[sebo_id] = {'ts': now, 'data': books_list}
+    except Exception:
+        # if cache fails for any reason, ignore and return data
+        pass
+
     return books_list
 
 def update_book(sebo_id, ISBN, copy_id, update_data):
@@ -115,7 +151,11 @@ def update_book(sebo_id, ISBN, copy_id, update_data):
         copy_ref.update(update_payload)
     except ValidationError as e:
         raise BadRequest(f"Invalid update data: {e}")
-
+    # invalidate list cache
+    try:
+        _books_cache.pop(sebo_id, None)
+    except Exception:
+        pass
     return fetch_book(sebo_id, ISBN)
 
 def delete_book(sebo_id, ISBN): 
@@ -139,6 +179,10 @@ def delete_book(sebo_id, ISBN):
     
     batch.delete(book_ref)
     batch.commit()
+    try:
+        _books_cache.pop(sebo_id, None)
+    except Exception:
+        pass
     return {"ISBN": ISBN}
 
 def delete_copy(sebo_id, ISBN, copy_id):
@@ -165,6 +209,10 @@ def delete_copy(sebo_id, ISBN, copy_id):
         transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(-1)})
     try:
         delete_copy_transaction(transaction, book_ref, copy_ref)
+        try:
+            _books_cache.pop(sebo_id, None)
+        except Exception:
+            pass
         return {"ISBN": ISBN, "copyID": copy_id}
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to delete copy: {e}")
