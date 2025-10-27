@@ -50,10 +50,11 @@ def save_book(sebo_id, book_data, inventory_data):
     
     # Batch read sebo + book resolution in parallel - saves ~200-400ms
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    book_ref_13 = sebo_ref.collection('Books').document(to_isbn13(sanitize_isbn(ISBN)))
+    clean_isbn = sanitize_isbn(ISBN)
+    book_ref_13 = sebo_ref.collection('Books').document(to_isbn13(clean_isbn))
     
     # Try to batch read sebo + potential book docs
-    alt10 = to_isbn10(sanitize_isbn(ISBN)) if len(sanitize_isbn(ISBN)) == 13 else None
+    alt10 = to_isbn10(clean_isbn) if len(clean_isbn) == 13 else None
     refs_to_check = [sebo_ref, book_ref_13]
     if alt10:
         book_ref_10 = sebo_ref.collection('Books').document(alt10)
@@ -104,13 +105,30 @@ def save_book(sebo_id, book_data, inventory_data):
     try:
         new_copy_id, total_quantity = save_book_transaction(transaction, book_ref, copy)
         
-        # Build response without expensive fetch_book call
-        return {
-            "ISBN": book_ref.id,
-            "message": "Book and copy saved successfully",
-            "copyId": new_copy_id,
-            "totalQuantity": total_quantity
-        }
+        # Build full book response with all fields and copies
+        if existing_book_doc:
+            full_book = existing_book_doc.to_dict()
+            # ensure updated fields
+            full_book['ISBN'] = book_ref.id
+            full_book['totalQuantity'] = total_quantity
+        else:
+            # New book just created: use validated/normalized payload
+            full_book = Book.model_validate(book_data).model_dump(by_alias=True, exclude={'copies'})
+            full_book['ISBN'] = book_ref.id
+            full_book['totalQuantity'] = total_quantity
+
+        # Include all copies
+        copies_ref = book_ref.collection('Copies')
+        copies_docs = list(copies_ref.stream())
+        copies_list = []
+        for cdoc in copies_docs:
+            cdata = cdoc.to_dict()
+            if 'copyId' not in cdata:
+                cdata['copyId'] = cdoc.id
+            copies_list.append(cdata)
+        full_book['copies'] = copies_list
+
+        return full_book
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
                             
