@@ -28,28 +28,30 @@ const LogTable = () => {
 
   return (
     <div className={styles.logContainer}>
-      <table className={styles.logTable}>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Usuário</th>
-            <th>Ação</th>
-            <th>Detalhes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log, index) => (
-            // Usando o índice + timestamp para garantir uma chave única, resolvendo o warning.
-            <tr key={`${log.timestamp._seconds}-${index}`}>
-              <td>{new Date(log.timestamp._seconds * 1000).toLocaleString("pt-BR")}</td>
-              <td>{log.userEmail}</td>
-              <td>{log.action}</td>
-              {/* Verifica se 'details' é um objeto e o converte para string se for, corrigindo o erro de renderização. */}
-              <td>{typeof log.details === 'object' && log.details !== null ? JSON.stringify(log.details) : log.details}</td>
+      <div className={styles.tableWrapper}>
+        <table className={styles.logTable}>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Usuário</th>
+              <th>Ação</th>
+              <th>Detalhes</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {logs.map((log, index) => (
+              // Usando o índice + timestamp para garantir uma chave única, resolvendo o warning.
+              <tr key={`${log.timestamp}-${index}`}>
+                <td>{new Date(log.timestamp).toLocaleString("pt-BR")}</td>
+                <td>{log.userName}</td>
+                <td>{log.action}</td>
+                {/* Verifica se 'details' é um objeto e o converte para string se for, corrigindo o erro de renderização. */}
+                <td>{typeof log.details === 'object' && log.details !== null ? JSON.stringify(log.details) : log.details}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 .logContainer {
     margin-top: 2rem;
+    margin-bottom: 5rem;
     width: 100%;
 }
 
@@ -29,4 +30,18 @@
 
 .loading {
     margin-top: 1rem;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
+}
+
+@media (max-width: 1030px) {
+    .logTable {
+        min-width: 800px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+    }
+    .logTable th, .logTable td {
+        white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
+    }
 }
