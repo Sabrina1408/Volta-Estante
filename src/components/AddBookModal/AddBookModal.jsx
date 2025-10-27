@@ -1,5 +1,6 @@
 import styles from "./AddBookModal.module.css";
 import { useState, useEffect } from "react";
+import { FaTimes } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
 import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
@@ -81,11 +82,31 @@ const AddBookModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // Fecha o modal ao pressionar Esc
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" || e.key === "Esc") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className={styles.modalBackdrop} onClick={onClose}>
+    <div className={styles.modalBackdrop}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={onClose}
+          aria-label="Fechar"
+        >
+          <FaTimes />
+        </button>
         <form onSubmit={handleSubmit} className={styles.addBookForm}>
           <h2>Adicionar Novo Livro/Cópia</h2>
           {message && (
