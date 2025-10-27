@@ -32,8 +32,14 @@ def save_book(sebo_id, book_data, inventory_data):
             transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
         else:
             transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
+        
+        
         copy_ref = book_ref.collection('Copies').document()
-        transaction.set(copy_ref, copy.model_dump(by_alias=True))
+        
+        copy_data = copy.model_dump(by_alias=True, exclude={'copyId'})
+        copy_data['copyId'] = copy_ref.id  
+        
+        transaction.set(copy_ref, copy_data)
     try:
         save_book_transaction(transaction, book_ref, copy)
         return fetch_book(sebo_id, ISBN)
