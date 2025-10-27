@@ -1,36 +1,12 @@
 import os
-import re
 import requests
-from typing import Optional
 from dotenv import load_dotenv
+from services.isbn_utils import sanitize_isbn, to_isbn10
 
 
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
 BASE_URL = "https://www.googleapis.com/books/v1/volumes"
-
-
-def _sanitize_isbn(isbn: str) -> str:
-    if not isbn:
-        return ""
-    cleaned = re.sub(r"[^0-9Xx]", "", str(isbn))
-    return cleaned.upper()
-
-
-def _isbn13_to_isbn10(isbn13: str) -> Optional[str]:
-    if not isbn13 or len(isbn13) != 13 or not isbn13.startswith("978"):
-        return None
-    core9 = isbn13[3:12]  
-    if not core9.isdigit():
-        return None
-    total = 0
-    for idx, ch in enumerate(core9):  
-        weight = 10 - idx
-        total += int(ch) * weight
-    remainder = total % 11
-    check_val = (11 - remainder) % 11
-    check_digit = "X" if check_val == 10 else str(check_val)
-    return f"{core9}{check_digit}"
 
 
 def _build_params(query: str) -> dict:
@@ -68,12 +44,12 @@ def _normalize_google_volume(ISBN: str, book_data: dict) -> dict:
 
 def fetch_book_by_isbn(ISBN: str):
     try:
-        original_isbn = _sanitize_isbn(ISBN)
+        original_isbn = sanitize_isbn(ISBN)
         if not original_isbn:
             return None
 
         queries = [f"isbn:{original_isbn}"]
-        alt = _isbn13_to_isbn10(original_isbn)
+        alt = to_isbn10(original_isbn)
         if alt:
             queries.append(f"isbn:{alt}")
 
