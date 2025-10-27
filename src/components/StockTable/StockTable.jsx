@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
@@ -10,6 +10,8 @@ const StockTable = () => {
   const [authorFilter, setAuthorFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [stockLevelFilter, setStockLevelFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const BOOKS_PER_PAGE = 15; // Define quantos livros serão exibidos por página
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
@@ -46,6 +48,11 @@ const StockTable = () => {
       deleteBook(isbn);
     }
   };
+
+  // Reseta para a primeira página sempre que um filtro for alterado
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, authorFilter, categoryFilter, stockLevelFilter]);
 
   if (isLoading) return <p>Carregando estoque...</p>;
   if (error)
@@ -97,6 +104,15 @@ const StockTable = () => {
         );
       })
     : [];
+
+  // Calcula o total de páginas com base nos livros filtrados
+  const totalPages = Math.ceil(filteredBooks.length / BOOKS_PER_PAGE);
+
+  // "Fatia" o array de livros filtrados para obter apenas os da página atual
+  const paginatedBooks = filteredBooks.slice(
+    (currentPage - 1) * BOOKS_PER_PAGE,
+    currentPage * BOOKS_PER_PAGE
+  );
 
   return (
     <div className={styles.stockContainer}>
@@ -157,8 +173,8 @@ const StockTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredBooks.length > 0 ? (
-              filteredBooks.map((book) => (
+            {paginatedBooks.length > 0 ? (
+              paginatedBooks.map((book) => (
                 <tr key={book.isbn}>
                   <td>
                     <Link
@@ -186,12 +202,35 @@ const StockTable = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6">Nenhum livro encontrado.</td>
+                <td colSpan="6">
+                  Nenhum livro encontrado com os filtros aplicados.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+      {totalPages > 1 && (
+        <div className={styles.paginationControls}>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          <span>
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Próximo
+          </button>
+        </div>
+      )}
     </div>
   );
 };
