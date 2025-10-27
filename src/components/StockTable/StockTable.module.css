@@ -127,12 +127,6 @@
   text-decoration: underline;
 }
 
-
-.editButton {
-    background-color: var(--editBookBackground);
-    padding: 8px; 
-}
-
 .deleteButton {
     background-color: var(--deleteBookBackground); 
 }
