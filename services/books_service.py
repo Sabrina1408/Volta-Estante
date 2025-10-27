@@ -3,7 +3,7 @@ from werkzeug.exceptions import NotFound, BadRequest
 from models.books import Book
 from models.copy import Copy
 from pydantic import ValidationError
-from services.isbn_utils import to_isbn13, sanitize_isbn
+from services.isbn_utils import sanitize_isbn
 
 
 db = firestore.client() 
@@ -19,21 +19,19 @@ def save_book(sebo_id, book_data, inventory_data):
         raise BadRequest(f"Invalid inventory data: {e}")
     
     sebo_ref = db.collection('Sebos').document(sebo_id)
-    if not sebo_ref.get().exists:
-        raise NotFound(f"Sebo with ID {sebo_id} not found")
     ISBN = sanitize_isbn(book_data['ISBN'])
     if not ISBN or len(ISBN) != 13:
         raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
     book_ref = sebo_ref.collection('Books').document(ISBN)
     
+    book_doc = book_ref.get()
+    book_exists = book_doc.exists
     
     transaction = db.transaction()
     @firestore.transactional
-    def save_book_transaction(transaction, book_ref, copy):
-        book_doc = book_ref.get()
-        if not book_doc.exists:
+    def save_book_transaction(transaction, book_ref, copy, book_exists):
+        if not book_exists:
             book_data['totalQuantity'] = 1
-            
             book_data['ISBN'] = book_ref.id
             book = Book.model_validate(book_data)
             transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
@@ -41,14 +39,16 @@ def save_book(sebo_id, book_data, inventory_data):
             transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
         
         copy_ref = book_ref.collection('Copies').document()
-        
         copy_data = copy.model_dump(by_alias=True, exclude={'copyId'})
         copy_data['copyId'] = copy_ref.id  
-        
         transaction.set(copy_ref, copy_data)
     try:
-        save_book_transaction(transaction, book_ref, copy)
-        return fetch_book(sebo_id, ISBN)
+        save_book_transaction(transaction, book_ref, copy, book_exists)
+        return {
+            "ISBN": ISBN,
+            "title": book_data.get('title'),
+            "message": "Book saved successfully"
+        }
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
                             
@@ -177,7 +177,7 @@ def delete_copy(sebo_id, ISBN, copy_id):
 
 def fetch_all_books(sebo_id):
     books_ref = db.collection('Sebos').document(sebo_id).collection('Books').select(
-        ['title', 'author', 'categories', 'totalQuantity', 'isbn']
+        ['title', 'authors', 'categories', 'totalQuantity', 'isbn']
     )
     books_docs = books_ref.stream()
     books = []
