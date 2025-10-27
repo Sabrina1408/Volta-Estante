@@ -9,9 +9,6 @@ from services.isbn_utils import sanitize_isbn
 db = firestore.client() 
 
 
-
-
-
 def save_book(sebo_id, book_data, inventory_data):
     try:
         copy = Copy.model_validate(inventory_data)
