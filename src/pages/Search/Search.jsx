@@ -13,22 +13,35 @@ const Search = () => {
     queryKey: ['bookSearch', query],
     queryFn: async () => {
       const response = await authFetch(`/books/${query}`);
-      if (response.status === 404) return null;
+      if (response.status === 404) {
+        // Se o livro não for encontrado, retornamos null para indicar que não há dados,
+        // mas não é um erro de rede/servidor que o react-query deva tratar como falha.
+        // Isso permite que a UI exiba "Nenhum resultado encontrado".
+        return null;
+      }
+      // Se a resposta não for OK (ex: 500 Internal Server Error), lançamos um erro.
       if (!response.ok) throw new Error(`Erro na busca (status: ${response.status})`);
       return response.json();
     },
     enabled: !!query, // A query só será executada se 'query' não for uma string vazia.
   });
-
   return (
     <div className={styles.search}>
       <h1>Resultados para: {query}</h1>
-      {isLoading && <p>Carregando...</p>}
-      {error && <p className="error">Ocorreu um erro: {error.message}</p>}
-      {isSuccess && book && <BookDetails book={book} />}
-       {isSuccess && !book && <p>Nenhum resultado encontrado para "{query}".</p>}
+      {isLoading && query && <p>Carregando...</p>} {/* Apenas mostra carregando se houver uma query */}
+      {error && <p className="error">Ocorreu um erro ao buscar o livro: {error.message}</p>}
+      {isSuccess && (
+        <>
+          {book ? (
+            <BookDetails book={book} />
+          ) : (
+            query && <p>Nenhum resultado encontrado para "{query}".</p> // Mostra a mensagem apenas se houver uma query
+          )}
+        </>
+      )}
     </div>
   );
-}
+};
 
 export default Search;
+//

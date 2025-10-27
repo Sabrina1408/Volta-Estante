@@ -68,11 +68,6 @@ const StockTable = () => {
         const filterText = filter.toLowerCase();
         const authorFilterText = authorFilter.toLowerCase();
 
-        // Filtro principal (Título ou ISBN)
-        const mainFilterMatch =
-          !filterText ||
-          book.title.toLowerCase().includes(filterText) ||
-          book.ISBN.toLowerCase().includes(filterText);
 
         // Filtro por autor
         const authorFilterMatch =
@@ -89,7 +84,7 @@ const StockTable = () => {
           (stockLevelFilter === "medium" && book.totalQuantity >= 6 && book.totalQuantity <= 10) ||
           (stockLevelFilter === "high" && book.totalQuantity > 10);
 
-        return mainFilterMatch && authorFilterMatch && categoryFilterMatch && stockLevelMatch;
+        return authorFilterMatch && categoryFilterMatch && stockLevelMatch;
       })
     : [];
 
@@ -124,7 +119,7 @@ const StockTable = () => {
         <div className={styles.selectWrapper}>
           <FaLayerGroup className={styles.selectIcon} />
           <select value={stockLevelFilter} onChange={(e) => setStockLevelFilter(e.target.value)} className={styles.filterSelect}>
-            <option value="all">Níveis</option>
+            <option value="all">Quantidade</option>
             <option value="low">Baixo (1-5)</option>
             <option value="medium">Médio (6-10)</option>
             <option value="high">Alto (&gt;10)</option>
@@ -146,15 +141,15 @@ const StockTable = () => {
           <tbody>
             {filteredBooks.length > 0 ? (
               filteredBooks.map((book) => (
-                <tr key={book.ISBN}>
+                <tr key={book.isbn}>
                   <td>
-                    <Link to={`/search?q=${book.ISBN}`} className={styles.titleLink}>
+                    <Link to={`/search?q=${book.isbn}`} className={styles.titleLink}>
                       {book.title}
                     </Link>
                   </td>
                   <td>{book.authors?.join(", ") || "N/A"}</td>
                   <td>{book.categories?.join(", ") || "N/A"}</td>
-                  <td>{book.ISBN}</td>
+                  <td>{book.isbn}</td>
                   <td>{book.totalQuantity}</td>
                   <td>
                     <div className={styles.actions}>
