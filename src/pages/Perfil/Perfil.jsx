@@ -1,15 +1,30 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query"; // Importa o useQuery
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
-import { useApi } from "../../hooks/useApi"; // Usaremos o useApi como fetcher
+import { useApi } from "../../hooks/useApi";
 import styles from "./Perfil.module.css";
+import ProfileCard from "../../components/ProfileCard/ProfileCard";
 
 const Perfil = () => {
-  const [role, setRole] = useState("admin");
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { authFetch } = useApi();
+  const queryClient = useQueryClient();
+
+  // Mutação para atualizar os dados do perfil
+  const { mutate: updateUser, isLoading: isSaving } = useMutation({
+    mutationFn: (updatedData) =>
+      authFetch(`/users/${user.uid}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      }),
+    onSuccess: () => {
+      alert("Perfil atualizado com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["userProfile", user?.uid] });
+    },
+    onError: (error) => alert(`Erro ao atualizar perfil: ${error.message}`),
+  });
 
   const {
     data: profileData,
@@ -17,7 +32,13 @@ const Perfil = () => {
     error,
   } = useQuery({
     queryKey: ["userProfile", user?.uid], // Chave única para o cache
-    queryFn: () => authFetch(`/users/${user.uid}`).then((res) => res.json()),
+    queryFn: async () => {
+      const res = await authFetch(`/users/${user.uid}`);
+      if (!res.ok) {
+        throw new Error("Não foi possível carregar os dados do perfil.");
+      }
+      return res.json();
+    },
     enabled: !!user, // Só executa a query se o 'user' existir
   });
 
@@ -28,6 +49,16 @@ const Perfil = () => {
     } catch (err) {
       console.error("logout error:", err);
     }
+  };
+
+  const handleSave = (updatedData) => {
+    // A API espera 'nameSebo' e 'name', que são os campos editáveis no card.
+    updateUser(updatedData);
+  };
+
+  const handleCancel = () => {
+    // Ao cancelar, podemos navegar de volta para a página inicial, por exemplo.
+    navigate("/dashboard");
   };
 
   if (isLoading) {
@@ -45,82 +76,18 @@ const Perfil = () => {
 
   return (
     <div className={styles.perfil}>
-      <h1>Gerenciamento de Estoque e Funcionários</h1>
-      <section>
-        <h2>Informações do Perfil</h2>
-        <p>Visualize e edite suas informações pessoais</p>
-        {profileData && (
-          <>
-            <p>
-              <strong>Nome:</strong> {profileData.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {profileData.email}
-            </p>
-            <p>
-              <strong>Nome do Sebo:</strong> {profileData.nameSebo}
-            </p>
-            <p>
-              <strong>Função:</strong> {profileData.user_role}
-            </p>
-          </>
-        )}
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          Sair
-        </button>
-      </section>
-      <section>
-        <div className={styles.textEmployees}>
-          <h2>Gerenciar Funcionários</h2>
-          <p>Adicione, edite ou remova funcionários do sistema</p>
-        </div>
-        <button>Adicionar Funcionário</button>
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Função</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          {/* <tbody> */}
-        </table>
-      </section>
-      <p>Tipo de usuário:</p>
-      <div>
-        <input
-          type="radio"
-          id="leitor"
-          name="role"
-          value="leitor"
-          checked={role === "leitor"}
-          onChange={(e) => setRole(e.target.value)}
-        />
-        <label htmlFor="leitor">Leitor</label>
-      </div>
-      <div>
-        <input
-          type="radio"
-          id="editor"
-          name="role"
-          value="editor"
-          checked={role === "editor"}
-          onChange={(e) => setRole(e.target.value)}
-        />
-        <label htmlFor="editor">Editor</label>
-      </div>
-      <div>
-        <input
-          type="radio"
-          id="admin"
-          name="role"
-          value="admin"
-          checked={role === "admin"}
-          onChange={(e) => setRole(e.target.value)}
-        />
-        <label htmlFor="admin">Admin</label>
-      </div>
+      {/* O ProfileCard agora gerencia a exibição e edição dos dados */}
+      <ProfileCard
+        user={profileData}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        isSaving={isSaving}
+      />
+
+      {/* O botão de logout pode ficar fora do card, como uma ação global da página */}
+      <button className={styles.logoutButton} onClick={handleLogout}>
+        Sair da Conta
+      </button>
     </div>
   );
 };

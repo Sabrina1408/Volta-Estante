@@ -1,0 +1,168 @@
+/* Container principal para centralizar o card na tela */
+.profileCardContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinha no topo */
+    min-height: calc(100vh - 200px); /* Ajuste conforme necessário */
+    padding: 2rem;
+    background-color: var(--secondaryBackground);
+  }
+  
+  /* O card em si */
+  .profileCard {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff; /* Fundo branco puro */
+    border-radius: 12px; /* Cantos arredondados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Cabeçalho do card */
+  .cardHeader {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb; /* Cinza claro */
+  }
+  
+  .title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827; /* Cor escura */
+  }
+  
+  .subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: #6b7280; /* Tom de cinza claro */
+  }
+  
+  /* Conteúdo principal do card */
+  .cardContent {
+    padding: 2rem;
+  }
+  
+  /* Grid para os campos do formulário */
+  .formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    gap: 1.5rem;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup label {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151; /* Cinza escuro */
+  }
+  
+  .formGroup input,
+  .readOnlyInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: #f9fafb; /* Cinza muito suave */
+    border: 1px solid #d1d5db;
+    border-radius: 8px; /* Cantos arredondados */
+    font-size: 1rem;
+    color: #111827;
+    box-sizing: border-box;
+  }
+  
+  .formGroup input:focus {
+    outline: none;
+    border-color: var(--editBookBackground);
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+  }
+  
+  /* Estilos para campos somente leitura */
+  .readOnlyInput {
+    background-color: #f3f4f6; /* Um pouco mais escuro para indicar não editável */
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Wrapper para o input com ícone */
+  .inputWrapper {
+    position: relative;
+  }
+  
+  .inputIcon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af; /* Cinza */
+  }
+  
+  /* Ajuste no padding do input com ícone */
+  .inputWrapper input {
+    padding-left: 2.75rem;
+  }
+  
+  /* Estilização da tag de função */
+  .roleTag {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+  }
+  
+  .adminRole {
+    background-color: #dc2626; /* Vermelho forte */
+    color: #ffffff; /* Texto branco */
+    border-color: #dc2626;
+  }
+  
+  /* Metadado "Membro desde" */
+  .memberSince {
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280; /* Cinza claro */
+    text-align: left;
+  }
+  
+  /* Rodapé com os botões */
+  .cardFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.5rem 2rem;
+    background-color: #f9fafb; /* Fundo cinza suave */
+  }
+  
+  .saveButton,
+  .cancelButton {
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .saveButton {
+    background-color: #111827; /* Preto sólido */
+    color: #ffffff; /* Texto branco */
+  }
+  
+  .cancelButton {
+    background-color: transparent;
+    color: #111827; /* Texto escuro */
+    border: 1px solid #d1d5db;
+  }
+  
+  /* Responsividade para telas menores */
+  @media (max-width: 768px) {
+    .formGrid {
+      grid-template-columns: 1fr; /* Uma coluna */
+    }
+  }
