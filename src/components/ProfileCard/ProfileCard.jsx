@@ -75,17 +75,20 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving }) => {
             {/* Campo Função */}
             <div className={styles.formGroup}>
               <label htmlFor="role">Função</label>
-              <div 
-                id="role" 
-                className={`${styles.readOnlyInput} ${styles.roleTag} ${isRoleAdmin ? styles.adminRole : ''}`}
-              >
-                {isRoleAdmin ? 'Administrador' : user.userRole}
+              <div className={styles.inputWrapper}>
+                <input
+                  id="role"
+                  type="text"
+                  value={user.userRole}
+                  readOnly
+                  className={`${styles.readOnlyInput} ${styles.roleTag} ${isRoleAdmin ? styles.adminRole : ''}`}
+                />
               </div>
             </div>
           </div>
 
           <p className={styles.memberSince}>
-            Membro desde {formatDate(user.memberSince)}
+            Membro desde {formatDate(user.registeredAt)}
           </p>
         </main>
 
