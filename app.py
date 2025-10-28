@@ -245,6 +245,8 @@ def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, ed
     update_data = request.get_json()
     if not update_data:
         raise BadRequest("Invalid JSON data")
+    if "UserRole" in update_data and g.user_id == user_id:
+        raise Forbidden("You cannot change your own user role.")
     updated_user = update_user(user_id, update_data)
     return jsonify({
         "message": "User updated successfully",
