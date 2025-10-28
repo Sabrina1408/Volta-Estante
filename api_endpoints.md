@@ -11,6 +11,20 @@
 Adiciona um novo livro ao acervo do sebo do usuário autenticado. Se o livro (identificado pelo ISBN) já existir, adiciona apenas uma nova cópia.
 
 **Payload (JSON):**
+"""markdown
+# api_endpoints
+---
+
+> Observação geral: o `sebo_id` e o `user_id` são obtidos a partir do token de autenticação (middleware). Todos os endpoints que usam `ISBN` esperam ISBN-13 sanitizado.
+
+## Endpoints de Livros (`/books`)
+
+### Adicionar Livro / Adicionar Cópia
+POST /books
+
+Descrição: adiciona um novo livro (buscado na Google Books API) ao acervo do sebo ou, se o livro já existir, adiciona apenas uma nova cópia ao inventário.
+
+Payload (JSON):
 ```json
 {
   "ISBN": "9788532530837",
@@ -19,160 +33,182 @@ Adiciona um novo livro ao acervo do sebo do usuário autenticado. Se o livro (id
 }
 ```
 
-**Permissões:** `ADMIN`, `EDITOR`
+Permissões: `ADMIN`, `EDITOR`
 
 ---
 
-### Listar Livros do Estoque
-**GET /books**
+### Listar livros do estoque
+GET /books
 
-Retorna uma lista de todos os livros no acervo do sebo, incluindo a quantidade total de cópias de cada um.
+Descrição: retorna uma lista dos livros do sebo (campos principais: title, author, categories, ISBN, totalQuantity).
 
-**Permissões:** `ADMIN`, `EDITOR`, `READER`
-
----
-
-### Buscar Livro
-**GET /books/`<ISBN>`**
-
-Busca os detalhes de um livro específico no acervo do sebo, incluindo todas as suas cópias disponíveis.
-
-**Permissões:** `ADMIN`, `EDITOR`, `READER` (qualquer usuário autenticado do sebo)
+Permissões: `ADMIN`, `EDITOR`, `READER`
 
 ---
 
-### Deletar Livro
-**DELETE /books/`<ISBN>`**
+### Buscar livro
+GET /books/<ISBN>
 
-Deleta um livro e **todas** as suas cópias do acervo. Esta é uma ação destrutiva.
+Descrição: retorna os detalhes de um livro específico e suas cópias.
 
-**Permissões:** `ADMIN`
-
----
-
-### Atualizar Cópia de um Livro
-**PUT /books/`<ISBN>`/copies/`<copy_id>`**
-
-Atualiza as informações de uma cópia específica de um livro, como preço e estado de conservação.
-
-**Payload (JSON):**
-```json
-{
-  "price": 49.90,
-  "conservationState": "Como novo"
-}
-```
-
-**Permissões:** `ADMIN`, `EDITOR`
+Permissões: `ADMIN`, `EDITOR`, `READER`
 
 ---
 
-### Deletar Cópia de um Livro
-**DELETE /books/`<ISBN>`/copies/`<copy_id>`**
+### Deletar livro (todas as cópias)
+DELETE /books/<ISBN>
 
-Deleta uma cópia específica de um livro do acervo. A quantidade total do livro é decrementada.
+Descrição: deleta o documento do livro e todas as suas cópias do acervo.
 
-**Permissões:** `ADMIN`, `EDITOR`
+Permissões: `ADMIN`
+
+---
+
+### Atualizar uma cópia do livro
+PUT /books/<ISBN>/copies/<copy_id>
+
+Descrição: atualiza campos editáveis de uma cópia (ex.: preço, estado de conservação).
+
+Payload (JSON): campos a atualizar (ex.: `price`, `conservationState`).
+
+Permissões: `ADMIN`, `EDITOR`
+
+---
+
+### Deletar uma cópia do livro
+DELETE /books/<ISBN>/copies/<copy_id>
+
+Descrição: remove uma cópia específica e decrementa `totalQuantity` do livro.
+
+Permissões: `ADMIN`, `EDITOR`
 
 ---
 
 ## Endpoints de Vendas (`/sales`)
 
-**Nota:** Para todos os endpoints de vendas, o `sebo_id` é obtido automaticamente do token de autenticação do usuário.
+### Registrar venda
+POST /sales/<ISBN>/<copy_id>
 
-### Registrar Venda
-**POST /sales/`<ISBN>`/`<copy_id>`**
+Descrição: registra a venda de uma cópia específica. O `user_id` e `sebo_id` são obtidos do token.
 
-Registra a venda de uma cópia específica de um livro. A cópia é removida do inventário, a quantidade total do livro é decrementada e um registro de venda é criado na coleção `Sales`. O `user_id` do vendedor e o `sebo_id` são obtidos do token de autenticação.
-
-**Permissões:** `ADMIN`, `EDITOR`
+Permissões: `ADMIN`, `EDITOR`
 
 ---
 
-### Listar Vendas
-**GET /sales**
+### Buscar venda
+GET /sales/<sale_id>
 
-Retorna uma lista de todas as vendas registradas para o sebo.
+Descrição: retorna os detalhes de uma venda específica.
 
-**Permissões:** `ADMIN`
+Permissões: `ADMIN`, `EDITOR`, `READER`
 
 ---
 
-### Buscar Venda Específica
-**GET /sales/`<sale_id>`**
+### Deletar venda
+DELETE /sales/<sale_id>
 
-Busca os detalhes de uma venda específica.
+Descrição: remove o registro de venda.
 
-**Permissões:** `ADMIN`
+Permissões: `ADMIN`
+
+---
+
+### Atualizar venda
+PUT /sales/<sale_id>
+
+Descrição: atualiza campos de uma venda (payload com campos a atualizar).
+
+Permissões: `ADMIN`, `EDITOR`
 
 ---
 
 ## Endpoints de Usuários (`/users`)
 
-### Criar Usuário
-**POST /users**
- 
-Cria um novo perfil de usuário no banco de dados após o registro no Firebase Auth. O `userId`, `email` e `name` são obtidos do token de autenticação. Se for o primeiro usuário de um sebo, cria o sebo associado.
+### Criar usuário
+POST /users
 
-**Payload (JSON):**
+Descrição: cria um perfil no banco para um usuário autentificado (dados básicos vindos do token). Permite criar o primeiro sebo se necessário.
+
+Payload (JSON) exemplo:
 ```json
 {
-    "nameSebo" : "Nome do Sebo",
-    "userRole": "ADMIN"
+  "nameSebo": "Nome do Sebo",
+  "userRole": "ADMIN"
 }
 ```
 
-**Permissões:** Público
+Permissões: sem claims obrigatórias (público autenticado)
 
 ---
 
-### Listar Usuários do Sebo
-**GET /users**
+### Buscar usuário
+GET /users/<user_id>
 
-Retorna uma lista de todos os usuários associados ao sebo do administrador autenticado.
+Descrição: retorna dados do usuário. Usuário comum só pode ver seu próprio perfil; `ADMIN` pode ver qualquer perfil do seu sebo.
 
-**Permissões:** `ADMIN`
-
----
-
-### Buscar Usuário
-**GET /users/`<user_id>`**
-
-Busca os detalhes de um usuário específico.
-
-**Permissões:** Qualquer usuário autenticado pode ver seu próprio perfil. `ADMIN` pode ver qualquer perfil.
-
----
-### Atualizar Usuário
-**PUT /users/`<user_id>`**
-
-Atualiza as informações de um usuário, como seu papel no sistema.
-
-**Payload (JSON):**
-```json
-{
-  "userRole": "EDITOR"
-}
-```
-
-**Permissões:** `ADMIN`
+Permissões: `ADMIN`, `EDITOR`, `READER` (com regras de autorização aplicadas)
 
 ---
 
-### Deletar Usuário
-**DELETE /users/`<user_id>`**
+### Deletar usuário
+DELETE /users/<user_id>
 
-Deleta um usuário do sistema.
+Descrição: remove o usuário. Se um admin deletar a si mesmo, é necessário informar `editorID` no body para promoção.
 
-**Permissões:** `ADMIN`
+Permissões: `ADMIN` (editores/usuários podem deletar apenas a si mesmos)
 
 ---
 
-## Endpoints de Log de Alterações (`/logs`)
+### Criar funcionário (pelo admin)
+POST /users/employees/<user_id>
 
-### Listar Logs de Alterações
-**GET /logs**
+Descrição: adiciona um novo funcionário ao sebo (o `user_id` aqui é o UID do Firebase do funcionário).
 
-Retorna o histórico de alterações (log) para o sebo. Útil para auditoria.
+Permissões: `ADMIN`
 
-**Permissões:** `ADMIN`
+---
+
+### Atualizar usuário
+PUT /users/<user_id>
+
+Descrição: atualiza campos do usuário. `ADMIN` pode atualizar qualquer usuário do sebo; `EDITOR` pode atualizar apenas seu próprio perfil.
+
+Permissões: `ADMIN`, `EDITOR`
+
+---
+
+## Endpoints de Logs (`/logs`)
+
+### Buscar log
+GET /logs/<log_id>
+
+Descrição: retorna um registro de log específico do sebo.
+
+Permissões: `ADMIN`, `EDITOR`, `READER`
+
+---
+
+### Atualizar log
+PUT /logs/<log_id>
+
+Descrição: atualiza um registro de log (somente `ADMIN`).
+
+Permissões: `ADMIN`
+
+---
+
+### Listar logs
+GET /logs
+
+Descrição: retorna todos os logs do sebo (paginável se necessário).
+
+Permissões: `ADMIN`, `EDITOR`, `READER`
+
+---
+
+## Observações finais
+- Todos os endpoints protegem o `sebo_id` e as autorizações via o decorator `permission_required`.
+- Campos esperados e nomes (ex.: `conservationState`) são sensíveis — consulte os payloads de cada rota.
+- Para performance, as operações de criação/atualização retornam respostas mínimas; o frontend pode solicitar dados completos via GET quando necessário.
+
+``` 
