@@ -78,7 +78,7 @@ def handle_general_error(e):
 
 @app.route("/books", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
-@log_action("add_book")
+@log_action("Adicionar ao Estoque")
 def add_book_route():
     data = request.get_json()
     if not data: 
@@ -106,14 +106,14 @@ def list_books_route():
 
 @app.route("/books/<ISBN>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
-@log_action("get_book")
+@log_action("Pesquisar Livro")
 def get_book_route(ISBN):
     book = fetch_book(g.sebo_id, ISBN)
     return jsonify(book), 200
     
 @app.route("/books/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
 @permission_required(UserRole.ADMIN)
-@log_action("delete_book")
+@log_action("Deletar Livro")
 def delete_book_route(ISBN):
     deleted = delete_book(g.sebo_id, ISBN)
     return jsonify({
@@ -123,7 +123,7 @@ def delete_book_route(ISBN):
 
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
-@log_action("update_book")
+@log_action("Atualizar Livro")
 def update_book_route(ISBN, copy_id):
     data = request.get_json()
     if not data: 
@@ -138,7 +138,7 @@ def update_book_route(ISBN, copy_id):
 
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
-@log_action("delete_book_copy")
+@log_action("Deletar Cópia do Livro")
 def delete_copy_route(ISBN, copy_id):
     deleted = delete_copy(g.sebo_id, ISBN, copy_id)
     return jsonify({
