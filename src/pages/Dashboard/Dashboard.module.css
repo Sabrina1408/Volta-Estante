@@ -1,0 +1,99 @@
+.dashboardContainer {
+    padding: 2rem;
+    background-color: var(--background);
+    color: var(--text);
+    display: grid;
+    gap: 2rem;
+}
+
+.filterBar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.filterSelect {
+    padding: 0.5rem 1rem;
+    border-radius: var(--borderRadius);
+    border: 1px solid var(--gray-300);
+    background-color: var(--white);
+}
+
+.metricsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.metricCard {
+    display: flex;
+    align-items: center;
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: var(--borderRadius);
+    box-shadow: var(--shadow-sm);
+    gap: 1.5rem;
+}
+
+.metricIcon {
+    font-size: 2rem;
+    padding: 1rem;
+    border-radius: 50%;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.metricInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.metricTitle {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: 0.25rem;
+}
+
+.metricValue {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.chartCard {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: var(--borderRadius);
+    box-shadow: var(--shadow-sm);
+}
+
+.chartTitle {
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.lightGreenBg {
+    background-color: var(--lightGreen);
+}
+
+.lightBlueBg {
+    background-color: var(--lightBlue);
+}
+
+.softPurpleBg {
+    background-color: var(--softPurple);
+}
+
+.lightOrangeBg {
+    background-color: var(--lightOrange);
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.legendText {
+    color: var(--lightGreen);
+}

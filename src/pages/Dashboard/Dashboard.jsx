@@ -83,7 +83,7 @@ const Dashboard = () => {
 
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon} style={{ backgroundColor: 'var(--lightGreen)' }}>
+          <div className={`${styles.metricIcon} ${styles.lightGreenBg}`}>
             <FaDollarSign />
           </div>
           <div className={styles.metricInfo}>
@@ -92,7 +92,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon} style={{ backgroundColor: 'var(--lightBlue)' }}>
+          <div className={`${styles.metricIcon} ${styles.lightBlueBg}`}>
             <FaTags />
           </div>
           <div className={styles.metricInfo}>
@@ -101,7 +101,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon} style={{ backgroundColor: 'var(--softPurple)' }}>
+          <div className={`${styles.metricIcon} ${styles.softPurpleBg}`}>
             <FaBoxOpen />
           </div>
           <div className={styles.metricInfo}>
@@ -110,7 +110,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={styles.metricIcon} style={{ backgroundColor: 'var(--lightOrange)' }}>
+          <div className={`${styles.metricIcon} ${styles.lightOrangeBg}`}>
             <FaShoppingCart />
           </div>
           <div className={styles.metricInfo}>
@@ -120,7 +120,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className={styles.chartCard} style={{ gridColumn: "1 / -1" }}>
+      <div className={`${styles.chartCard} ${styles.fullWidth}`}>
         <h3 className={styles.chartTitle}>Receita ao Longo do Tempo</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={revenueOverTimeData}>
