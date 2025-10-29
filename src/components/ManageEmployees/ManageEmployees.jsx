@@ -42,8 +42,13 @@ const ManageEmployees = () => {
   };
 
   const handleDelete = (userId, userName) => {
-    if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
-      deleteEmployee(userId);
+    const employeeToDelete = employees.find(emp => emp.userId === userId);
+    if (employeeToDelete && employeeToDelete.userRole === 'Admin') {
+      alert('Não é possível excluir um usuário com o papel de Administrador.');
+    } else {
+      if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
+        deleteEmployee(userId);
+      }
     }
   };
 
@@ -57,9 +62,9 @@ const ManageEmployees = () => {
   // Mapeia a role para um texto e uma classe de estilo
   const getRoleInfo = (role) => {
     switch (role) {
-      case 'ADMIN':
+      case 'Admin':
         return { text: 'Administrador', className: styles.roleAdmin };
-      case 'EDITOR':
+      case 'Editor':
         return { text: 'Editor', className: styles.roleEditor };
       default:
         return { text: role, className: '' };
