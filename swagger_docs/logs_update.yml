@@ -1,0 +1,52 @@
+Atualizar log
+---
+tags:
+  - Logs
+summary: Atualizar uma entrada de log
+description: Modifica uma entrada de log de atividade existente (Apenas Admin)
+parameters:
+  - in: path
+    name: log_id
+    type: string
+    required: true
+    description: O ID da entrada de log a ser atualizada
+    example: "log_abc123"
+  - in: body
+    name: update_data
+    description: Campos a serem atualizados
+    required: true
+    schema:
+      type: object
+      properties:
+        details:
+          type: object
+          description: Detalhes atualizados sobre a ação
+        notes:
+          type: string
+          example: "Entrada corrigida"
+          description: Notas adicionais ou correções
+responses:
+  200:
+    description: Log atualizado com sucesso
+    schema:
+      type: object
+      properties:
+        logId:
+          type: string
+        action:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+        notes:
+          type: string
+  400:
+    description: Requisição inválida - Dados inválidos
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Admin
+  404:
+    description: Log não encontrado

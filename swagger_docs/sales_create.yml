@@ -1,0 +1,48 @@
+Criar venda
+---
+tags:
+  - Vendas
+summary: Registrar uma nova venda de livro
+description: Cria um registro de venda e marca a cópia do livro como vendida
+parameters:
+  - in: path
+    name: ISBN
+    type: string
+    required: true
+    description: O ISBN do livro sendo vendido
+    example: "9780134685991"
+  - in: path
+    name: copy_id
+    type: string
+    required: true
+    description: O ID da cópia específica do livro sendo vendida
+    example: "copy_abc123"
+responses:
+  201:
+    description: Venda criada com sucesso
+    schema:
+      type: object
+      properties:
+        saleId:
+          type: string
+        ISBN:
+          type: string
+        copyId:
+          type: string
+        price:
+          type: number
+        soldBy:
+          type: string
+        soldAt:
+          type: string
+          format: date-time
+        seboId:
+          type: string
+  400:
+    description: Requisição inválida - Cópia já vendida ou não encontrada
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Editor ou Admin
+  404:
+    description: Livro ou cópia não encontrado

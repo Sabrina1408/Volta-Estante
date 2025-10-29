@@ -1,0 +1,43 @@
+Obter venda por ID
+---
+tags:
+  - Vendas
+summary: Recuperar detalhes da venda
+description: Obtém informações detalhadas sobre uma venda específica
+parameters:
+  - in: path
+    name: sale_id
+    type: string
+    required: true
+    description: O ID da venda a ser recuperada
+    example: "sale_abc123"
+responses:
+  200:
+    description: Detalhes da venda
+    schema:
+      type: object
+      properties:
+        saleId:
+          type: string
+        ISBN:
+          type: string
+        copyId:
+          type: string
+        bookTitle:
+          type: string
+        price:
+          type: number
+        soldBy:
+          type: string
+          description: ID do usuário que fez a venda
+        soldAt:
+          type: string
+          format: date-time
+        seboId:
+          type: string
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Deve pertencer ao mesmo sebo
+  404:
+    description: Venda não encontrada

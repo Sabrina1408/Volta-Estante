@@ -1,0 +1,64 @@
+Atualizar cópia do livro
+---
+tags:
+  - Livros
+summary: Atualizar uma cópia específica do livro
+description: Atualiza preço, estado de conservação ou outros campos editáveis de uma cópia do livro
+parameters:
+  - in: path
+    name: ISBN
+    type: string
+    required: true
+    description: O ISBN do livro
+    example: "9780134685991"
+  - in: path
+    name: copy_id
+    type: string
+    required: true
+    description: O ID da cópia específica a ser atualizada
+    example: "copy_abc123"
+  - in: body
+    name: update_data
+    description: Campos a serem atualizados
+    required: true
+    schema:
+      type: object
+      properties:
+        price:
+          type: number
+          format: float
+          example: 35.50
+          description: Novo preço para a cópia do livro
+        conservationState:
+          type: string
+          enum: [Novo, Seminovo, Usado]
+          example: "Usado"
+          description: Estado de conservação atualizado
+responses:
+  200:
+    description: Cópia do livro atualizada com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Livro atualizado com sucesso"
+        book:
+          type: object
+          properties:
+            ISBN:
+              type: string
+            copyId:
+              type: string
+            price:
+              type: number
+            conservationState:
+              type: string
+  400:
+    description: Requisição inválida - Dados inválidos
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Editor ou Admin
+  404:
+    description: Livro ou cópia não encontrado

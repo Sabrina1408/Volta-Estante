@@ -1,0 +1,37 @@
+Deletar venda
+---
+tags:
+  - Vendas
+summary: Deletar um registro de venda
+description: Remove uma venda do sistema e restaura a cópia do livro ao inventário (Apenas Admin)
+parameters:
+  - in: path
+    name: sale_id
+    type: string
+    required: true
+    description: O ID da venda a ser deletada
+    example: "sale_abc123"
+responses:
+  200:
+    description: Venda deletada com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Venda deletada com sucesso"
+        data:
+          type: object
+          properties:
+            saleId:
+              type: string
+            ISBN:
+              type: string
+            copyId:
+              type: string
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Admin
+  404:
+    description: Venda não encontrada

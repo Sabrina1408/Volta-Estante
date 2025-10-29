@@ -1,0 +1,47 @@
+Obter log por ID
+---
+tags:
+  - Logs
+summary: Recuperar um log de atividade específico
+description: Obtém informações detalhadas sobre uma entrada de log específica do registro de alterações
+parameters:
+  - in: path
+    name: log_id
+    type: string
+    required: true
+    description: O ID da entrada de log a ser recuperada
+    example: "log_abc123"
+responses:
+  200:
+    description: Detalhes do log
+    schema:
+      type: object
+      properties:
+        logId:
+          type: string
+        action:
+          type: string
+          example: "Adicionar ao Estoque"
+        userId:
+          type: string
+        userName:
+          type: string
+        seboId:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          description: Informações adicionais sobre a ação
+        resourceType:
+          type: string
+          example: "Livro"
+        resourceId:
+          type: string
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Deve pertencer ao mesmo sebo
+  404:
+    description: Log não encontrado
