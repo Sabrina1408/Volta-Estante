@@ -13,7 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa";
+import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart, FaFilter } from "react-icons/fa";
 import styles from "./Dashboard.module.css";
 
 // Mock data for charts
@@ -67,18 +67,30 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.filterBar}>
-        <select className={styles.filterSelect}>
-          <option>Categorias</option>
-        </select>
-        <select className={styles.filterSelect}>
-          <option>Idioma do livro</option>
-        </select>
-        <select className={styles.filterSelect}>
-          <option>Mês</option>
-        </select>
-        <select className={styles.filterSelect}>
-          <option>Ano</option>
-        </select>
+        <div className={styles.selectWrapper}>
+          <FaFilter className={styles.selectIcon} />
+          <select className={styles.filterSelect}>
+            <option>Categorias</option>
+          </select>
+        </div>
+        <div className={styles.selectWrapper}>
+          <FaFilter className={styles.selectIcon} />
+          <select className={styles.filterSelect}>
+            <option>Idioma do livro</option>
+          </select>
+        </div>
+        <div className={styles.selectWrapper}>
+          <FaFilter className={styles.selectIcon} />
+          <select className={styles.filterSelect}>
+            <option>Mês</option>
+          </select>
+        </div>
+        <div className={styles.selectWrapper}>
+          <FaFilter className={styles.selectIcon} />
+          <select className={styles.filterSelect}>
+            <option>Ano</option>
+          </select>
+        </div>
       </div>
 
       <div className={styles.metricsGrid}>
