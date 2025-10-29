@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start; /* Alinha no topo */
-    min-height: calc(100vh - 200px); /* Ajuste conforme necessário */
+
     padding: 2rem;
     background-color: var(--secondaryBackground);
   }
@@ -11,7 +11,7 @@
   /* O card em si */
   .profileCard {
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     background-color: #ffffff; /* Fundo branco puro */
     border-radius: 12px; /* Cantos arredondados */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
