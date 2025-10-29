@@ -30,7 +30,7 @@ parameters:
           example: "+55 11 91111-2222"
         userRole:
           type: string
-          enum: [ADMIN, EDITOR, READER]
+          enum: [Admin, Editor, Reader]
           description: Pode apenas ser alterado por Admin (não para própria conta)
         address:
           type: object

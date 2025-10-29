@@ -15,41 +15,17 @@ responses:
           userId:
             type: string
             example: "uid_123"
+            description: UID do Firebase do usuário
           email:
             type: string
             example: "usuario@exemplo.com"
           name:
             type: string
             example: "João Silva"
-          seboId:
-            type: string
-            example: "sebo_abc"
           userRole:
             type: string
-            enum: [ADMIN, EDITOR, READER]
-            example: "EDITOR"
-          phone:
-            type: string
-            example: "+55 11 99999-9999"
-          createdAt:
-            type: string
-            format: date-time
-            example: "2025-10-28T12:34:56Z"
-          address:
-            type: object
-            properties:
-              street:
-                type: string
-                example: "Rua Exemplo, 123"
-              city:
-                type: string
-                example: "São Paulo"
-              state:
-                type: string
-                example: "SP"
-              zipCode:
-                type: string
-                example: "01234-567"
+            enum: [Admin, Editor, Reader]
+            example: "Editor"
   401:
     description: Não autorizado
   403:

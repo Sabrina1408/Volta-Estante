@@ -25,19 +25,38 @@ responses:
       properties:
         saleId:
           type: string
-        ISBN:
-          type: string
-        copyId:
-          type: string
-        price:
-          type: number
-        soldBy:
-          type: string
-        soldAt:
-          type: string
-          format: date-time
-        seboId:
-          type: string
+          example: "sale_abc123"
+        data:
+          type: object
+          description: Dados da venda (campos em camelCase conforme modelo Sales)
+          properties:
+            saleId:
+              type: string
+            userId:
+              type: string
+            userName:
+              type: string
+            ISBN:
+              type: string
+            bookTitle:
+              type: string
+            authors:
+              type: array
+              items:
+                type: string
+            bookCategory:
+              type: array
+              items:
+                type: string
+            averageRating:
+              type: number
+            bookPrice:
+              type: number
+            conservationState:
+              type: string
+            saleDate:
+              type: string
+              format: date-time
   400:
     description: Requisição inválida - Cópia já vendida ou não encontrada
   401:

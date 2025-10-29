@@ -12,9 +12,6 @@ responses:
       items:
         type: object
         properties:
-          ISBN:
-            type: string
-            example: "9780134685991"
           title:
             type: string
             example: "Effective Java"
@@ -23,25 +20,17 @@ responses:
             items:
               type: string
             example: ["Joshua Bloch"]
-          publisher:
-            type: string
-            example: "Addison-Wesley"
-          publishedDate:
-            type: string
-            example: "2018-01-06"
-          copies:
+          categories:
             type: array
             items:
-              type: object
-              properties:
-                copyId:
-                  type: string
-                price:
-                  type: number
-                conservationState:
-                  type: string
-                sold:
-                  type: boolean
+              type: string
+            example: ["Programming"]
+          totalQuantity:
+            type: integer
+            example: 3
+          isbn:
+            type: string
+            example: "9780134685991"
   401:
     description: Não autorizado - Token inválido ou ausente
   403:

@@ -27,7 +27,7 @@ responses:
           type: string
         userRole:
           type: string
-          enum: [ADMIN, EDITOR, READER]
+          enum: [Admin, Editor, Reader]
         phone:
           type: string
         createdAt:

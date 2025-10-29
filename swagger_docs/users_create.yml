@@ -48,6 +48,7 @@ responses:
           type: string
         userRole:
           type: string
+          enum: [Admin, Editor, Reader]
   400:
     description: Requisição inválida
   401:
