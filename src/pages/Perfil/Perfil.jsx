@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Perfil.module.css";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import ManageEmployees from "../../components/ManageEmployees/ManageEmployees";
+import AlertModal from '../../components/AlertModal/AlertModal';
 
 const Perfil = () => {
   const { user, logout } = useAuth();
@@ -21,10 +23,14 @@ const Perfil = () => {
         body: JSON.stringify(updatedData),
       }),
     onSuccess: () => {
-      alert("Perfil atualizado com sucesso!");
+      setAlertMessage('Perfil atualizado com sucesso!');
+      setAlertOpen(true);
       queryClient.invalidateQueries({ queryKey: ["userProfile", user?.uid] });
     },
-    onError: (error) => alert(`Erro ao atualizar perfil: ${error.message}`),
+    onError: (error) => {
+      setAlertMessage(`Erro ao atualizar perfil: ${error.message}`);
+      setAlertOpen(true);
+    },
   });
 
   const {
@@ -62,6 +68,9 @@ const Perfil = () => {
     navigate("/dashboard");
   };
 
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
   if (isLoading) {
     return <div className={styles.perfil}>Carregando perfil...</div>;
   }
@@ -96,6 +105,7 @@ const Perfil = () => {
       <button className={styles.logoutButton} onClick={handleLogout}>
         Sair da Conta
       </button>
+      <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} title="Aviso" message={alertMessage} />
     </div>
   );
 };

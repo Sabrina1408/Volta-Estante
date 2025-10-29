@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import styles from "./Cadastro.module.css";
 import { useApi } from "../../hooks/useApi";
 import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
+import AlertModal from '../../components/AlertModal/AlertModal';
 
 const Cadastro = () => {
   const [nome, setNome] = useState("");
@@ -50,8 +51,9 @@ const Cadastro = () => {
       };
 
       await createUser(payload);
-      alert("Usuário cadastrado com sucesso!");
-      navigate("/login");
+  setAlertMessage('Usuário cadastrado com sucesso!');
+  setAlertOnClose(() => () => navigate('/login'));
+  setAlertOpen(true);
 
     } catch (error) {
       // Se a criação no backend falhar, o usuário do Firebase já foi criado.
@@ -65,6 +67,10 @@ const Cadastro = () => {
     }
 
   };
+
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertOnClose, setAlertOnClose] = useState(() => () => {});
 
   return (
     <div className={styles.cadastro}>
@@ -115,6 +121,7 @@ const Cadastro = () => {
           {isLoading ? "Cadastrando..." : "Cadastrar"}
         </button>
       </form>
+      <AlertModal open={alertOpen} onClose={() => { setAlertOpen(false); alertOnClose(); }} title="Aviso" message={alertMessage} />
     </div>
   );
 };

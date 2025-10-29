@@ -24,10 +24,12 @@ const ManageEmployees = () => {
     mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['employees']);
-      alert('Funcionário excluído com sucesso!');
+      setAlertMessage('Funcionário excluído com sucesso!');
+      setAlertOpen(true);
     },
     onError: (err) => {
-      alert(`Erro ao excluir funcionário: ${err.message}`);
+      setAlertMessage(`Erro ao excluir funcionário: ${err.message}`);
+      setAlertOpen(true);
     },
   });
 

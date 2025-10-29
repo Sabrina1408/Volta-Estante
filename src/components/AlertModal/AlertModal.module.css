@@ -1,0 +1,30 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+}
+
+.message {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ok {
+  background: var(--quinaryBackground);
+  color: var(--white);
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
