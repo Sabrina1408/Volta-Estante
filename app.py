@@ -320,6 +320,13 @@ def fetch_all_users_route():
 #                   Vendas
 # ============================================
 
+@app.route("/sales", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/sales_list.yml')
+def fetch_all_sales_route():
+    sales = fetch_all_sales(g.sebo_id)
+    return jsonify(sales), 200
+
 @app.route("/sales/<ISBN>/<copy_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 @swag_from('swagger_docs/sales_create.yml')

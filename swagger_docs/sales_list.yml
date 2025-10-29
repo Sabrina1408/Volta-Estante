@@ -1,0 +1,58 @@
+tags:
+  - Vendas
+summary: Lista todas as vendas de um sebo
+description: Retorna uma lista de todas as vendas registradas para o sebo do usuário autenticado.
+security:
+  - bearerAuth: []
+responses:
+  200:
+    description: Uma lista de vendas.
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          saleId:
+            type: string
+            example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          userId:
+            type: string
+            example: "some-user-id"
+          userName:
+            type: string
+            example: "John Doe"
+          isbn:
+            type: string
+            example: "9788576082675"
+          bookTitle:
+            type: string
+            example: "Código Limpo"
+          authors:
+            type: array
+            items:
+              type: string
+            example: ["Robert C. Martin"]
+          bookCategory:
+            type: array
+            items:
+              type: string
+            example: ["Computers", "Software"]
+          averageRating:
+            type: number
+            format: float
+            example: 4.5
+          bookPrice:
+            type: number
+            format: float
+            example: 59.90
+          conservationState:
+            type: string
+            example: "Novo"
+          saleDate:
+            type: string
+            format: date-time
+            example: "2024-05-23T18:25:43.511Z"
+  401:
+    description: Unauthorized
+  403:
+    description: Forbidden

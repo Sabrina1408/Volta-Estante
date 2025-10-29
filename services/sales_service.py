@@ -86,3 +86,10 @@ def update_sale(sebo_id, sale_id, update_data):
         return updated_fields.model_dump(by_alias=True)    
     except (ValidationError, Exception) as e:
         raise BadRequest(f"Invalid sale data: {e}")
+
+def fetch_all_sales(sebo_id):
+    sales_ref = db.collection('Sales').document(sebo_id).collection('saleId')
+    all_sales = []
+    for sale in sales_ref.stream():
+        all_sales.append(sale.to_dict())
+    return all_sales
