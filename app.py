@@ -279,17 +279,14 @@ def delete_user_route(user_id):
         "message": "User deleted successfully",
         "data": deleted_info
     }), 200
-@app.route("/users/employees/<user_id>", methods=["POST"])
+@app.route("/users/employees/", methods=["POST"])
 @permission_required(UserRole.ADMIN)
 @swag_from('swagger_docs/users_add_employee.yml')
-def add_new_employee_route(user_id): # <- id do user criado pelo admin
+def add_new_employee_route(): 
     data = request.get_json()
-    if not user_id:
-        raise BadRequest("Employee User ID is required")
     if not data:
         raise BadRequest("Employee data is required")
-    # user_id here is the new employee's Firebase UID
-    new_employee = add_new_employee(user_id, g.sebo_id, data)
+    new_employee = add_new_employee(g.user_id, g.sebo_id, data) # user_id do admin
     return jsonify(new_employee), 201
 
 @app.route("/users/<user_id>", methods=["PUT"])
