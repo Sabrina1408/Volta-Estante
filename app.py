@@ -27,7 +27,15 @@ from services.google_books_service import fetch_book_by_isbn
 # Via auth vou ter o user_id, sebo_id e user_role
 
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
-CORS(app)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True,
+        "max_age": 86400
+    }
+})
 
 
 swagger_config = {
@@ -316,6 +324,13 @@ def fetch_all_users_route():
 # ============================================
 #                   Vendas
 # ============================================
+
+@app.route("/sales", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/sales_list.yml')
+def fetch_all_sales_route():
+    sales = fetch_all_sales(g.sebo_id)
+    return jsonify(sales), 200
 
 @app.route("/sales/<ISBN>/<copy_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
