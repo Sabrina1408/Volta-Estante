@@ -150,6 +150,11 @@ const ManageEmployees = () => {
           </table>
         </div>
       </div>
+      <EmployeeModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        employee={selectedEmployee}
+      />
     </div>
   );
 };
