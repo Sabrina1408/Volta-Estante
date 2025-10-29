@@ -309,6 +309,13 @@ def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, ed
         "user": updated_user
     }), 200
 
+@app.route("/users", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/users_list.yml')
+def fetch_all_users_route():
+    users = fetch_all_sebo_users(g.sebo_id)
+    return jsonify(users), 200
+
 # ============================================
 #                   Vendas
 # ============================================

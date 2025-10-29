@@ -1,0 +1,56 @@
+Listar usuários do sebo
+---
+tags:
+  - Usuários
+summary: Listar todos os usuários do sebo
+description: Retorna todos os usuários pertencentes ao mesmo sebo do solicitante (filtrado por seboId)
+responses:
+  200:
+    description: Lista de usuários
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          userId:
+            type: string
+            example: "uid_123"
+          email:
+            type: string
+            example: "usuario@exemplo.com"
+          name:
+            type: string
+            example: "João Silva"
+          seboId:
+            type: string
+            example: "sebo_abc"
+          userRole:
+            type: string
+            enum: [ADMIN, EDITOR, READER]
+            example: "EDITOR"
+          phone:
+            type: string
+            example: "+55 11 99999-9999"
+          createdAt:
+            type: string
+            format: date-time
+            example: "2025-10-28T12:34:56Z"
+          address:
+            type: object
+            properties:
+              street:
+                type: string
+                example: "Rua Exemplo, 123"
+              city:
+                type: string
+                example: "São Paulo"
+              state:
+                type: string
+                example: "SP"
+              zipCode:
+                type: string
+                example: "01234-567"
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Permissões insuficientes

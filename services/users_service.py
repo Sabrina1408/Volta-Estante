@@ -118,3 +118,9 @@ def delete_user(user_id, sebo_id):
     except Exception as e:
         raise BadRequest(f"Failed to delete user {user_id}: {e}")
     return validated_user.model_dump(by_alias=True)
+
+def fetch_all_sebo_users(sebo_id): 
+    users_ref = db.collection('Users').select('userId', 'email', 'name', 'userRole')
+    query = users_ref.where('seboId', '==', sebo_id)
+    users = [user.to_dict() for user in query.stream()]
+    return users
