@@ -11,11 +11,12 @@ def create_sale(user_id, sebo_id, ISBN, copy_id):
     user_ref = db.collection('Users').document(user_id)
     book_ref = db.collection('Sebos').document(sebo_id).collection('Books').document(ISBN)
     copy_ref = book_ref.collection('Copies').document(copy_id)
-    
-    
-    docs = db.get_all([user_ref, book_ref, copy_ref])
-    user_doc, book_doc, copy_doc = docs
-    
+
+    user_doc = user_ref.get(['name'])
+    book_doc = book_ref.get(['title', 'authors', 'categories', 'averageRating'])
+    copy_doc = copy_ref.get(['price', 'conservationState'])
+
+
     if not user_doc.exists:
         raise NotFound(f"User with ID {user_id} not found")
     if not book_doc.exists:
