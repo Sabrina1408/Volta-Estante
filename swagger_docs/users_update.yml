@@ -1,0 +1,73 @@
+Atualizar usuário
+---
+tags:
+  - Usuários
+summary: Atualizar informações do usuário
+description: |
+  Atualiza detalhes da conta do usuário. Regras:
+  - Admins podem atualizar qualquer usuário do seu sebo
+  - Editores podem apenas atualizar seu próprio perfil
+  - Usuários não podem alterar seu próprio papel
+parameters:
+  - in: path
+    name: user_id
+    type: string
+    required: true
+    description: O UID do Firebase do usuário a ser atualizado
+    example: "user_firebase_uid_123"
+  - in: body
+    name: update_data
+    description: Campos a serem atualizados
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "João Silva Jr."
+        phone:
+          type: string
+          example: "+55 11 91111-2222"
+        userRole:
+          type: string
+          enum: [ADMIN, EDITOR, READER]
+          description: Pode apenas ser alterado por Admin (não para própria conta)
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zipCode:
+              type: string
+responses:
+  200:
+    description: Usuário atualizado com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Usuário atualizado com sucesso"
+        user:
+          type: object
+          properties:
+            userId:
+              type: string
+            name:
+              type: string
+            phone:
+              type: string
+            userRole:
+              type: string
+  400:
+    description: Requisição inválida - Dados inválidos
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Não pode alterar próprio papel ou permissões insuficientes
+  404:
+    description: Usuário não encontrado

@@ -191,7 +191,7 @@ const StockTable = () => {
                   <td>
                     <div className={styles.actions}>
                       <button
-                        onClick={() => handleDelete(book.ISBN)}
+                        onClick={() => handleDelete(book.isbn)}
                         className={styles.deleteButton}
                       >
                         <FaTrash />

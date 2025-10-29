@@ -1,0 +1,41 @@
+Deletar cópia do livro
+---
+tags:
+  - Livros
+summary: Deletar uma cópia específica do livro
+description: Remove uma única cópia de um livro do inventário (o livro permanece se outras cópias existirem)
+parameters:
+  - in: path
+    name: ISBN
+    type: string
+    required: true
+    description: O ISBN do livro
+    example: "9780134685991"
+  - in: path
+    name: copy_id
+    type: string
+    required: true
+    description: O ID da cópia específica a ser deletada
+    example: "copy_abc123"
+responses:
+  200:
+    description: Cópia do livro deletada com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Cópia do livro deletada com sucesso"
+        book:
+          type: object
+          properties:
+            ISBN:
+              type: string
+            copyId:
+              type: string
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Editor ou Admin
+  404:
+    description: Livro ou cópia não encontrado

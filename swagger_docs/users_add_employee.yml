@@ -1,0 +1,68 @@
+Adicionar novo funcionário
+---
+tags:
+  - Usuários
+summary: Adicionar um novo funcionário ao sebo
+description: Admin cria uma nova conta de funcionário e atribui ao sebo (Apenas Admin)
+parameters:
+  - in: path
+    name: user_id
+    type: string
+    required: true
+    description: O UID do Firebase do novo funcionário (criado pelo Admin)
+    example: "new_employee_uid_789"
+  - in: body
+    name: employee_data
+    description: Informações do funcionário
+    required: true
+    schema:
+      type: object
+      required:
+        - name
+        - userRole
+      properties:
+        name:
+          type: string
+          example: "Maria Santos"
+          description: Nome completo do funcionário
+        userRole:
+          type: string
+          enum: [EDITOR, READER]
+          example: "EDITOR"
+          description: Papel a ser atribuído ao funcionário
+        phone:
+          type: string
+          example: "+55 11 98888-7777"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zipCode:
+              type: string
+responses:
+  201:
+    description: Funcionário adicionado com sucesso
+    schema:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        seboId:
+          type: string
+        userRole:
+          type: string
+  400:
+    description: Requisição inválida - Dados inválidos
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Admin

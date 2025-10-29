@@ -1,0 +1,66 @@
+Adicionar novo livro
+---
+tags:
+  - Livros
+summary: Adicionar um novo livro ao estoque
+description: Busca dados do livro na API do Google Books usando o ISBN e adiciona ao inventário da loja
+parameters:
+  - in: body
+    name: book
+    description: Dados do livro incluindo ISBN
+    required: true
+    schema:
+      type: object
+      required:
+        - ISBN
+      properties:
+        ISBN:
+          type: string
+          example: "9780134685991"
+          description: Número Padrão Internacional de Livro
+        price:
+          type: number
+          format: float
+          example: 29.99
+          description: Preço do livro
+        conservationState:
+          type: string
+          enum: [Novo, Seminovo, Usado]
+          example: "Seminovo"
+          description: Estado de conservação do livro
+responses:
+  201:
+    description: Livro adicionado com sucesso
+    schema:
+      type: object
+      properties:
+        ISBN:
+          type: string
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        price:
+          type: number
+        conservationState:
+          type: string
+  400:
+    description: Requisição inválida - Dados inválidos ou ISBN não encontrado
+    schema:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+  401:
+    description: Não autorizado - Token inválido ou ausente
+  403:
+    description: Proibido - Permissões insuficientes
+  422:
+    description: Erro de validação

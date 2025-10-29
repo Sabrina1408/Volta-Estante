@@ -1,0 +1,30 @@
+Deletar livro
+---
+tags:
+  - Livros
+summary: Deletar um livro e todas as suas cópias
+description: Remove um livro e todas as cópias associadas do inventário (Apenas Admin)
+parameters:
+  - in: path
+    name: ISBN
+    type: string
+    required: true
+    description: O ISBN do livro a ser deletado
+    example: "9780134685991"
+responses:
+  200:
+    description: Livro deletado com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Livro deletado com sucesso"
+        ISBN:
+          type: string
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Admin
+  404:
+    description: Livro não encontrado

@@ -1,0 +1,58 @@
+Atualizar venda
+---
+tags:
+  - Vendas
+summary: Atualizar informações da venda
+description: Modifica detalhes de um registro de venda existente
+parameters:
+  - in: path
+    name: sale_id
+    type: string
+    required: true
+    description: O ID da venda a ser atualizada
+    example: "sale_abc123"
+  - in: body
+    name: update_data
+    description: Campos a serem atualizados
+    required: true
+    schema:
+      type: object
+      properties:
+        price:
+          type: number
+          format: float
+          example: 32.50
+          description: Preço de venda atualizado
+        notes:
+          type: string
+          example: "Cliente solicitou desconto"
+          description: Notas adicionais sobre a venda
+responses:
+  200:
+    description: Venda atualizada com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Venda atualizada com sucesso"
+        sale:
+          type: object
+          properties:
+            saleId:
+              type: string
+            ISBN:
+              type: string
+            price:
+              type: number
+            updatedAt:
+              type: string
+              format: date-time
+  400:
+    description: Requisição inválida - Dados inválidos
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Requer papel de Editor ou Admin
+  404:
+    description: Venda não encontrada
