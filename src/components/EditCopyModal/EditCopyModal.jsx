@@ -22,6 +22,14 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
     }
   }, [copy]);
 
+  // Determine se o usuário fez alguma alteração em relação aos valores originais
+  const originalPrice = copy?.price ?? null;
+  const originalConservation = copy?.conservationState ?? "";
+  const parsedPrice = parseFloat(price);
+  const priceChanged = !Number.isNaN(parsedPrice) && Number(parsedPrice) !== Number(originalPrice);
+  const conservationChanged = conservationState !== originalConservation;
+  const hasChanges = priceChanged || conservationChanged;
+
   const { mutate, isLoading } = useMutation({
     mutationFn: (updatedData) =>
       authFetch(`/books/${bookIsbn}/copies/${copy.copyId}`, {
@@ -108,9 +116,12 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
             <option value="Péssimo">Péssimo</option>
           </select>
 
-          <button type="submit" disabled={isSubmitting}>
+          <button type="submit" disabled={isSubmitting || !hasChanges}>
             {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </button>
+          {!hasChanges && (
+            <p className={styles.info} aria-live="polite">Altere o preço ou o estado de conservação primeiro .</p>
+          )}
         </form>
       </div>
     </div>
