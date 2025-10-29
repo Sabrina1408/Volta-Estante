@@ -39,7 +39,7 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving }) => {
     return <div className={styles.profileCardContainer}><p>Carregando perfil...</p></div>;
   }
 
-  const isRoleAdmin = user.userRole === 'ADMIN';
+  const isRoleAdmin = user.userRole === "ADMIN";
 
   return (
     <div className={styles.profileCardContainer}>
@@ -79,7 +79,7 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving }) => {
                 <input
                   id="role"
                   type="text"
-                  value={user.userRole}
+                  value={user.userRole || 'N/A'}
                   readOnly
                   className={`${styles.readOnlyInput} ${styles.roleTag} ${isRoleAdmin ? styles.adminRole : ''}`}
                 />

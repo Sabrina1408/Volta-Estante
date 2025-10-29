@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Perfil.module.css";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
+import ManageEmployees from "../../components/ManageEmployees/ManageEmployees";
 
 const Perfil = () => {
   const { user, logout } = useAuth();
@@ -83,6 +84,13 @@ const Perfil = () => {
         onCancel={handleCancel}
         isSaving={isSaving}
       />
+
+      {/* Seção para gerenciar funcionários, visível apenas para admins */}
+      {profileData?.userRole === "Admin" && (
+        <div className={styles.manageSection}>
+          <ManageEmployees />
+        </div>
+      )}
 
       {/* O botão de logout pode ficar fora do card, como uma ação global da página */}
       <button className={styles.logoutButton} onClick={handleLogout}>
