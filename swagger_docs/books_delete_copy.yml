@@ -23,16 +23,12 @@ responses:
     schema:
       type: object
       properties:
-        message:
+        ISBN:
           type: string
-          example: "Cópia do livro deletada com sucesso"
-        book:
-          type: object
-          properties:
-            ISBN:
-              type: string
-            copyId:
-              type: string
+          example: "9780134685991"
+        copyID:
+          type: string
+          example: "copy_abc123"
   401:
     description: Não autorizado
   403:

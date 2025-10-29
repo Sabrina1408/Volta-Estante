@@ -120,7 +120,7 @@ def delete_user(user_id, sebo_id):
     return validated_user.model_dump(by_alias=True)
 
 def fetch_all_sebo_users(sebo_id): 
-    users_ref = db.collection('Users').select('userId', 'email', 'name', 'userRole')
+    users_ref = db.collection('Users').select(['userId', 'email', 'name', 'userRole'])
     query = users_ref.where('seboId', '==', sebo_id)
     users = [user.to_dict() for user in query.stream()]
     return users

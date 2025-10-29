@@ -4,18 +4,11 @@ import { useApi } from '../../hooks/useApi';
 import styles from './ManageEmployees.module.css';
 import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
-import ConfirmModal from '../ConfirmModal/ConfirmModal';
-import AlertModal from '../AlertModal/AlertModal';
 
 const ManageEmployees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmMessage, setConfirmMessage] = useState('');
-  const [confirmAction, setConfirmAction] = useState(() => () => {});
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
@@ -51,9 +44,14 @@ const ManageEmployees = () => {
   };
 
   const handleDelete = (userId, userName) => {
-    setConfirmMessage(`Tem certeza que deseja excluir o funcionário ${userName}?`);
-    setConfirmAction(() => () => deleteEmployee(userId));
-    setConfirmOpen(true);
+    const employeeToDelete = employees.find(emp => emp.userId === userId);
+    if (employeeToDelete && employeeToDelete.userRole === 'Admin') {
+      alert('Não é possível excluir um usuário com o papel de Administrador.');
+    } else {
+      if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
+        deleteEmployee(userId);
+      }
+    }
   };
 
   // Filtra os funcionários com base no termo de busca (nome ou email)
@@ -66,9 +64,9 @@ const ManageEmployees = () => {
   // Mapeia a role para um texto e uma classe de estilo
   const getRoleInfo = (role) => {
     switch (role) {
-      case 'ADMIN':
+      case 'Admin':
         return { text: 'Administrador', className: styles.roleAdmin };
-      case 'EDITOR':
+      case 'Editor':
         return { text: 'Editor', className: styles.roleEditor };
       default:
         return { text: role, className: '' };
@@ -154,20 +152,11 @@ const ManageEmployees = () => {
           </table>
         </div>
       </div>
-      <ConfirmModal
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          confirmAction();
-          setConfirmOpen(false);
-        }}
-        title="Confirmar exclusão"
-        message={confirmMessage}
-        confirmText="Excluir"
-        cancelText="Cancelar"
-        variant="danger"
+      <EmployeeModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        employee={selectedEmployee}
       />
-      <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} message={alertMessage} />
     </div>
   );
 };

@@ -48,12 +48,32 @@ responses:
           properties:
             ISBN:
               type: string
-            copyId:
+            title:
               type: string
-            price:
-              type: number
-            conservationState:
-              type: string
+            authors:
+              type: array
+              items:
+                type: string
+            categories:
+              type: array
+              items:
+                type: string
+            totalQuantity:
+              type: integer
+            copies:
+              type: array
+              items:
+                type: object
+                properties:
+                  copyId:
+                    type: string
+                  price:
+                    type: number
+                  conservationState:
+                    type: string
+                  registeredAt:
+                    type: string
+                    format: date-time
   400:
     description: Requisição inválida - Dados inválidos
   401:

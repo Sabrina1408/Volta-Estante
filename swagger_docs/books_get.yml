@@ -37,11 +37,12 @@ responses:
           type: array
           items:
             type: string
-        imageLinks:
-          type: object
-          properties:
-            thumbnail:
-              type: string
+        thumbnail:
+          type: string
+        smallThumbnail:
+          type: string
+        totalQuantity:
+          type: integer
         copies:
           type: array
           items:
@@ -53,9 +54,7 @@ responses:
                 type: number
               conservationState:
                 type: string
-              sold:
-                type: boolean
-              addedAt:
+              registeredAt:
                 type: string
                 format: date-time
   401:

@@ -21,16 +21,9 @@ responses:
             type: string
           userName:
             type: string
-          seboId:
-            type: string
           timestamp:
             type: string
             format: date-time
-          resourceType:
-            type: string
-            example: "Livro"
-          resourceId:
-            type: string
           details:
             type: object
   401:

@@ -1,16 +1,4 @@
 Obter venda por ID
----
-tags:
-  - Vendas
-summary: Recuperar detalhes da venda
-description: Obtém informações detalhadas sobre uma venda específica
-parameters:
-  - in: path
-    name: sale_id
-    type: string
-    required: true
-    description: O ID da venda a ser recuperada
-    example: "sale_abc123"
 responses:
   200:
     description: Detalhes da venda
@@ -19,16 +7,37 @@ responses:
       properties:
         saleId:
           type: string
-        ISBN:
+        userId:
           type: string
-        copyId:
+        userName:
+          type: string
+        ISBN:
           type: string
         bookTitle:
           type: string
-        price:
+        authors:
+          type: array
+          items:
+            type: string
+        bookCategory:
+          type: array
+          items:
+            type: string
+        averageRating:
           type: number
-        soldBy:
+        bookPrice:
+          type: number
+        conservationState:
           type: string
+        saleDate:
+          type: string
+          format: date-time
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Deve pertencer ao mesmo sebo
+  404:
+    description: Venda não encontrada
           description: ID do usuário que fez a venda
         soldAt:
           type: string

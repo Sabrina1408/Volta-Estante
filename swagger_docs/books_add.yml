@@ -36,16 +36,13 @@ responses:
       properties:
         ISBN:
           type: string
+          example: "9780134685991"
         title:
           type: string
-        authors:
-          type: array
-          items:
-            type: string
-        price:
-          type: number
-        conservationState:
+          example: "Effective Java"
+        message:
           type: string
+          example: "Book saved successfully"
   400:
     description: Requisição inválida - Dados inválidos ou ISBN não encontrado
     schema:

@@ -27,8 +27,8 @@ parameters:
           description: Nome completo do funcionário
         userRole:
           type: string
-          enum: [EDITOR, READER]
-          example: "EDITOR"
+          enum: [Editor, Reader]
+          example: "Editor"
           description: Papel a ser atribuído ao funcionário
         phone:
           type: string

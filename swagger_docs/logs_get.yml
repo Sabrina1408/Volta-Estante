@@ -26,19 +26,15 @@ responses:
           type: string
         userName:
           type: string
-        seboId:
-          type: string
         timestamp:
           type: string
           format: date-time
         details:
           type: object
           description: Informações adicionais sobre a ação
-        resourceType:
-          type: string
-          example: "Livro"
-        resourceId:
-          type: string
+        details:
+          type: object
+          description: Informações adicionais sobre a ação
   401:
     description: Não autorizado
   403:
