@@ -30,20 +30,7 @@ parameters:
           enum: [Editor, Reader]
           example: "Editor"
           description: Papel a ser atribuído ao funcionário
-        phone:
-          type: string
-          example: "+55 11 98888-7777"
-        address:
-          type: object
-          properties:
-            street:
-              type: string
-            city:
-              type: string
-            state:
-              type: string
-            zipCode:
-              type: string
+        
 responses:
   201:
     description: Funcionário adicionado com sucesso
