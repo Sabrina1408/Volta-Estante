@@ -4,11 +4,18 @@ import { useApi } from '../../hooks/useApi';
 import styles from './ManageEmployees.module.css';
 import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import AlertModal from '../AlertModal/AlertModal';
 
 const ManageEmployees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState('');
+  const [confirmAction, setConfirmAction] = useState(() => () => {});
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
@@ -24,10 +31,12 @@ const ManageEmployees = () => {
     mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['employees']);
-      alert('Funcionário excluído com sucesso!');
+      setAlertMessage('Funcionário excluído com sucesso!');
+      setAlertOpen(true);
     },
     onError: (err) => {
-      alert(`Erro ao excluir funcionário: ${err.message}`);
+      setAlertMessage(`Erro ao excluir funcionário: ${err.message}`);
+      setAlertOpen(true);
     },
   });
 
@@ -42,9 +51,9 @@ const ManageEmployees = () => {
   };
 
   const handleDelete = (userId, userName) => {
-    if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
-      deleteEmployee(userId);
-    }
+    setConfirmMessage(`Tem certeza que deseja excluir o funcionário ${userName}?`);
+    setConfirmAction(() => () => deleteEmployee(userId));
+    setConfirmOpen(true);
   };
 
   // Filtra os funcionários com base no termo de busca (nome ou email)
@@ -145,6 +154,20 @@ const ManageEmployees = () => {
           </table>
         </div>
       </div>
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          confirmAction();
+          setConfirmOpen(false);
+        }}
+        title="Confirmar exclusão"
+        message={confirmMessage}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+      <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} message={alertMessage} />
     </div>
   );
 };

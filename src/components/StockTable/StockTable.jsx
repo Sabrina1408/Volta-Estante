@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./StockTable.module.css";
 import { FaFilter, FaLayerGroup, FaTrash } from "react-icons/fa";
+import ConfirmModal from "../ConfirmModal/ConfirmModal";
+import AlertModal from "../AlertModal/AlertModal";
 
 const StockTable = () => {
   const [filter, setFilter] = useState("");
@@ -35,19 +37,36 @@ const StockTable = () => {
     },
     onError: (err) => {
       console.error("Erro ao deletar livro:", err);
-      alert("Não foi possível excluir o livro. Tente novamente.");
+      setAlertMessage("Não foi possível excluir o livro. Tente novamente.");
+      setShowAlert(true);
     },
   });
 
-  const handleDelete = (isbn) => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir este livro e todas as suas cópias? Esta ação não pode ser desfeita."
-      )
-    ) {
-      deleteBook(isbn);
-    }
+  // Modal state for confirming delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState(null);
+
+  const handleDelete = (book) => {
+    // Open modal instead of using window.confirm
+    setBookToDelete(book);
+    setShowDeleteModal(true);
   };
+
+  const confirmDelete = () => {
+    if (!bookToDelete) return;
+    deleteBook(bookToDelete.isbn);
+    setShowDeleteModal(false);
+    setBookToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setBookToDelete(null);
+  };
+
+  // Alert modal state
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Reseta para a primeira página sempre que um filtro for alterado
   useEffect(() => {
@@ -191,7 +210,7 @@ const StockTable = () => {
                   <td>
                     <div className={styles.actions}>
                       <button
-                        onClick={() => handleDelete(book.isbn)}
+                        onClick={() => handleDelete(book)}
                         className={styles.deleteButton}
                       >
                         <FaTrash />
@@ -231,6 +250,22 @@ const StockTable = () => {
           </button>
         </div>
       )}
+      {/* Delete confirmation modal (uses shared ConfirmModal) */}
+      <ConfirmModal
+        open={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Confirmar exclusão"
+        message={
+          bookToDelete
+            ? `Tem certeza que deseja excluir "${bookToDelete.title || bookToDelete.isbn}" e todas as suas cópias? Esta ação não pode ser desfeita.`
+            : "Tem certeza que deseja excluir este livro e todas as suas cópias? Esta ação não pode ser desfeita."
+        }
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+      <AlertModal open={showAlert} onClose={() => setShowAlert(false)} title="Aviso" message={alertMessage} />
     </div>
   );
 };

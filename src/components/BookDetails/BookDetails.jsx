@@ -5,6 +5,8 @@ import { FaEdit, FaTrash, FaDollarSign } from 'react-icons/fa';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import EditCopyModal from '../EditCopyModal/EditCopyModal';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import AlertModal from '../AlertModal/AlertModal';
 
 const BookDetails = ({ book }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -33,9 +35,13 @@ const BookDetails = ({ book }) => {
       // Invalida as queries para atualizar a UI: a lista de cópias e os dados do livro (totalQuantity)
       // A query 'bookSearch' já contém as cópias, invalidá-la é suficiente.
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] }); // Invalida a busca para atualizar o objeto 'book' completo
-      alert('Venda registrada com sucesso!');
+      setAlertMessage('Venda registrada com sucesso!');
+      setAlertOpen(true);
     },
-    onError: (err) => alert(`Erro ao registrar venda: ${err.message}`),
+    onError: (err) => {
+      setAlertMessage(`Erro ao registrar venda: ${err.message}`);
+      setAlertOpen(true);
+    },
   });
 
   // Mutação para deletar uma cópia
@@ -52,21 +58,34 @@ const BookDetails = ({ book }) => {
     onSuccess: () => {
       // A query 'bookSearch' já contém as cópias, invalidá-la é suficiente.
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] }); // Invalida a busca para atualizar o objeto 'book' completo
-      alert('Cópia excluída com sucesso!');
+      setAlertMessage('Cópia excluída com sucesso!');
+      setAlertOpen(true);
     },
-    onError: (err) => alert(`Erro ao excluir cópia: ${err.message}`),
+    onError: (err) => {
+      setAlertMessage(`Erro ao excluir cópia: ${err.message}`);
+      setAlertOpen(true);
+    },
   });
 
+  // Alert modal state
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  // Confirm modal state (reusable for different confirm actions)
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState(() => () => {});
+
   const handleSellCopy = (copyId) => {
-    if (window.confirm(`Confirmar a venda da cópia ${copyId}?`)) {
-      sellCopy(copyId);
-    }
+    setConfirmMessage(`Confirmar a venda da cópia ${copyId}?`);
+    setConfirmAction(() => () => sellCopy(copyId));
+    setConfirmOpen(true);
   };
 
   const handleDeleteCopy = (copyId) => {
-    if (window.confirm(`Tem certeza que deseja excluir a cópia ${copyId}?`)) {
-      deleteCopy(copyId);
-    }
+    setConfirmMessage(`Tem certeza que deseja excluir a cópia ${copyId}?`);
+    setConfirmAction(() => () => deleteCopy(copyId));
+    setConfirmOpen(true);
   };
 
   const handleEditCopy = (copy) => {
@@ -141,6 +160,19 @@ const BookDetails = ({ book }) => {
         onClose={() => setIsEditModalOpen(false)}
         bookIsbn={isbn}
         copy={selectedCopy}
+      />
+      <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} title="Aviso" message={alertMessage} />
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          confirmAction();
+          setConfirmOpen(false);
+        }}
+        title="Confirmação"
+        message={confirmMessage}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
       />
     </>
   );

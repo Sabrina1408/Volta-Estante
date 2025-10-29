@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./NavBar.module.css";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import AlertModal from '../AlertModal/AlertModal';
 
 const NavBar = () => {
   const [search, setSearch] = useState("");
@@ -12,13 +13,17 @@ const NavBar = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (search.trim() === "") {
-      alert("Por favor, insira um código de livro válido.");
+      setAlertMessage('Por favor, insira um código de livro válido.');
+      setShowAlert(true);
       return;
     }
     navigate(`/search?q=${search}`);
     setSearch("");
     setIsMenuOpen(false); // Fecha o menu após a busca
   };
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   // Fecha o menu ao clicar em um link
   const handleLinkClick = () => {
@@ -81,6 +86,8 @@ const NavBar = () => {
             </svg>
           </button>
         </form>
+
+    <AlertModal open={showAlert} onClose={() => setShowAlert(false)} title="Aviso" message={alertMessage} />
 
         <ul>
           {user ? (
