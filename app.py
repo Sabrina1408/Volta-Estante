@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, g
 from flask_cors import CORS
+from flasgger import Swagger, swag_from
 import os
 from dotenv import load_dotenv
 from firebase_admin import credentials, firestore
@@ -28,7 +29,51 @@ from services.google_books_service import fetch_book_by_isbn
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
 CORS(app)
 
-# Simple request timing to help diagnose slow endpoints (logs duration in ms)
+
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'apispec',
+            "route": '/apispec.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/apidocs/",
+    "ui_params": {
+        "supportedSubmitMethods": [],  
+        "docExpansion": "list",
+        "defaultModelsExpandDepth": 3,
+        "defaultModelExpandDepth": 3
+    }
+}
+
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "API Volta Estante",
+        "description": "Documentação da API do Volta Estante - Sistema de Gestão de Livrarias",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Equipe Volta Estante",
+            "email": "suporte@voltaestante.com"
+        }
+    },
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "tags": [
+        {"name": "Livros", "description": "Endpoints de gerenciamento de inventário de livros"},
+        {"name": "Usuários", "description": "Endpoints de gerenciamento de usuários"},
+        {"name": "Vendas", "description": "Endpoints de gerenciamento de vendas"},
+        {"name": "Logs", "description": "Endpoints de logs de atividades"}
+    ]
+}
+
+swagger = Swagger(app, config=swagger_config, template=swagger_template)
+
 @app.before_request
 def _start_timer():
     request._start_time = None
@@ -79,6 +124,7 @@ def handle_general_error(e):
 @app.route("/books", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 @log_action("Adicionar ao Estoque")
+@swag_from('swagger_docs/books_add.yml')
 def add_book_route():
     data = request.get_json()
     if not data: 
@@ -100,6 +146,7 @@ def add_book_route():
 
 @app.route("/books", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/books_list.yml')
 def list_books_route():
     all_books = fetch_all_books(g.sebo_id)
     return jsonify(all_books), 200
@@ -107,6 +154,7 @@ def list_books_route():
 @app.route("/books/<ISBN>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 @log_action("Pesquisar Livro")
+@swag_from('swagger_docs/books_get.yml')
 def get_book_route(ISBN):
     book = fetch_book(g.sebo_id, ISBN)
     return jsonify(book), 200
@@ -114,6 +162,7 @@ def get_book_route(ISBN):
 @app.route("/books/<ISBN>", methods=["DELETE"]) # deleta toda instancia de livro e suas copias, se existirem
 @permission_required(UserRole.ADMIN)
 @log_action("Deletar Livro")
+@swag_from('swagger_docs/books_delete.yml')
 def delete_book_route(ISBN):
     deleted = delete_book(g.sebo_id, ISBN)
     return jsonify({
@@ -124,6 +173,7 @@ def delete_book_route(ISBN):
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["PUT"]) # apenas alguns cmapos serao editaveis como preço, estado de conservação
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 @log_action("Atualizar Livro")
+@swag_from('swagger_docs/books_update_copy.yml')
 def update_book_route(ISBN, copy_id):
     data = request.get_json()
     if not data: 
@@ -139,6 +189,7 @@ def update_book_route(ISBN, copy_id):
 @app.route("/books/<ISBN>/copies/<copy_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
 @log_action("Deletar Cópia do Livro")
+@swag_from('swagger_docs/books_delete_copy.yml')
 def delete_copy_route(ISBN, copy_id):
     deleted = delete_copy(g.sebo_id, ISBN, copy_id)
     return jsonify({
@@ -153,6 +204,7 @@ def delete_copy_route(ISBN, copy_id):
 
 @app.route("/users", methods=["POST"])
 @permission_required(claims_required=False) # user novo n tem os required claims: seboId e userRole setados
+@swag_from('swagger_docs/users_create.yml')
 def add_user_route():
     data = request.get_json()
     if not data:
@@ -163,6 +215,7 @@ def add_user_route():
 
 @app.route("/users/<user_id>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/users_get.yml')
 def get_user_route(user_id):
     if user_id == g.user_id:
         user = fetch_user(user_id)
@@ -176,6 +229,7 @@ def get_user_route(user_id):
 
 @app.route("/users/<user_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/users_delete.yml')
 def delete_user_route(user_id):
     target = fetch_user(user_id)
     if target.get('seboId') != g.sebo_id:
@@ -227,6 +281,7 @@ def delete_user_route(user_id):
     }), 200
 @app.route("/users/employees/<user_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN)
+@swag_from('swagger_docs/users_add_employee.yml')
 def add_new_employee_route(user_id): # <- id do user criado pelo admin
     data = request.get_json()
     if not user_id:
@@ -239,6 +294,7 @@ def add_new_employee_route(user_id): # <- id do user criado pelo admin
 
 @app.route("/users/<user_id>", methods=["PUT"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@swag_from('swagger_docs/users_update.yml')
 def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, editor apenas ele mesmo
     if g.user_role != UserRole.ADMIN.value and g.user_id != user_id:
         raise Forbidden("You can only update your own profile.")
@@ -259,24 +315,28 @@ def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, ed
 
 @app.route("/sales/<ISBN>/<copy_id>", methods=["POST"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@swag_from('swagger_docs/sales_create.yml')
 def create_sale_route(ISBN, copy_id):
-    sale_data = create_sale(g.user_id,g.sebo_id, ISBN, copy_id)
+    sale_data = create_sale(g.user_id, g.sebo_id, ISBN, copy_id)
     return jsonify(sale_data), 201
 
 @app.route("/sales/<sale_id>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/sales_get.yml')
 def fetch_sale_route(sale_id):
     sale = fetch_sale(sale_id, g.sebo_id)
     return jsonify(sale), 200
 
 @app.route("/sales/<sale_id>", methods=["DELETE"])
 @permission_required(UserRole.ADMIN)
+@swag_from('swagger_docs/sales_delete.yml')
 def delete_sale_route(sale_id):
     sale = delete_sale(g.sebo_id, sale_id)
     return jsonify({"message": "Sale deleted successfully", "data": sale}), 200
 
 @app.route("/sales/<sale_id>", methods=["PUT"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@swag_from('swagger_docs/sales_update.yml')
 def update_sale_route(sale_id):
     update_data = request.get_json()
     if not update_data:
@@ -285,7 +345,7 @@ def update_sale_route(sale_id):
     return jsonify({
         "message": "Sale updated successfully",
         "sale": updated_sale
-        }), 200
+    }), 200
 
 # ============================================
 #                   Logs
@@ -293,12 +353,14 @@ def update_sale_route(sale_id):
 
 @app.route("/logs/<log_id>", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/logs_get.yml')
 def get_log_route(log_id):
     log = fetch_log(g.sebo_id, log_id) # o g.sebo_id garante que o log do proprio user
     return jsonify(log), 200
 
 @app.route("/logs/<log_id>", methods=["PUT"])
 @permission_required(UserRole.ADMIN)
+@swag_from('swagger_docs/logs_update.yml')
 def update_log_route(log_id):
     update_data = request.get_json()
     if not update_data:
@@ -308,6 +370,7 @@ def update_log_route(log_id):
 
 @app.route("/logs", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+@swag_from('swagger_docs/logs_list.yml')
 def fetch_all_logs_route():
     logs = fetch_all_logs(g.sebo_id)
     return jsonify(logs), 200

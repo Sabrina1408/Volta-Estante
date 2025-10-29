@@ -1,0 +1,39 @@
+Obter todos os logs
+---
+tags:
+  - Logs
+summary: Listar todos os logs de atividade
+description: Recupera todos os logs de atividade do sebo do usuário (filtrado por seboId)
+responses:
+  200:
+    description: Lista de todos os logs de atividade
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          logId:
+            type: string
+          action:
+            type: string
+            example: "Adicionar ao Estoque"
+          userId:
+            type: string
+          userName:
+            type: string
+          seboId:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          resourceType:
+            type: string
+            example: "Livro"
+          resourceId:
+            type: string
+          details:
+            type: object
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Permissões insuficientes

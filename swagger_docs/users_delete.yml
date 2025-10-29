@@ -1,0 +1,54 @@
+Deletar usuário
+---
+tags:
+  - Usuários
+summary: Deletar uma conta de usuário
+description: |
+  Deleta uma conta de usuário. Regras:
+  - Usuários podem deletar sua própria conta
+  - Admins podem deletar qualquer usuário do seu sebo
+  - Se um Admin se deleta, deve promover um Editor a Admin (fornecer editorID no body)
+parameters:
+  - in: path
+    name: user_id
+    type: string
+    required: true
+    description: O UID do Firebase do usuário a ser deletado
+    example: "user_firebase_uid_123"
+  - in: body
+    name: promotion_data
+    description: Necessário apenas se Admin está se deletando
+    schema:
+      type: object
+      properties:
+        editorID:
+          type: string
+          description: UID do Firebase do Editor a ser promovido a Admin (obrigatório se Admin se deleta)
+          example: "editor_firebase_uid_456"
+responses:
+  200:
+    description: Usuário deletado com sucesso
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Usuário deletado com sucesso"
+        editorID:
+          type: string
+          description: Presente se Editor foi promovido a Admin
+        data:
+          type: object
+          properties:
+            userId:
+              type: string
+            seboId:
+              type: string
+  400:
+    description: Requisição inválida - Dados inválidos ou problemas com editorID
+  401:
+    description: Não autorizado
+  403:
+    description: Proibido - Permissões insuficientes ou sebo incompatível
+  404:
+    description: Usuário não encontrado

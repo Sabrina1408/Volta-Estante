@@ -1,0 +1,54 @@
+Criar usuário
+---
+tags:
+  - Usuários
+summary: Criar um novo usuário
+description: Cria um novo usuário no sistema (tipicamente após autenticação do Firebase)
+parameters:
+  - in: body
+    name: user
+    description: Dados do usuário
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "João Silva"
+        seboName:
+          type: string
+          example: "Livraria do João"
+        phone:
+          type: string
+          example: "+55 11 99999-9999"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zipCode:
+              type: string
+responses:
+  201:
+    description: Usuário criado com sucesso
+    schema:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        seboId:
+          type: string
+        userRole:
+          type: string
+  400:
+    description: Requisição inválida
+  401:
+    description: Não autorizado
