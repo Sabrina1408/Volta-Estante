@@ -36,7 +36,7 @@ const Dashboard = () => {
 
   const [filters, setFilters] = useState({
     category: 'all',
-    language: 'all',
+    conservation: 'all',
     month: 'all',
     day: 'all',
     year: 'all',
@@ -93,7 +93,7 @@ const Dashboard = () => {
     if (!sales) {
       return {
         categories: [],
-        languages: [],
+        conservations: [],
         months: [],
         days: [],
         years: [],
@@ -101,13 +101,13 @@ const Dashboard = () => {
     }
 
     const categories = [...new Set(sales.flatMap(sale => sale.bookCategory))];
-    const languages = [...new Set(sales.map(sale => sale.bookLanguage).filter(Boolean))];
+    const conservations = [...new Set(sales.map(sale => sale.conservationState))];
     const dates = sales.map(sale => new Date(sale.saleDate));
     const months = [...new Set(dates.map(date => date.toLocaleString('pt-BR', { month: 'long' })))];
     const days = [...new Set(dates.map(date => date.getDate()))].sort((a, b) => a - b);
     const years = [...new Set(dates.map(date => date.getFullYear()))].sort((a, b) => a - b);
 
-    return { categories, languages, months, days, years };
+    return { categories, conservations, months, days, years };
   }, [sales]);
 
   const processedData = useMemo(() => {
@@ -116,7 +116,7 @@ const Dashboard = () => {
       if (filters.category !== 'all' && !sale.bookCategory.includes(filters.category)) {
         return false;
       }
-      if (filters.language !== 'all' && sale.bookLanguage !== filters.language) {
+      if (filters.conservation !== 'all' && sale.conservationState !== filters.conservation) {
         return false;
       }
       if (filters.month !== 'all' && saleDate.toLocaleString('pt-BR', { month: 'long' }) !== filters.month) {
@@ -235,19 +235,19 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Language Filter */}
+        {/* Conservation Filter */}
         <div className={styles.filterGroup}>
-          <label htmlFor="language-filter">Idioma do livro</label>
+          <label htmlFor="conservation-filter">Estado de Conservação</label>
           <div className={styles.selectWrapper}>
             <select 
-              id="language-filter" 
+              id="conservation-filter" 
               className={styles.filterSelect}
-              value={filters.language}
-              onChange={(e) => setFilters(prev => ({ ...prev, language: e.target.value }))}
+              value={filters.conservation}
+              onChange={(e) => setFilters(prev => ({ ...prev, conservation: e.target.value }))}
             >
-              <option value="all">Todos os idiomas</option>
-              {filterOptions.languages.map(language => (
-                <option key={language} value={language}>{language}</option>
+              <option value="all">Todos os estados</option>
+              {filterOptions.conservations.map(conservation => (
+                <option key={conservation} value={conservation}>{conservation}</option>
               ))}
             </select>
           </div>
