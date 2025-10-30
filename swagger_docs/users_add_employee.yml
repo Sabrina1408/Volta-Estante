@@ -2,54 +2,68 @@ Adicionar novo funcionário
 ---
 tags:
   - Usuários
-summary: Adicionar um novo funcionário ao sebo
-description: Admin cria uma nova conta de funcionário e atribui ao sebo (Apenas Admin)
+summary: Adicionar novo funcionário
+description: >
+  Cria uma conta Firebase para o funcionário e seu perfil no banco de dados.
+  Apenas administradores do sebo podem executar esta ação.
 parameters:
-  - in: path
-    name: user_id
-    type: string
-    required: true
-    description: O UID do Firebase do novo funcionário (criado pelo Admin)
-    example: "new_employee_uid_789"
   - in: body
-    name: employee_data
-    description: Informações do funcionário
+    name: employee
+    description: Dados do novo funcionário
     required: true
     schema:
       type: object
       required:
+        - email
         - name
         - userRole
       properties:
+        email:
+          type: string
+          format: email
+          example: "maria.santos@example.com"
         name:
           type: string
           example: "Maria Santos"
-          description: Nome completo do funcionário
         userRole:
           type: string
           enum: [Editor, Reader]
           example: "Editor"
-          description: Papel a ser atribuído ao funcionário
-        
+        phone:
+          type: string
+          example: "+55 11 98888-7777"
+        address:
+          type: object
+          properties:
+            street: { type: string, example: "Rua A, 123" }
+            city: { type: string, example: "São Paulo" }
+            state: { type: string, example: "SP" }
+            zipCode: { type: string, example: "01234-567" }
 responses:
   201:
-    description: Funcionário adicionado com sucesso
+    description: Funcionário criado com sucesso (inclui credenciais temporárias)
     schema:
       type: object
       properties:
-        userId:
+        employee_user:
+          type: object
+          properties:
+            userId: { type: string, example: "uid_abc123" }
+            email: { type: string, example: "maria.santos@example.com" }
+            name: { type: string, example: "Maria Santos" }
+            nameSebo: { type: string, example: "Sebo Exemplo" }
+            seboId: { type: string, example: "sebo_xyz" }
+            userRole: { type: string, example: "Editor" }
+            registeredAt: { type: string, format: date-time, example: "2025-10-29T12:34:56.789Z" }
+        temporary_password:
           type: string
-        email:
+          example: "aB3xY9mK2pQ7"
+        password_reset_link:
           type: string
-        name:
-          type: string
-        seboId:
-          type: string
-        userRole:
-          type: string
+          example: "https://..."
   400:
-    description: Requisição inválida - Dados inválidos
-  401:
-    description: Não autorizado
+    description: Dados inválidos
   403:
-    description: Proibido - Requer papel de Admin
+    description: Usuário sem permissão
+  409:
+    description: Email já cadastrado no Firebase

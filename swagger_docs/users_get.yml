@@ -2,51 +2,24 @@ Obter usuário por ID
 ---
 tags:
   - Usuários
-summary: Obter informações do usuário
-description: Recupera detalhes do usuário. Usuários podem ver seu próprio perfil, Admins podem ver qualquer usuário do seu sebo
+summary: Obter usuário por ID
 parameters:
-  - in: path
-    name: user_id
-    type: string
+  - name: user_id
+    in: path
     required: true
-    description: O UID do Firebase do usuário
-    example: "user_firebase_uid_123"
+    type: string
 responses:
   200:
-    description: Detalhes do usuário
+    description: Usuário encontrado
     schema:
       type: object
       properties:
-        userId:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        seboId:
-          type: string
-        userRole:
-          type: string
-          enum: [Admin, Editor, Reader]
-        phone:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        address:
-          type: object
-          properties:
-            street:
-              type: string
-            city:
-              type: string
-            state:
-              type: string
-            zipCode:
-              type: string
-  401:
-    description: Não autorizado
-  403:
-    description: Proibido - Pode apenas ver o próprio perfil ou deve ser Admin
+        userId: { type: string, example: "firebase_uid_123" }
+        email: { type: string, example: "joao@example.com" }
+        name: { type: string, example: "João Silva" }
+        nameSebo: { type: string, example: "Livraria do João" }
+        seboId: { type: string, example: "sebo_abc123" }
+        userRole: { type: string, example: "Admin" }
+        registeredAt: { type: string, format: date-time }
   404:
     description: Usuário não encontrado

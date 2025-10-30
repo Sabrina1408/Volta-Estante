@@ -5,61 +5,31 @@ tags:
 summary: Obter informações detalhadas sobre um livro específico
 description: Retorna informações completas sobre um livro incluindo todas as suas cópias
 parameters:
-  - in: path
-    name: ISBN
-    type: string
+  - name: ISBN
+    in: path
     required: true
-    description: O ISBN do livro a ser recuperado
-    example: "9780134685991"
+    type: string
 responses:
   200:
-    description: Detalhes do livro
+    description: Livro encontrado
     schema:
       type: object
       properties:
-        ISBN:
-          type: string
-        title:
-          type: string
-        authors:
-          type: array
-          items:
-            type: string
-        publisher:
-          type: string
-        publishedDate:
-          type: string
-        description:
-          type: string
-        pageCount:
-          type: integer
-        categories:
-          type: array
-          items:
-            type: string
-        thumbnail:
-          type: string
-        smallThumbnail:
-          type: string
-        totalQuantity:
-          type: integer
+        isbn: { type: string }
+        title: { type: string }
+        authors: { type: array, items: { type: string } }
+        categories: { type: array, items: { type: string } }
+        thumbnail: { type: string }
+        smallThumbnail: { type: string }
+        totalQuantity: { type: integer }
         copies:
           type: array
           items:
             type: object
             properties:
-              copyId:
-                type: string
-              price:
-                type: number
-              conservationState:
-                type: string
-              registeredAt:
-                type: string
-                format: date-time
-  401:
-    description: Não autorizado
-  403:
-    description: Proibido
+              copyId: { type: string }
+              price: { type: number }
+              conservationState: { type: string }
+              registeredAt: { type: string, format: date-time }
   404:
     description: Livro não encontrado

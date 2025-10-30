@@ -2,66 +2,40 @@ Criar venda
 ---
 tags:
   - Vendas
-summary: Registrar uma nova venda de livro
-description: Cria um registro de venda e marca a cópia do livro como vendida
+summary: Criar venda (vender uma cópia)
 parameters:
-  - in: path
-    name: ISBN
-    type: string
+  - name: ISBN
+    in: path
     required: true
-    description: O ISBN do livro sendo vendido
-    example: "9780134685991"
-  - in: path
-    name: copy_id
     type: string
+    description: ISBN-13 do livro
+  - name: copy_id
+    in: path
     required: true
-    description: O ID da cópia específica do livro sendo vendida
-    example: "copy_abc123"
+    type: string
+    description: ID da cópia a ser vendida
 responses:
   201:
     description: Venda criada com sucesso
     schema:
       type: object
       properties:
-        saleId:
-          type: string
-          example: "sale_abc123"
+        saleId: { type: string }
         data:
           type: object
-          description: Dados da venda (campos em camelCase conforme modelo Sales)
           properties:
-            saleId:
-              type: string
-            userId:
-              type: string
-            userName:
-              type: string
-            ISBN:
-              type: string
-            bookTitle:
-              type: string
-            authors:
-              type: array
-              items:
-                type: string
-            bookCategory:
-              type: array
-              items:
-                type: string
-            averageRating:
-              type: number
-            bookPrice:
-              type: number
-            conservationState:
-              type: string
-            saleDate:
-              type: string
-              format: date-time
+            saleId: { type: string }
+            userId: { type: string }
+            userName: { type: string }
+            isbn: { type: string }
+            bookTitle: { type: string }
+            authors: { type: array, items: { type: string } }
+            bookCategory: { type: array, items: { type: string } }
+            averageRating: { type: number }
+            bookPrice: { type: number }
+            conservationState: { type: string }
+            saleDate: { type: string, format: date-time }
   400:
-    description: Requisição inválida - Cópia já vendida ou não encontrada
-  401:
-    description: Não autorizado
+    description: Dados inválidos / não encontrado
   403:
-    description: Proibido - Requer papel de Editor ou Admin
-  404:
-    description: Livro ou cópia não encontrado
+    description: Permissão negada

@@ -3,28 +3,19 @@ Atualizar log
 tags:
   - Logs
 summary: Atualizar uma entrada de log
-description: Modifica uma entrada de log de atividade existente (Apenas Admin)
 parameters:
-  - in: path
-    name: log_id
-    type: string
+  - name: log_id
+    in: path
     required: true
-    description: O ID da entrada de log a ser atualizada
-    example: "log_abc123"
+    type: string
   - in: body
-    name: update_data
-    description: Campos a serem atualizados
+    name: update
     required: true
     schema:
       type: object
       properties:
-        details:
-          type: object
-          description: Detalhes atualizados sobre a ação
-        notes:
-          type: string
-          example: "Entrada corrigida"
-          description: Notas adicionais ou correções
+        details: { type: object }
+        notes: { type: string }
 responses:
   200:
     description: Log atualizado com sucesso

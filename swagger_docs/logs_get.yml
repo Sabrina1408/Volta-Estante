@@ -2,7 +2,7 @@ Obter log por ID
 ---
 tags:
   - Logs
-summary: Recuperar um log de atividade específico
+summary: Obter log por ID
 description: Obtém informações detalhadas sobre uma entrada de log específica do registro de alterações
 parameters:
   - in: path
@@ -13,31 +13,22 @@ parameters:
     example: "log_abc123"
 responses:
   200:
-    description: Detalhes do log
+    description: Log encontrado
     schema:
       type: object
       properties:
         logId:
           type: string
-        action:
-          type: string
-          example: "Adicionar ao Estoque"
         userId:
           type: string
         userName:
           type: string
+        action:
+          type: string
+        details:
+          type: object
         timestamp:
           type: string
           format: date-time
-        details:
-          type: object
-          description: Informações adicionais sobre a ação
-        details:
-          type: object
-          description: Informações adicionais sobre a ação
-  401:
-    description: Não autorizado
-  403:
-    description: Proibido - Deve pertencer ao mesmo sebo
   404:
     description: Log não encontrado
