@@ -15,7 +15,7 @@ const Search = () => {
       const response = await authFetch(`/books/${query}`);
       if (response.status === 404) {
         // Se o livro não for encontrado, retornamos null para indicar que não há dados,
-        // mas não é um erro de rede/servidor que o react-query deva tratar como falha.
+        // Mas não é um erro de rede/servidor que o react-query deva tratar como falha.
         // Isso permite que a UI exiba "Nenhum resultado encontrado".
         return null;
       }

@@ -96,19 +96,29 @@ const BookDetails = ({ book }) => {
   return (
     <>
       <div className={styles.bookDetails}>
-        {book.thumbnail && <img src={book.thumbnail} alt={`Capa de ${book.title}`} className={styles.thumbnail} />}
         <div className={styles.bookInfo}>
-          <h2>{book.title}</h2>
-          <p><strong>ISBN:</strong> {book.isbn}</p>
-          {book.authors?.length > 0 && <p><strong>Autor(es):</strong> {book.authors.join(', ')}</p>}
-          {book.publisher && <p><strong>Editora:</strong> {book.publisher}</p>}
-          {book.publishedDate && <p><strong>Data de Publicação:</strong> {book.publishedDate}</p>}
-          {book.categories?.length > 0 && <p><strong>Categorias:</strong> {book.categories.join(', ')}</p>}
-          {book.language && <p><strong>Idioma:</strong> {book.language}</p>}
-          {book.pageCount > 0 && <p><strong>Número de Páginas:</strong> {book.pageCount}</p>}
-          {book.totalQuantity !== undefined && <p><strong>Quantidade em Estoque:</strong> {book.totalQuantity}</p>}
-          {book.maturityRating && <p><strong>Classificação Indicativa:</strong> <MaturityRating rating={book.maturityRating} /></p>}
-          {book.averageRating > 0 && book.ratingsCount > 0 && (<p><strong>Avaliação Média:</strong> {book.averageRating} (de {book.ratingsCount} avaliações)</p>)}
+          <div className={styles.infoHeader}>
+            <div className={styles.infoMain}>
+              <h2>{book.title}</h2>
+              <p><strong>ISBN:</strong> {book.isbn}</p>
+              {book.authors?.length > 0 && <p><strong>Autor(es):</strong> {book.authors.join(', ')}</p>}
+              {book.publisher && <p><strong>Editora:</strong> {book.publisher}</p>}
+              {book.publishedDate && <p><strong>Data de Publicação:</strong> {book.publishedDate}</p>}
+              {book.categories?.length > 0 && <p><strong>Categorias:</strong> {book.categories.join(', ')}</p>}
+              {book.language && <p><strong>Idioma:</strong> {book.language}</p>}
+              {book.pageCount > 0 && <p><strong>Número de Páginas:</strong> {book.pageCount}</p>}
+              {book.totalQuantity !== undefined && <p><strong>Quantidade em Estoque:</strong> {book.totalQuantity}</p>}
+              {book.maturityRating && <p><strong>Classificação Indicativa:</strong> <MaturityRating rating={book.maturityRating} /></p>}
+              {book.averageRating > 0 && book.ratingsCount > 0 && (<p><strong>Avaliação Média:</strong> {book.averageRating} (de {book.ratingsCount} avaliações)</p>)}
+            </div>
+
+            {book.thumbnail && (
+              <div className={styles.thumbColumn}>
+                <img src={book.thumbnail} alt={`Capa de ${book.title}`} className={styles.thumbnail} />
+              </div>
+            )}
+          </div>
+
           {book.description && ( <><h3>Descrição</h3><p>{book.description}</p></> )}
           {book.textSnippet && ( <><h3>Trecho</h3><p><em>{book.textSnippet}</em></p></> )}
 
