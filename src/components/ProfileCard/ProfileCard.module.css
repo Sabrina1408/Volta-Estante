@@ -149,9 +149,27 @@
     transition: all 0.2s;
   }
 
+  /* Save button: default (disabled-looking) is gray; when enabled it becomes green
+     Use CSS variables defined in src/index.css to stay consistent with the theme */
   .saveButton {
-    background-color: #111827; /* Preto sólido */
-    color: #ffffff; /* Texto branco */
+    background-color: var(--quaternaryBackground); /* gray */
+    color: var(--white); /* Texto branco */
+  }
+
+  /* Enabled state (when not disabled) shows success green from the global vars */
+  .saveButton:not(:disabled) {
+    background-color: var(--successBackground);
+    color: var(--white);
+  }
+
+  .saveButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.95;
+  }
+
+  .saveButton:not(:disabled):hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
   }
 
   .cancelButton {

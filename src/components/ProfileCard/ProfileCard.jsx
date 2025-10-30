@@ -15,6 +15,12 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
     }
   }, [user]);
 
+  // Calcula se houve alterações nos campos editáveis em relação aos dados originais do usuário
+  const isDirty = (
+    (name || '').trim() !== ((user?.name || '')).trim() ||
+    (seboName || '').trim() !== ((user?.nameSebo || '')).trim()
+  );
+
   // Função para lidar com o salvamento das alterações
   const handleSave = (e) => {
     e.preventDefault();
@@ -102,7 +108,12 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
             <button type="button" className={styles.cancelButton} onClick={onCancel}>
               Cancelar
             </button>
-            <button type="submit" className={styles.saveButton} disabled={isSaving}>
+            <button
+              type="submit"
+              className={styles.saveButton}
+              disabled={isSaving || !isDirty}
+              aria-disabled={isSaving || !isDirty}
+            >
               {isSaving ? 'Salvando...' : 'Salvar Alterações'}
             </button>
           </div>
