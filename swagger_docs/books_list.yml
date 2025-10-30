@@ -35,3 +35,22 @@ responses:
     description: Não autorizado - Token inválido ou ausente
   403:
     description: Proibido - Permissões insuficientes
+
+tags:
+  - Livros
+summary: Listar livros do sebo
+responses:
+  200:
+    description: Lista de livros
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          title: { type: string }
+          authors: { type: array, items: { type: string } }
+          categories: { type: array, items: { type: string } }
+          totalQuantity: { type: integer }
+          isbn: { type: string }
+  403:
+    description: Permissão negada

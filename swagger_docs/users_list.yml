@@ -1,9 +1,7 @@
-Listar usuários do sebo
----
 tags:
   - Usuários
-summary: Listar todos os usuários do sebo
-description: Retorna todos os usuários pertencentes ao mesmo sebo do solicitante (filtrado por seboId)
+summary: Listar usuários do sebo
+description: Retorna a lista de usuários pertencentes ao sebo do usuário autenticado.
 responses:
   200:
     description: Lista de usuários
@@ -12,21 +10,9 @@ responses:
       items:
         type: object
         properties:
-          userId:
-            type: string
-            example: "uid_123"
-            description: UID do Firebase do usuário
-          email:
-            type: string
-            example: "usuario@exemplo.com"
-          name:
-            type: string
-            example: "João Silva"
-          userRole:
-            type: string
-            enum: [Admin, Editor, Reader]
-            example: "Editor"
-  401:
-    description: Não autorizado
+          userId: { type: string, example: "uid_abc123" }
+          email: { type: string, example: "user@example.com" }
+          name: { type: string, example: "Nome Exemplo" }
+          userRole: { type: string, example: "Editor" }
   403:
-    description: Proibido - Permissões insuficientes
+    description: Usuário sem permissão

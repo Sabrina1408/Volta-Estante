@@ -1,52 +1,27 @@
-Obter venda por ID
+tags:
+  - Vendas
+summary: Obter venda por ID
+parameters:
+  - name: sale_id
+    in: path
+    required: true
+    type: string
 responses:
   200:
-    description: Detalhes da venda
+    description: Venda encontrada
     schema:
       type: object
       properties:
-        saleId:
-          type: string
-        userId:
-          type: string
-        userName:
-          type: string
-        ISBN:
-          type: string
-        bookTitle:
-          type: string
-        authors:
-          type: array
-          items:
-            type: string
-        bookCategory:
-          type: array
-          items:
-            type: string
-        averageRating:
-          type: number
-        bookPrice:
-          type: number
-        conservationState:
-          type: string
-        saleDate:
-          type: string
-          format: date-time
-  401:
-    description: Não autorizado
-  403:
-    description: Proibido - Deve pertencer ao mesmo sebo
-  404:
-    description: Venda não encontrada
-          description: ID do usuário que fez a venda
-        soldAt:
-          type: string
-          format: date-time
-        seboId:
-          type: string
-  401:
-    description: Não autorizado
-  403:
-    description: Proibido - Deve pertencer ao mesmo sebo
+        saleId: { type: string }
+        userId: { type: string }
+        userName: { type: string }
+        isbn: { type: string }
+        bookTitle: { type: string }
+        authors: { type: array, items: { type: string } }
+        bookCategory: { type: array, items: { type: string } }
+        averageRating: { type: number }
+        bookPrice: { type: number }
+        conservationState: { type: string }
+        saleDate: { type: string, format: date-time }
   404:
     description: Venda não encontrada

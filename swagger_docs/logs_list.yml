@@ -2,11 +2,11 @@ Obter todos os logs
 ---
 tags:
   - Logs
-summary: Listar todos os logs de atividade
+summary: Listar logs do sebo
 description: Recupera todos os logs de atividade do sebo do usuário (filtrado por seboId)
 responses:
   200:
-    description: Lista de todos os logs de atividade
+    description: Lista de logs
     schema:
       type: array
       items:
@@ -14,18 +14,17 @@ responses:
         properties:
           logId:
             type: string
-          action:
-            type: string
-            example: "Adicionar ao Estoque"
           userId:
             type: string
           userName:
             type: string
+          action:
+            type: string
+          details:
+            type: object
           timestamp:
             type: string
             format: date-time
-          details:
-            type: object
   401:
     description: Não autorizado
   403:

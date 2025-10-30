@@ -2,15 +2,18 @@ Criar usuário
 ---
 tags:
   - Usuários
-summary: Criar um novo usuário
-description: Cria um novo usuário no sistema (tipicamente após autenticação do Firebase)
+summary: Criar usuário / registrar sebo
+description: >
+  Registra o perfil do usuário e cria o sebo associado. Deve ser chamado
+  após criar a conta no Firebase (usuário já autenticado).
 parameters:
   - in: body
     name: user
-    description: Dados do usuário
     required: true
     schema:
       type: object
+      required:
+        - seboName
       properties:
         name:
           type: string
@@ -24,32 +27,24 @@ parameters:
         address:
           type: object
           properties:
-            street:
-              type: string
-            city:
-              type: string
-            state:
-              type: string
-            zipCode:
-              type: string
+            street: { type: string, example: "Rua Principal, 123" }
+            city: { type: string, example: "São Paulo" }
+            state: { type: string, example: "SP" }
+            zipCode: { type: string, example: "01234-567" }
 responses:
   201:
     description: Usuário criado com sucesso
     schema:
       type: object
       properties:
-        userId:
-          type: string
-        email:
-          type: string
-        name:
-          type: string
-        seboId:
-          type: string
-        userRole:
-          type: string
-          enum: [Admin, Editor, Reader]
+        userId: { type: string, example: "firebase_uid_123" }
+        email: { type: string, example: "joao@example.com" }
+        name: { type: string, example: "João Silva" }
+        nameSebo: { type: string, example: "Livraria do João" }
+        seboId: { type: string, example: "sebo_abc123" }
+        userRole: { type: string, example: "Admin" }
+        registeredAt: { type: string, format: date-time, example: "2025-10-29T12:34:56.789Z" }
   400:
-    description: Requisição inválida
-  401:
-    description: Não autorizado
+    description: Dados inválidos
+  409:
+    description: Usuário já existe

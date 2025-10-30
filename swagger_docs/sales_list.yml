@@ -1,12 +1,12 @@
 tags:
   - Vendas
-summary: Lista todas as vendas de um sebo
-description: Retorna uma lista de todas as vendas registradas para o sebo do usuário autenticado.
+summary: Listar vendas do sebo
+description: Retorna todas as vendas registradas para o sebo do usuário autenticado.
 security:
   - bearerAuth: []
 responses:
   200:
-    description: Uma lista de vendas.
+    description: Lista de vendas
     schema:
       type: array
       items:
@@ -55,4 +55,4 @@ responses:
   401:
     description: Unauthorized
   403:
-    description: Forbidden
+    description: Permissão negada
