@@ -1,6 +1,4 @@
 .bookDetails {
-  display: flex;
-  gap: 2rem;
   margin-top: 2rem;
   padding: 1.5rem;
   border: 1px solid var(--tertiaryBackground);
@@ -15,12 +13,28 @@
 
 .thumbnail {
   width: 180px; /* Largura fixa para a imagem */
-  flex-shrink: 0; /* Impede que a imagem encolha */
   height: auto;
   object-fit: cover;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  align-self: start; /* Alinha a imagem no topo da sua célula do grid */
+}
+
+/* Header within bookInfo: left is metadata, right is thumbnail column */
+.infoHeader {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.infoMain {
+  min-width: 0;
+}
+
+.thumbColumn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: start;
 }
 
 .bookDetails h2 {
@@ -107,9 +121,9 @@
 
 .copiesTable .actions {
   display: flex;
-  flex-wrap: nowrap; /* Permite que os botões quebrem a linha */
+  flex-wrap: wrap; /* Permite que os botões quebrem a linha quando necessário */
   justify-content: flex-start; /* Alinha os botões de ação */
-  gap: 0.5rem; /* Reduz o espaçamento entre os botões */
+  gap: 0.5rem; /* Espaçamento entre os botões */
 }
 
 .copiesTable .actions button {
@@ -124,5 +138,35 @@
 @media (max-width: 1200px) {
   .copiesTable {
     min-width: 600px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+  }
+}
+
+/* Em telas pequenas, empilha a infoHeader em coluna: metadata então thumbnail, e faz ações empilharem */
+@media (max-width: 800px) {
+  .infoHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .thumbnail {
+    width: 140px;
+    display: block;
+    margin: 0 auto 1rem; /* centraliza a imagem */
+  }
+}
+
+/* Mobile: empilha os botões de ação um sobre o outro para evitar overflow */
+@media (max-width: 600px) {
+  .copiesTable {
+    min-width: unset; /* Permite que a tabela se ajuste ao viewport em telas muito pequenas */
+  }
+
+  .copiesTable .actions {
+    flex-direction: column;
+    align-items: stretch; /* Faz os botões ocuparem toda a largura disponível */
+    gap: 0.5rem;
+  }
+
+  .copiesTable .actions button {
+    width: 100%;
   }
 }

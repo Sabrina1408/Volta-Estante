@@ -27,14 +27,15 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      {/* If user is logged, redirect root to dashboard; otherwise show Home */}
+      <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Home />} />
       <Route
         path="/login"
         element={!user ? <Login /> : <Navigate to="/perfil" replace />}
       />
       <Route
         path="/cadastro"
-        element={!user ? <Cadastro /> : <Navigate to="/" replace />}
+        element={!user ? <Cadastro /> : <Navigate to="/dashboard" replace />}
       />
       <Route
         path="/recuperarSenha"
@@ -56,7 +57,7 @@ function AppRoutes() {
         path="/search"
         element={user ? <Search /> : <Navigate to="/login" replace />}
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
     </Routes>
   );
 }

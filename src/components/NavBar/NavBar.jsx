@@ -48,11 +48,13 @@ const NavBar = () => {
 
       <div className={`${styles.navContent} ${isMenuOpen ? styles.activeMenu : ""}`}>
         <ul>
-          <li>
-            <NavLink to="/" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
-              Home
-            </NavLink>
-          </li>
+          {!user && (
+            <li>
+              <NavLink to="/" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                Home
+              </NavLink>
+            </li>
+          )}
 
           {user && (
             <>
