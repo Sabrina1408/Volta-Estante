@@ -92,6 +92,7 @@ const Perfil = () => {
         onSave={handleSave}
         onCancel={handleCancel}
         isSaving={isSaving}
+        onLogout={handleLogout}
       />
 
       {/* Seção para gerenciar funcionários, visível apenas para admins */}
@@ -101,10 +102,6 @@ const Perfil = () => {
         </div>
       )}
 
-      {/* O botão de logout pode ficar fora do card, como uma ação global da página */}
-      <button className={styles.logoutButton} onClick={handleLogout}>
-        Sair da Conta
-      </button>
       <AlertModal open={alertOpen} onClose={() => setAlertOpen(false)} title="Aviso" message={alertMessage} />
     </div>
   );

@@ -118,14 +118,28 @@
   /* Rodapé com os botões */
   .cardFooter {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 0.75rem;
     padding: 1.5rem 2rem;
     background-color: #f9fafb; /* Fundo cinza suave */
   }
-  
+
+  .leftActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .rightActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   .saveButton,
-  .cancelButton {
+  .cancelButton,
+  .logoutButton {
     padding: 0.6rem 1.25rem;
     border-radius: 8px;
     font-size: 0.9rem;
@@ -134,16 +148,26 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-  
+
   .saveButton {
     background-color: #111827; /* Preto sólido */
     color: #ffffff; /* Texto branco */
   }
-  
+
   .cancelButton {
     background-color: transparent;
     color: #111827; /* Texto escuro */
     border: 1px solid #d1d5db;
+  }
+
+  .logoutButton {
+    background-color: var(--deleteBookBackground);
+    color: var(--white);
+    border: none;
+  }
+
+  .logoutButton:hover {
+    opacity: 0.9;
   }
   
   /* Responsividade para telas menores */

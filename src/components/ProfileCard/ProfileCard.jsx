@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styles from './ProfileCard.module.css';
 import { FaEnvelope } from 'react-icons/fa';
 
-const ProfileCard = ({ user, onSave, onCancel, isSaving }) => {
+const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
   // Estado para os campos editáveis do formulário
   const [name, setName] = useState('');
   const [seboName, setSeboName] = useState('');
@@ -93,12 +93,19 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving }) => {
         </main>
 
         <footer className={styles.cardFooter}>
-          <button type="button" className={styles.cancelButton} onClick={onCancel}>
-            Cancelar
-          </button>
-          <button type="submit" className={styles.saveButton} disabled={isSaving}>
-            {isSaving ? 'Salvando...' : 'Salvar Alterações'}
-          </button>
+          <div className={styles.leftActions}>
+            <button type="button" className={styles.logoutButton} onClick={onLogout}>
+              Sair da Conta
+            </button>
+          </div>
+          <div className={styles.rightActions}>
+            <button type="button" className={styles.cancelButton} onClick={onCancel}>
+              Cancelar
+            </button>
+            <button type="submit" className={styles.saveButton} disabled={isSaving}>
+              {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+            </button>
+          </div>
         </footer>
       </form>
     </div>

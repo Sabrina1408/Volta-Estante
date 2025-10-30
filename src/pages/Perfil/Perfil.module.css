@@ -18,3 +18,8 @@
 .roleSelection label {
   font-weight: normal;
 }
+
+/* Espaço extra entre a seção de gerenciar funcionários e o footer da página */
+.manageSection {
+  margin-bottom: 5rem;
+}
