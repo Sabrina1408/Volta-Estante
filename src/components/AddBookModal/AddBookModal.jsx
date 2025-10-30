@@ -1,5 +1,5 @@
 import styles from "./AddBookModal.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
@@ -15,7 +15,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutateAsync, isLoading } = useMutation({
     mutationFn: (newBook) =>
       authFetch("/books", {
         method: "POST",
@@ -55,8 +55,16 @@ const AddBookModal = ({ isOpen, onClose }) => {
     },
   });
 
-  const handleSubmit = (e) => {
+  // Prevenir múltiplos cliques no botão de envio
+  const submittingRef = useRef(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Verifica se já está enviando para evitar múltiplos cliques
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+
     setMessage("");
     setMessageType("");
 
@@ -66,7 +74,15 @@ const AddBookModal = ({ isOpen, onClose }) => {
       conservationState: conservationState,
     };
 
-    mutate(bookData);
+    try {
+      // Valida os campos antes de enviar
+      await mutateAsync(bookData);
+    } catch (err) {
+
+      console.error("Erro na submissão do livro:", err);
+    } finally {
+      submittingRef.current = false;
+    }
   };
 
   // Limpa o estado quando o modal é fechado
