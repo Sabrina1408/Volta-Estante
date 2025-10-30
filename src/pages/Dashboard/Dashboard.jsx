@@ -198,12 +198,12 @@ const Dashboard = () => {
             <Legend
               verticalAlign="top"
               align="right"
-              wrapperStyle={{ color: "var(--lightGreen)" }}
+              wrapperStyle={{ color: "var(--sixnaryBackground)" }}
             />
             <Line
               type="monotone"
               dataKey="Receita"
-              stroke="var(--lightBlue)"
+              stroke="var(--sixnaryBackground)"
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
@@ -220,7 +220,7 @@ const Dashboard = () => {
             <XAxis type="number" />
             <YAxis type="category" dataKey="name" width={80} />
             <Tooltip />
-            <Bar dataKey="value" fill="var(--strongBlue)" />
+            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -262,7 +262,7 @@ const Dashboard = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="value" fill="var(--strongPurple)" />
+            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -275,7 +275,7 @@ const Dashboard = () => {
             <XAxis dataKey="name" />
             <YAxis domain={[0, 5]} />
             <Tooltip />
-            <Bar dataKey="value" fill="var(--vibrantOrange)" />
+            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
           </BarChart>
         </ResponsiveContainer>
       </div>
