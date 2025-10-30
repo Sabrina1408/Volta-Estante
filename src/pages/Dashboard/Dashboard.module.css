@@ -5,16 +5,15 @@
   height: 80vh;
 }
 
-.dashboardContainer {
+.dashboardPage {
   padding: 2rem;
   background-color: var(--background);
-  color: var(--text);
+  color: var(--text-dark);
   display: grid;
-  margin-bottom: 5rem;
   gap: 2rem;
 }
 
-/* 1. Contêiner e Estrutura do Cartão */
+/* --- Filtros --- */
 .filterCard {
   background-color: var(--white);
   padding: 1.5rem;
@@ -23,10 +22,8 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr); /* 2. Layout e Grid (5 colunas) */
   gap: 1.5rem;
-  margin-bottom: 1rem;
 }
 
-/* 3. Elementos de Filtro */
 .filterGroup {
   display: flex;
   flex-direction: column;
@@ -36,7 +33,7 @@
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151; /* Cinza escuro para o rótulo */
+  color: var(--text-light);
 }
 
 .selectWrapper {
@@ -47,11 +44,11 @@
 .filterSelect {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb; /* Cinza extremamente claro */
-  border: 1px solid #d1d5db; /* Borda sutil */
+  background-color: #f9fafb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
-  color: #111827; /* Texto escuro */
+  color: var(--text-dark);
   appearance: none; /* Remove a seta padrão do navegador */
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
@@ -64,7 +61,7 @@
   cursor: pointer;
 }
 
-/* 2. Responsividade */
+/* --- Responsividade dos Filtros --- */
 @media (max-width: 992px) {
   .filterCard {
     grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablets */
@@ -77,6 +74,7 @@
   }
 }
 
+/* --- Métricas --- */
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -97,7 +95,7 @@
   font-size: 2rem;
   padding: 1rem;
   border-radius: 50%;
-  color: var(--white);
+  color: inherit; /* A cor será definida pela classe de cor da métrica */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,15 +108,36 @@
 
 .metricTitle {
   font-size: 0.9rem;
-  color: var(--gray-500);
+  color: var(--text-light);
   margin-bottom: 0.25rem;
 }
 
 .metricValue {
   font-size: 1.5rem;
   font-weight: bold;
+  color: inherit; /* A cor será definida pela classe de cor da métrica */
 }
 
+/* Cores das Métricas */
+.metricGreen { color: var(--metric-green); }
+.metricGreenBg { background-color: var(--metric-green-bg); color: var(--metric-green); }
+
+.metricBlue { color: var(--metric-blue); }
+.metricBlueBg { background-color: var(--metric-blue-bg); color: var(--metric-blue); }
+
+.metricPurple { color: var(--metric-purple); }
+.metricPurpleBg { background-color: var(--metric-purple-bg); color: var(--metric-purple); }
+
+.metricOrange { color: var(--metric-orange); }
+.metricOrangeBg { background-color: var(--metric-orange-bg); color: var(--metric-orange); }
+
+
+/* --- Gráficos --- */
+.secondaryChartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
 .chartCard {
   background-color: var(--white);
   padding: 2rem;
@@ -132,26 +151,13 @@
   font-weight: bold;
 }
 
-.lightGreenBg {
-  background-color: var(--lightGreen);
-}
-
-.lightBlueBg {
-  background-color: var(--lightBlue);
-}
-
-.softPurpleBg {
-  background-color: var(--softPurple);
-}
-
-.lightOrangeBg {
-  background-color: var(--lightOrange);
-}
-
 .fullWidth {
   grid-column: 1 / -1;
 }
 
-.legendText {
-  color: var(--lightGreen);
+/* --- Responsividade dos Gráficos --- */
+@media (max-width: 992px) {
+  .secondaryChartsGrid {
+    grid-template-columns: 1fr; /* Empilha os gráficos secundários */
+  }
 }

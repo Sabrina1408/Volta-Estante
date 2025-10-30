@@ -14,7 +14,7 @@ import { useMemo } from "react";import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart, FaFilter } from "react-icons/fa";
+import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
@@ -119,7 +119,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={styles.dashboardPage}>
       <h1>Dashboard</h1>
       <div className={styles.filterCard}>
         <div className={styles.filterGroup}>
@@ -166,39 +166,43 @@ const Dashboard = () => {
 
       <div className={styles.metricsGrid}>
         <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.lightGreenBg}`}>
+          <div className={`${styles.metricIcon} ${styles.metricGreenBg}`}>
             <FaDollarSign />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Receita Total</span>
-            <span className={styles.metricValue}>{processedData.totalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+            <span className={`${styles.metricValue} ${styles.metricGreen}`}>
+              {processedData.totalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            </span>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.lightBlueBg}`}>
+          <div className={`${styles.metricIcon} ${styles.metricBlueBg}`}>
             <FaTags />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Preço Médio por Venda</span>
-            <span className={styles.metricValue}>{processedData.averagePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+            <span className={`${styles.metricValue} ${styles.metricBlue}`}>
+              {processedData.averagePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            </span>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.softPurpleBg}`}>
+          <div className={`${styles.metricIcon} ${styles.metricPurpleBg}`}>
             <FaBoxOpen />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Livros em Estoque</span>
-            <span className={styles.metricValue}>{totalStock}</span>
+            <span className={`${styles.metricValue} ${styles.metricPurple}`}>{totalStock}</span>
           </div>
         </div>
         <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.lightOrangeBg}`}>
+          <div className={`${styles.metricIcon} ${styles.metricOrangeBg}`}>
             <FaShoppingCart />
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Total de Livros Vendidos</span>
-            <span className={styles.metricValue}>{processedData.totalBooksSold}</span>
+            <span className={`${styles.metricValue} ${styles.metricOrange}`}>{processedData.totalBooksSold}</span>
           </div>
         </div>
       </div>
@@ -214,12 +218,12 @@ const Dashboard = () => {
             <Legend
               verticalAlign="top"
               align="right"
-              wrapperStyle={{ color: "var(--sixnaryBackground)" }}
+              wrapperStyle={{ color: "var(--text-light)" }}
             />
             <Line
               type="monotone"
               dataKey="Receita"
-              stroke="var(--sixnaryBackground)"
+              stroke="var(--metric-blue)"
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
@@ -228,72 +232,74 @@ const Dashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className={styles.chartCard}>
-        <h3 className={styles.chartTitle}>Receita por Categoria</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={processedData.revenueByCategoryData} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-            <XAxis type="number" />
-            <YAxis type="category" dataKey="name" width={80} />
-            <Tooltip />
-            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <div className={styles.secondaryChartsGrid}>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Receita por Categoria</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={processedData.revenueByCategoryData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" />
+              <YAxis type="category" dataKey="name" width={80} />
+              <Tooltip />
+              <Bar dataKey="value" fill="var(--chart-blue-strong)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      <div className={styles.chartCard}>
-        <h3 className={styles.chartTitle}>Vendas por Estado de Conservação</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={processedData.salesByStateData}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              fill="#8884d8"
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {processedData.salesByStateData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend
-              layout="vertical"
-              verticalAlign="middle"
-              align="right"
-              formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value.toFixed(2)}%`}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Vendas por Estado de Conservação</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={processedData.salesByStateData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {processedData.salesByStateData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend
+                layout="vertical"
+                verticalAlign="middle"
+                align="right"
+                formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value.toFixed(2)}%`}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
 
-      <div className={styles.chartCard}>
-        <h3 className={styles.chartTitle}>Vendas por Categoria</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={processedData.salesByCategoryData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Vendas por Categoria</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={processedData.salesByCategoryData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="var(--chart-purple-strong)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      <div className={styles.chartCard}>
-        <h3 className={styles.chartTitle}>Avaliação Média por Categoria</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={processedData.ratingByCategoryData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" />
-            <YAxis domain={[0, 5]} />
-            <Tooltip />
-            <Bar dataKey="value" fill="var(--sixnaryBackground)" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className={styles.chartCard}>
+          <h3 className={styles.chartTitle}>Avaliação Média por Categoria</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={processedData.ratingByCategoryData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip />
+              <Bar dataKey="value" fill="var(--chart-orange-vibrant)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
