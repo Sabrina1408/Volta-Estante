@@ -1,4 +1,5 @@
-import {
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";import {
   LineChart,
   Line,
   BarChart,
@@ -14,56 +15,96 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart, FaFilter } from "react-icons/fa";
+import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
-
-// Mock data for charts
-const revenueOverTimeData = [
-  { name: "Jan", Receita: 4000 },
-  { name: "Fev", Receita: 3000 },
-  { name: "Mar", Receita: 5000 },
-  { name: "Abr", Receita: 4500 },
-  { name: "Mai", Receita: 6000 },
-  { name: "Jun", Receita: 5500 },
-  { name: "Jul", Receita: 6500 },
-  { name: "Ago", Receita: 7000 },
-  { name: "Set", Receita: 6800 },
-  { name: "Out", Receita: 7200 },
-];
-
-const revenueByCategoryData = [
-  { name: "Ficção", value: 15000 },
-  { name: "Não-ficção", value: 12000 },
-  { name: "Técnico", value: 9000 },
-  { name: "Infantil", value: 6000 },
-  { name: "Biografia", value: 4000 },
-];
-
-const salesByStateData = [
-  { name: "Novo", value: 25 },
-  { name: "Seminovo", value: 42 },
-  { name: "Usado", value: 23 },
-  { name: "Muito usado", value: 11 },
-];
-
-const salesByCategoryData = [
-    { name: "Ficção", value: 95 },
-    { name: "Não-ficção", value: 80 },
-    { name: "Técnico", value: 50 },
-    { name: "Infantil", value: 40 },
-    { name: "Biografia", value: 25 },
-];
-
-const ratingByCategoryData = [
-    { name: "Ficção", value: 4.5 },
-    { name: "Não-ficção", value: 4.2 },
-    { name: "Técnico", value: 4.0 },
-    { name: "Infantil", value: 4.8 },
-    { name: "Biografia", value: 4.6 },
-];
+import Spinner from "../../components/Spinner/Spinner";
 
 const PIE_COLORS = ["#0088FE", "#FF8042", "#FFBB28", "#AF19FF"];
 
 const Dashboard = () => {
+  const { authFetch } = useApi();
+
+  const { data: sales, isLoading, isError, error } = useQuery({
+    queryKey: ['sales'],
+    queryFn: () => authFetch('/sales').then(res => res.json())
+  });
+
+  const processedData = useMemo(() => {
+    if (!sales || sales.length === 0) {
+      return {
+        totalRevenue: 0,
+        averagePrice: 0,
+        totalBooksSold: 0,
+        revenueOverTimeData: [],
+        revenueByCategoryData: [],
+        salesByStateData: [],
+        salesByCategoryData: [],
+        ratingByCategoryData: [],
+      };
+    }
+
+    const totalRevenue = sales.reduce((acc, sale) => acc + sale.bookPrice, 0);
+    const totalBooksSold = sales.length;
+    const averagePrice = totalBooksSold > 0 ? totalRevenue / totalBooksSold : 0;
+
+    const revenueOverTime = sales.reduce((acc, sale) => {
+      const month = new Date(sale.saleDate).toLocaleString('default', { month: 'short' });
+      acc[month] = (acc[month] || 0) + sale.bookPrice;
+      return acc;
+    }, {});
+    const revenueOverTimeData = Object.entries(revenueOverTime).map(([name, Receita]) => ({ name, Receita }));
+
+    const byCategory = sales.reduce((acc, sale) => {
+      sale.bookCategory.forEach(category => {
+        if (!acc[category]) {
+          acc[category] = { revenue: 0, count: 0, ratings: [] };
+        }
+        acc[category].revenue += sale.bookPrice;
+        acc[category].count += 1;
+        if (sale.averageRating) {
+          acc[category].ratings.push(sale.averageRating);
+        }
+      });
+      return acc;
+    }, {});
+
+    const revenueByCategoryData = Object.entries(byCategory).map(([name, data]) => ({ name, value: data.revenue }));
+    const salesByCategoryData = Object.entries(byCategory).map(([name, data]) => ({ name, value: data.count }));
+    const ratingByCategoryData = Object.entries(byCategory).map(([name, data]) => {
+      const avgRating = data.ratings.length > 0 ? data.ratings.reduce((a, b) => a + b, 0) / data.ratings.length : 0;
+      return { name, value: avgRating };
+    });
+
+    const byState = sales.reduce((acc, sale) => {
+      const state = sale.conservationState;
+      acc[state] = (acc[state] || 0) + 1;
+      return acc;
+    }, {});
+    const salesByStateData = Object.entries(byState).map(([name, count]) => ({
+      name,
+      value: (count / totalBooksSold) * 100
+    }));
+
+    return {
+      totalRevenue,
+      averagePrice,
+      totalBooksSold,
+      revenueOverTimeData,
+      revenueByCategoryData,
+      salesByStateData,
+      salesByCategoryData,
+      ratingByCategoryData,
+    };
+  }, [sales]);
+
+  if (isLoading) {
+    return <div className={styles.centered}><Spinner /></div>;
+  }
+
+  if (isError) {
+    return <div className={styles.centered}>Erro ao carregar dados: {error.message}</div>;
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       <div className={styles.filterBar}>
@@ -100,7 +141,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Receita Total</span>
-            <span className={styles.metricValue}>R$ 45.231,89</span>
+            <span className={styles.metricValue}>{processedData.totalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
           </div>
         </div>
         <div className={styles.metricCard}>
@@ -109,7 +150,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Preço Médio por Venda</span>
-            <span className={styles.metricValue}>R$ 42,50</span>
+            <span className={styles.metricValue}>{processedData.averagePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
           </div>
         </div>
         <div className={styles.metricCard}>
@@ -118,7 +159,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Livros em Estoque</span>
-            <span className={styles.metricValue}>1.240</span>
+            <span className={styles.metricValue}>N/A</span>
           </div>
         </div>
         <div className={styles.metricCard}>
@@ -127,7 +168,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Total de Livros Vendidos</span>
-            <span className={styles.metricValue}>342</span>
+            <span className={styles.metricValue}>{processedData.totalBooksSold}</span>
           </div>
         </div>
       </div>
@@ -135,7 +176,7 @@ const Dashboard = () => {
       <div className={`${styles.chartCard} ${styles.fullWidth}`}>
         <h3 className={styles.chartTitle}>Receita ao Longo do Tempo</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={revenueOverTimeData}>
+          <LineChart data={processedData.revenueOverTimeData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" />
             <YAxis />
@@ -160,7 +201,7 @@ const Dashboard = () => {
       <div className={styles.chartCard}>
         <h3 className={styles.chartTitle}>Receita por Categoria</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={revenueByCategoryData} layout="vertical">
+          <BarChart data={processedData.revenueByCategoryData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" />
             <YAxis type="category" dataKey="name" width={80} />
@@ -175,7 +216,7 @@ const Dashboard = () => {
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
-              data={salesByStateData}
+              data={processedData.salesByStateData}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -184,7 +225,7 @@ const Dashboard = () => {
               paddingAngle={5}
               dataKey="value"
             >
-              {salesByStateData.map((entry, index) => (
+              {processedData.salesByStateData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
               ))}
             </Pie>
@@ -193,7 +234,7 @@ const Dashboard = () => {
               layout="vertical"
               verticalAlign="middle"
               align="right"
-              formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value}%`}
+              formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value.toFixed(2)}%`}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -202,7 +243,7 @@ const Dashboard = () => {
       <div className={styles.chartCard}>
         <h3 className={styles.chartTitle}>Vendas por Categoria</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={salesByCategoryData}>
+          <BarChart data={processedData.salesByCategoryData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" />
             <YAxis />
@@ -215,7 +256,7 @@ const Dashboard = () => {
       <div className={styles.chartCard}>
         <h3 className={styles.chartTitle}>Avaliação Média por Categoria</h3>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={ratingByCategoryData}>
+          <BarChart data={processedData.ratingByCategoryData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" />
             <YAxis domain={[0, 5]} />
