@@ -80,24 +80,36 @@
 }
 
 .stockTable {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
 }
 
 .stockTable th,
 .stockTable td {
-    border: 1px solid var(--tertiaryBackground);
-    padding: 12px 15px;
-    text-align: left;
-    vertical-align: middle;
+  border: 1px solid var(--tertiaryBackground);
+  padding: 12px 15px;
+  text-align: left;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* evita quebras que mudam a largura da tabela */
 }
 
 .stockTable th {
-    background-color: var(--secondaryBackground);
-    color: var(--textColor);
-    font-weight: bold;
+  background-color: var(--secondaryBackground);
+  color: var(--textColor);
+  font-weight: bold;
 }
+
+/* Definindo larguras fixas para as colunas para manter a grade estável */
+.stockTable th:nth-child(1), .stockTable td:nth-child(1) { width: 30%; } /* Título */
+.stockTable th:nth-child(2), .stockTable td:nth-child(2) { width: 20%; } /* Autores */
+.stockTable th:nth-child(3), .stockTable td:nth-child(3) { width: 20%; } /* Categorias */
+.stockTable th:nth-child(4), .stockTable td:nth-child(4) { width: 15%; } /* ISBN */
+.stockTable th:nth-child(5), .stockTable td:nth-child(5) { width: 8%;  text-align: center; } /* Quantidade */
+.stockTable th:nth-child(6), .stockTable td:nth-child(6) { width: 7%;  text-align: center; } /* Ações */
 
 .stockTable tbody tr:nth-of-type(even) {
     background-color: var(--secondaryBackground);
@@ -130,6 +142,11 @@
   color: var(--linkGeneralColor);
   text-decoration: none;
   font-weight: 600;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .titleLink:hover {
