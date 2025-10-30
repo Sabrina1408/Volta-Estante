@@ -34,6 +34,14 @@ const getCssVariableValue = (variable) => {
 const Dashboard = () => {
   const { authFetch } = useApi();
 
+  const [filters, setFilters] = useState({
+    category: 'all',
+    language: 'all',
+    month: 'all',
+    day: 'all',
+    year: 'all',
+  });
+
   const [chartColors, setChartColors] = useState({
     metricBlue: "",
     chartBlueStrong: "",
@@ -81,8 +89,49 @@ const Dashboard = () => {
     queryFn: () => authFetch('/books').then(res => res.json())
   });
 
+  const filterOptions = useMemo(() => {
+    if (!sales) {
+      return {
+        categories: [],
+        languages: [],
+        months: [],
+        days: [],
+        years: [],
+      };
+    }
+
+    const categories = [...new Set(sales.flatMap(sale => sale.bookCategory))];
+    const languages = [...new Set(sales.map(sale => sale.bookLanguage).filter(Boolean))];
+    const dates = sales.map(sale => new Date(sale.saleDate));
+    const months = [...new Set(dates.map(date => date.toLocaleString('pt-BR', { month: 'long' })))];
+    const days = [...new Set(dates.map(date => date.getDate()))].sort((a, b) => a - b);
+    const years = [...new Set(dates.map(date => date.getFullYear()))].sort((a, b) => a - b);
+
+    return { categories, languages, months, days, years };
+  }, [sales]);
+
   const processedData = useMemo(() => {
-    if (!sales || sales.length === 0) {
+    const filteredSales = sales ? sales.filter(sale => {
+      const saleDate = new Date(sale.saleDate);
+      if (filters.category !== 'all' && !sale.bookCategory.includes(filters.category)) {
+        return false;
+      }
+      if (filters.language !== 'all' && sale.bookLanguage !== filters.language) {
+        return false;
+      }
+      if (filters.month !== 'all' && saleDate.toLocaleString('pt-BR', { month: 'long' }) !== filters.month) {
+        return false;
+      }
+      if (filters.day !== 'all' && saleDate.getDate() !== parseInt(filters.day)) {
+        return false;
+      }
+      if (filters.year !== 'all' && saleDate.getFullYear() !== parseInt(filters.year)) {
+        return false;
+      }
+      return true;
+    }) : [];
+
+    if (!filteredSales || filteredSales.length === 0) {
       return {
         totalRevenue: 0,
         averagePrice: 0,
@@ -95,18 +144,18 @@ const Dashboard = () => {
       };
     }
 
-    const totalRevenue = sales.reduce((acc, sale) => acc + sale.bookPrice, 0);
-    const totalBooksSold = sales.length;
+    const totalRevenue = filteredSales.reduce((acc, sale) => acc + sale.bookPrice, 0);
+    const totalBooksSold = filteredSales.length;
     const averagePrice = totalBooksSold > 0 ? totalRevenue / totalBooksSold : 0;
 
-    const revenueOverTime = sales.reduce((acc, sale) => {
+    const revenueOverTime = filteredSales.reduce((acc, sale) => {
       const month = new Date(sale.saleDate).toLocaleString('default', { month: 'short' });
       acc[month] = (acc[month] || 0) + sale.bookPrice;
       return acc;
     }, {});
     const revenueOverTimeData = Object.entries(revenueOverTime).map(([name, Receita]) => ({ name, Receita }));
 
-    const byCategory = sales.reduce((acc, sale) => {
+    const byCategory = filteredSales.reduce((acc, sale) => {
       sale.bookCategory.forEach(category => {
         if (!acc[category]) {
           acc[category] = { revenue: 0, count: 0, ratings: [] };
@@ -127,7 +176,7 @@ const Dashboard = () => {
       return { name, value: avgRating };
     });
 
-    const byState = sales.reduce((acc, sale) => {
+    const byState = filteredSales.reduce((acc, sale) => {
       const state = sale.conservationState;
       acc[state] = (acc[state] || 0) + 1;
       return acc;
@@ -147,7 +196,7 @@ const Dashboard = () => {
       salesByCategoryData,
       ratingByCategoryData,
     };
-  }, [sales]);
+  }, [sales, filters]);
 
   const totalStock = useMemo(() => {
     if (!stock) return 0;
@@ -168,43 +217,92 @@ const Dashboard = () => {
     <div className={styles.dashboardPage}>
       <h1>Dashboard</h1>
       <div className={styles.filterCard}>
+        {/* Category Filter */}
         <div className={styles.filterGroup}>
           <label htmlFor="category-filter">Categorias</label>
           <div className={styles.selectWrapper}>
-            <select id="category-filter" className={styles.filterSelect}>
-              <option>Todas as categorias</option>
+            <select 
+              id="category-filter" 
+              className={styles.filterSelect}
+              value={filters.category}
+              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+            >
+              <option value="all">Todas as categorias</option>
+              {filterOptions.categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
             </select>
           </div>
         </div>
+
+        {/* Language Filter */}
         <div className={styles.filterGroup}>
           <label htmlFor="language-filter">Idioma do livro</label>
           <div className={styles.selectWrapper}>
-            <select id="language-filter" className={styles.filterSelect}>
-              <option>Todos os idiomas</option>
+            <select 
+              id="language-filter" 
+              className={styles.filterSelect}
+              value={filters.language}
+              onChange={(e) => setFilters(prev => ({ ...prev, language: e.target.value }))}
+            >
+              <option value="all">Todos os idiomas</option>
+              {filterOptions.languages.map(language => (
+                <option key={language} value={language}>{language}</option>
+              ))}
             </select>
           </div>
         </div>
+
+        {/* Month Filter */}
         <div className={styles.filterGroup}>
           <label htmlFor="month-filter">Mês</label>
           <div className={styles.selectWrapper}>
-            <select id="month-filter" className={styles.filterSelect}>
-              <option>Todos os meses</option>
+            <select 
+              id="month-filter" 
+              className={styles.filterSelect}
+              value={filters.month}
+              onChange={(e) => setFilters(prev => ({ ...prev, month: e.target.value }))}
+            >
+              <option value="all">Todos os meses</option>
+              {filterOptions.months.map(month => (
+                <option key={month} value={month}>{month}</option>
+              ))}
             </select>
           </div>
         </div>
+
+        {/* Day Filter */}
         <div className={styles.filterGroup}>
           <label htmlFor="day-filter">Dia</label>
           <div className={styles.selectWrapper}>
-            <select id="day-filter" className={styles.filterSelect}>
-              <option>Todos os dias</option>
+            <select 
+              id="day-filter" 
+              className={styles.filterSelect}
+              value={filters.day}
+              onChange={(e) => setFilters(prev => ({ ...prev, day: e.target.value }))}
+            >
+              <option value="all">Todos os dias</option>
+              {filterOptions.days.map(day => (
+                <option key={day} value={day}>{day}</option>
+              ))}
             </select>
           </div>
         </div>
+
+        {/* Year Filter */}
         <div className={styles.filterGroup}>
           <label htmlFor="year-filter">Ano</label>
           <div className={styles.selectWrapper}>
-            <select id="year-filter" className={styles.filterSelect}>
-              <option>Todos os anos</option>
+            <select 
+              id="year-filter" 
+              className={styles.filterSelect}
+              value={filters.year}
+              onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
+            >
+              <option value="all">Todos os anos</option>
+              {filterOptions.years.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -282,10 +380,10 @@ const Dashboard = () => {
         <div className={styles.chartCard}>
           <h3 className={styles.chartTitle}>Receita por Categoria</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={processedData.revenueByCategoryData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="name" width={80} />
+            <BarChart data={processedData.revenueByCategoryData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" />
+              <YAxis />
               <Tooltip />
               <Bar dataKey="value" fill={chartColors.chartBlueStrong} />
             </BarChart>
