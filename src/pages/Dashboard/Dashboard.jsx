@@ -148,12 +148,26 @@ const Dashboard = () => {
     const totalBooksSold = filteredSales.length;
     const averagePrice = totalBooksSold > 0 ? totalRevenue / totalBooksSold : 0;
 
-    const revenueOverTime = filteredSales.reduce((acc, sale) => {
-      const month = new Date(sale.saleDate).toLocaleString('default', { month: 'short' });
-      acc[month] = (acc[month] || 0) + sale.bookPrice;
-      return acc;
-    }, {});
-    const revenueOverTimeData = Object.entries(revenueOverTime).map(([name, Receita]) => ({ name, Receita }));
+    let revenueOverTimeData;
+    if (filters.month !== 'all') {
+      // A month is selected, group by day
+      const revenueByDay = filteredSales.reduce((acc, sale) => {
+        const day = new Date(sale.saleDate).getDate();
+        acc[day] = (acc[day] || 0) + sale.bookPrice;
+        return acc;
+      }, {});
+      revenueOverTimeData = Object.entries(revenueByDay)
+        .map(([name, Receita]) => ({ name: `Dia ${name}`, Receita }))
+        .sort((a, b) => parseInt(a.name.split(' ')[1]) - parseInt(b.name.split(' ')[1]));
+    } else {
+      // No month selected, group by month
+      const revenueByMonth = filteredSales.reduce((acc, sale) => {
+        const month = new Date(sale.saleDate).toLocaleString('default', { month: 'short' });
+        acc[month] = (acc[month] || 0) + sale.bookPrice;
+        return acc;
+      }, {});
+      revenueOverTimeData = Object.entries(revenueByMonth).map(([name, Receita]) => ({ name, Receita }));
+    }
 
     const byCategory = filteredSales.reduce((acc, sale) => {
       sale.bookCategory.forEach(category => {
