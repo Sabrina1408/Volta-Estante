@@ -12,25 +12,50 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* --- Variáveis de Cor e Estilo --- */
+  /* Cores Base */
   --white: #FFFFFF;
   --black: #000000;
-  --primaryBackground: #F9FAFB;
-  --secondaryBackground: #F9FAFB;
+  --background: #f8f9fa; /* Fundo geral da página */
+  --primaryBackground: #F9FAFB; /* Mantido para compatibilidade */
+  --secondaryBackground: #F9FAFB; /* Mantido para compatibilidade */
   --tertiaryBackground: #ECECF0;
   --quaternaryBackground: #818181;
   --quinaryBackground: #030213;
   --sixnaryBackground: #646cff;
+  --text-dark: #111827; /* Texto principal escuro */
+  --text-light: #6b7280; /* Texto secundário/labels */
   --inputColor: #2c2c2c;
+  --input-background: #f9fafb; /* Fundo de inputs/selects */
+  --border-color: #e5e7eb; /* Cor de borda sutil */
+
+  /* Cores de Feedback */
   --error: rgb(165, 62, 62);
   --errorBorder: #e74c3c;
   --successBackground: #218838;
   --successBorder: #218838;
+
+  /* Cores de Ação */
   --addBookBackground: #00A63E;
   --logButtonBackground: #2B7FFF;
   --deleteBookBackground: #d9534f;
   --editBookBackground: #2B7FFF;
   --linkGeneralColor: #888eff;
   --sellBookBackground: #28a745;
+
+  /* Cores de Destaque para Métricas e Gráficos */
+  --metric-green: #10b981;
+  --metric-green-bg: #e7f8f3;
+  --metric-blue: #3b82f6;
+  --metric-blue-bg: #eef5ff;
+  --metric-purple: #8b5cf6;
+  --metric-purple-bg: #f5f3ff;
+  --metric-orange: #f97316;
+  --metric-orange-bg: #fff5ee;
+
+  /* Estilos de Card */
+  --borderRadius: 12px;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 * {
