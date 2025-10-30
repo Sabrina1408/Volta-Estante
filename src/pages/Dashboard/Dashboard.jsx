@@ -24,9 +24,15 @@ const PIE_COLORS = ["#0088FE", "#FF8042", "#FFBB28", "#AF19FF"];
 const Dashboard = () => {
   const { authFetch } = useApi();
 
-  const { data: sales, isLoading, isError, error } = useQuery({
+  const { data: sales, isLoading: isLoadingSales, isError: isErrorSales, error: errorSales } = useQuery({
     queryKey: ['sales'],
     queryFn: () => authFetch('/sales').then(res => res.json())
+  });
+
+  const { data: stock, isLoading: isLoadingStock, isError: isErrorStock, error: errorStock } = useQuery({
+    queryKey: ['stock'],
+    // O endpoint /books retorna a lista de livros com a quantidade total de cada um
+    queryFn: () => authFetch('/books').then(res => res.json())
   });
 
   const processedData = useMemo(() => {
@@ -97,16 +103,24 @@ const Dashboard = () => {
     };
   }, [sales]);
 
-  if (isLoading) {
+  const totalStock = useMemo(() => {
+    if (!stock) return 0;
+    // Soma a 'totalQuantity' de cada livro para obter o estoque total
+    return stock.reduce((acc, book) => acc + (book.totalQuantity || 0), 0);
+  }, [stock]);
+
+  if (isLoadingSales || isLoadingStock) {
     return <div className={styles.centered}><Spinner /></div>;
   }
 
-  if (isError) {
-    return <div className={styles.centered}>Erro ao carregar dados: {error.message}</div>;
+  if (isErrorSales || isErrorStock) {
+    const errorMessage = errorSales?.message || errorStock?.message;
+    return <div className={styles.centered}>Erro ao carregar dados: {errorMessage}</div>;
   }
 
   return (
     <div className={styles.dashboardContainer}>
+      <h1>Dashboard</h1>
       <div className={styles.filterBar}>
         <div className={styles.selectWrapper}>
           <FaFilter className={styles.selectIcon} />
@@ -159,7 +173,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricInfo}>
             <span className={styles.metricTitle}>Livros em Estoque</span>
-            <span className={styles.metricValue}>N/A</span>
+            <span className={styles.metricValue}>{totalStock}</span>
           </div>
         </div>
         <div className={styles.metricCard}>
