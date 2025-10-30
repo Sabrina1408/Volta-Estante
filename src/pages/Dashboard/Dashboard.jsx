@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";import {
+import { useMemo, useState, useEffect } from "react";import {
   LineChart,
   Line,
   BarChart,
@@ -19,10 +19,56 @@ import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
 
-const PIE_COLORS = ["#0088FE", "#FF8042", "#FFBB28", "#AF19FF"];
+/**
+ * Helper para ler o valor de uma variável CSS do :root.
+ * Necessário porque os atributos SVG (fill, stroke) não resolvem var() diretamente.
+ * @param {string} variable - O nome da variável CSS (ex: '--metric-blue').
+ * @returns {string} O valor computado da cor (ex: '#3b82f6').
+ */
+const getCssVariableValue = (variable) => {
+  // Garante que o código não quebre em ambientes sem DOM (ex: SSR)
+  if (typeof window === 'undefined') return '';
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+};
 
 const Dashboard = () => {
   const { authFetch } = useApi();
+
+  const [chartColors, setChartColors] = useState({
+    metricBlue: "",
+    chartBlueStrong: "",
+    chartPurpleStrong: "",
+    chartOrangeVibrant: "",
+    pieColor1: "",
+    pieColor2: "",
+    pieColor3: "",
+    pieColor4: "",
+  });
+
+  useEffect(() => {
+    // Garante que o código não quebre em ambientes sem DOM (ex: SSR)
+    if (typeof window === "undefined") return;
+
+    const metricBlue = getCssVariableValue("--metric-blue");
+    const chartBlueStrong = getCssVariableValue("--chart-blue-strong");
+    const chartPurpleStrong = getCssVariableValue("--chart-purple-strong");
+    const chartOrangeVibrant = getCssVariableValue("--chart-orange-vibrant");
+    const pieColor1 = getCssVariableValue("--pie-color-1");
+    const pieColor2 = getCssVariableValue("--pie-color-2");
+    const pieColor3 = getCssVariableValue("--pie-color-3");
+    const pieColor4 = getCssVariableValue("--pie-color-4");
+
+    setChartColors({
+      metricBlue,
+      chartBlueStrong,
+      chartPurpleStrong,
+      chartOrangeVibrant,
+      pieColor1,
+      pieColor2,
+      pieColor3,
+      pieColor4,
+    });
+  }, []);
 
   const { data: sales, isLoading: isLoadingSales, isError: isErrorSales, error: errorSales } = useQuery({
     queryKey: ['sales'],
@@ -223,7 +269,7 @@ const Dashboard = () => {
             <Line
               type="monotone"
               dataKey="Receita"
-              stroke="var(--metric-blue)"
+              stroke={chartColors.metricBlue}
               strokeWidth={2}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
@@ -241,7 +287,7 @@ const Dashboard = () => {
               <XAxis type="number" />
               <YAxis type="category" dataKey="name" width={80} />
               <Tooltip />
-              <Bar dataKey="value" fill="var(--chart-blue-strong)" />
+              <Bar dataKey="value" fill={chartColors.chartBlueStrong} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -261,7 +307,7 @@ const Dashboard = () => {
                 dataKey="value"
               >
                 {processedData.salesByStateData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={[chartColors.pieColor1, chartColors.pieColor2, chartColors.pieColor3, chartColors.pieColor4][index % 4]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -283,7 +329,7 @@ const Dashboard = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="value" fill="var(--chart-purple-strong)" />
+              <Bar dataKey="value" fill={chartColors.chartPurpleStrong} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -296,7 +342,7 @@ const Dashboard = () => {
               <XAxis dataKey="name" />
               <YAxis domain={[0, 5]} />
               <Tooltip />
-              <Bar dataKey="value" fill="var(--chart-orange-vibrant)" />
+              <Bar dataKey="value" fill={chartColors.chartOrangeVibrant} />
             </BarChart>
           </ResponsiveContainer>
         </div>

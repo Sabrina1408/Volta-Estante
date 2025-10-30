@@ -11,6 +11,7 @@
   color: var(--text-dark);
   display: grid;
   gap: 2rem;
+  margin-bottom: 5rem;
 }
 
 /* --- Filtros --- */
@@ -44,7 +45,7 @@
 .filterSelect {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb;
+  background-color: var(--input-background);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;

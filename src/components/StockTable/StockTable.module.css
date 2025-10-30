@@ -45,14 +45,14 @@
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151; /* Cinza escuro para o rótulo */
+  color: var(--text-light);
 }
 
 .filterInput,
 .filterSelect {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb; /* Cinza extremamente claro */
+  background-color: var(--input-background);
   border: 1px solid #d1d5db; /* Borda sutil */
   border-radius: 8px;
   font-size: 1rem;

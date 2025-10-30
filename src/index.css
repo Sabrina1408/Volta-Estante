@@ -53,6 +53,15 @@
   --metric-orange: #f97316;
   --metric-orange-bg: #fff5ee;
 
+  /* Cores para Gráficos */
+  --chart-blue-strong: #2563eb;
+  --chart-purple-strong: #7c3aed;
+  --chart-orange-vibrant: #ea580c;
+  --pie-color-1: #3b82f6;
+  --pie-color-2: #8b5cf6;
+  --pie-color-3: #f97316;
+  --pie-color-4: #10b981;
+
   /* Estilos de Card */
   --borderRadius: 12px;
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
