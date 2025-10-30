@@ -1,10 +1,7 @@
 // React Router
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
 // Hook/Context
 import { useAuth, AuthProvider } from "./context/AuthContext";
-// CSS
-import "./App.css";
 // Pages
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
