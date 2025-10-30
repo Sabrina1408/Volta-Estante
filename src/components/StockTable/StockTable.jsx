@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./StockTable.module.css";
-import { FaFilter, FaLayerGroup, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import AlertModal from "../AlertModal/AlertModal";
 
@@ -135,29 +135,38 @@ const StockTable = () => {
 
   return (
     <div className={styles.stockContainer}>
-      <div className={styles.filterControls}>
-        <input
-          type="text"
-          placeholder="Filtrar por Título ou ISBN..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <input
-          type="text"
-          placeholder="Filtrar por autor..."
-          value={authorFilter}
-          onChange={(e) => setAuthorFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        <div className={styles.selectWrapper}>
-          <FaFilter className={styles.selectIcon} />
+      <div className={styles.filterCard}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="title-isbn-filter">Título ou ISBN</label>
+          <input
+            id="title-isbn-filter"
+            type="text"
+            placeholder="Filtrar por Título ou ISBN..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className={styles.filterInput}
+          />
+        </div>
+        <div className={styles.filterGroup}>
+          <label htmlFor="author-filter">Autor</label>
+          <input
+            id="author-filter"
+            type="text"
+            placeholder="Filtrar por autor..."
+            value={authorFilter}
+            onChange={(e) => setAuthorFilter(e.target.value)}
+            className={styles.filterInput}
+          />
+        </div>
+        <div className={styles.filterGroup}>
+          <label htmlFor="category-filter">Categorias</label>
           <select
+            id="category-filter"
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className={styles.filterSelect}
           >
-            <option value="all">Categorias</option>
+            <option value="all">Todas as categorias</option>
             {allCategories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -165,14 +174,15 @@ const StockTable = () => {
             ))}
           </select>
         </div>
-        <div className={styles.selectWrapper}>
-          <FaLayerGroup className={styles.selectIcon} />
+        <div className={styles.filterGroup}>
+          <label htmlFor="stock-level-filter">Quantidade</label>
           <select
+            id="stock-level-filter"
             value={stockLevelFilter}
             onChange={(e) => setStockLevelFilter(e.target.value)}
             className={styles.filterSelect}
           >
-            <option value="all">Quantidade</option>
+            <option value="all">Todas</option>
             <option value="low">Baixo (1-5)</option>
             <option value="medium">Médio (6-10)</option>
             <option value="high">Alto (&gt;10)</option>

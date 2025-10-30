@@ -24,51 +24,59 @@
     font-weight: bold;
 }
 
-
-.filterControls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    align-items: center;
+/* --- Estilos dos Filtros (Padrão do Dashboard) --- */
+.filterCard {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.filterInput {
-    flex-grow: 1; /* Ocupa o espaço restante */
-    padding: 10px;
-    border: 1px solid var(--tertiaryBackground);
-    background-color: var(--tertiaryBackground);
-    color: var(--inputColor);
-    border-radius: 5px;
-    font-size: 1rem;
+.filterGroup {
+  display: flex;
+  flex-direction: column;
 }
 
-.selectWrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
+.filterGroup label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151; /* Cinza escuro para o rótulo */
 }
 
-.selectIcon {
-    position: absolute;
-    left: 10px;
-    color: var(--inputColor);
-    pointer-events: none; /* Permite clicar no select através do ícone */
+.filterInput,
+.filterSelect {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb; /* Cinza extremamente claro */
+  border: 1px solid #d1d5db; /* Borda sutil */
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #111827; /* Texto escuro */
+  box-sizing: border-box;
 }
 
 .filterSelect {
-    padding: 10px;
-    padding-left: 35px; /* Espaço para o ícone */
-    border: 1px solid var(--tertiaryBackground);
-    background-color: var(--tertiaryBackground);
-    color: var(--inputColor);
-    border-radius: 5px;
-    font-size: 1rem;
-    min-width: 150px; /* Largura mínima para evitar que fiquem muito pequenos */
-    appearance: none;
+  appearance: none; /* Remove a seta padrão do navegador */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em;
+  padding-right: 2.5rem; /* Espaço para a nova seta */
 }
 
 .filterSelect:hover {
     cursor: pointer;
+}
+
+@media (max-width: 992px) {
+  .filterCard {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablets */
+  }
 }
 
 .stockTable {
@@ -139,15 +147,6 @@
 
 /* --- Estilos Responsivos --- */
 @media screen and (max-width: 768px) {
-    .filterControls {
-        flex-direction: column; /* Empilha os filtros verticalmente */
-        align-items: stretch; /* Faz os filtros ocuparem a largura total */
-    }
-
-    .filterInput, .filterSelect {
-        width: 100%; /* Garante que os inputs e selects ocupem todo o espaço */
-    }
-
     .stockTable {
         min-width: 700px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
     }
@@ -155,6 +154,12 @@
     .stockTable th, .stockTable td {
         white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
     }
+}
+
+@media (max-width: 576px) {
+  .filterCard {
+    grid-template-columns: 1fr; /* 1 coluna em celulares */
+  }
 }
 
 .paginationControls {

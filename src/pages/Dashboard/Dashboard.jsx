@@ -121,30 +121,46 @@ const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <h1>Dashboard</h1>
-      <div className={styles.filterBar}>
-        <div className={styles.selectWrapper}>
-          <FaFilter className={styles.selectIcon} />
-          <select className={styles.filterSelect}>
-            <option>Categorias</option>
-          </select>
+      <div className={styles.filterCard}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="category-filter">Categorias</label>
+          <div className={styles.selectWrapper}>
+            <select id="category-filter" className={styles.filterSelect}>
+              <option>Todas as categorias</option>
+            </select>
+          </div>
         </div>
-        <div className={styles.selectWrapper}>
-          <FaFilter className={styles.selectIcon} />
-          <select className={styles.filterSelect}>
-            <option>Idioma do livro</option>
-          </select>
+        <div className={styles.filterGroup}>
+          <label htmlFor="language-filter">Idioma do livro</label>
+          <div className={styles.selectWrapper}>
+            <select id="language-filter" className={styles.filterSelect}>
+              <option>Todos os idiomas</option>
+            </select>
+          </div>
         </div>
-        <div className={styles.selectWrapper}>
-          <FaFilter className={styles.selectIcon} />
-          <select className={styles.filterSelect}>
-            <option>Mês</option>
-          </select>
+        <div className={styles.filterGroup}>
+          <label htmlFor="month-filter">Mês</label>
+          <div className={styles.selectWrapper}>
+            <select id="month-filter" className={styles.filterSelect}>
+              <option>Todos os meses</option>
+            </select>
+          </div>
         </div>
-        <div className={styles.selectWrapper}>
-          <FaFilter className={styles.selectIcon} />
-          <select className={styles.filterSelect}>
-            <option>Ano</option>
-          </select>
+        <div className={styles.filterGroup}>
+          <label htmlFor="day-filter">Dia</label>
+          <div className={styles.selectWrapper}>
+            <select id="day-filter" className={styles.filterSelect}>
+              <option>Todos os dias</option>
+            </select>
+          </div>
+        </div>
+        <div className={styles.filterGroup}>
+          <label htmlFor="year-filter">Ano</label>
+          <div className={styles.selectWrapper}>
+            <select id="year-filter" className={styles.filterSelect}>
+              <option>Todos os anos</option>
+            </select>
+          </div>
         </div>
       </div>
 
