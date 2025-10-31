@@ -6,7 +6,8 @@ import { FaTimes } from 'react-icons/fa';
 
 const EmployeeModal = ({ isOpen, onClose, employee }) => {
   const [userId, setUserId] = useState('');
-  const [userRole, setUserRole] = useState('EDITOR');
+  // Start empty so edit mode can show the actual user's role (or blank if none)
+  const [userRole, setUserRole] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -17,9 +18,10 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   useEffect(() => {
     if (employee) {
       setUserId(employee.userId);
-      setUserRole(employee.userRole);
+      // If employee has a role, normalize it and show it; otherwise leave blank
+      setUserRole(employee.userRole ? String(employee.userRole).toUpperCase() : '');
     } else {
-      // Reset form when opening for a new employee
+      // Reset form when opening for a new employee: default to EDITOR
       setUserId('');
       setUserRole('EDITOR');
     }
@@ -104,7 +106,12 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
             <label htmlFor="userRole">Função</label>
             <select id="userRole" value={userRole} onChange={(e) => setUserRole(e.target.value)}>
               <option value="EDITOR">Editor</option>
+              <option value="LEITOR">Leitor</option>
               <option value="ADMIN">Administrador</option>
+              {/* If the employee has a role not present in the above list, include it so the select displays it */}
+              {isEditing && userRole && !["EDITOR", "LEITOR", "ADMIN"].includes(userRole) && (
+                <option value={userRole}>{userRole}</option>
+              )}
             </select>
           </div>
 
