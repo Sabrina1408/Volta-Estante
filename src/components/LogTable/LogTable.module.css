@@ -1,44 +1,39 @@
-.logContainer {
-  margin-top: 2rem;
-  margin-bottom: 5rem;
+.tableWrapper {
   width: 100%;
+  overflow-x: auto; /* Habilita a rolagem horizontal */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
 }
 
+/* Tabela */
 .logTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 800px;
 }
 
 .logTable th,
 .logTable td {
-  border: 1px solid var(--tertiaryBackground);
-  padding: 12px 15px;
+  padding: 1rem 1.25rem;
   text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .logTable th {
-  background-color: var(--secondaryBackground);
-  color: var(--textColor);
-  font-weight: bold;
+  background-color: var(--input-background);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.logTable tbody tr:nth-of-type(even) {
-  background-color: var(--secondaryBackground);
-}
-
-.loading {
-  margin-top: 1rem;
-}
-
-.tableWrapper {
-  width: 100%;
-  overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
-}
-
-.logTable td:last-child {
-  word-break: break-all;
+.logTable tbody tr:last-child td {
+  border-bottom: none; /* Remove a borda da última linha */
 }
 
 .paginationControls {
@@ -66,14 +61,4 @@
 .paginationControls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-@media (max-width: 1030px) {
-  .logTable {
-    min-width: 800px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
-  }
-  .logTable th,
-  .logTable td {
-    white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
-  }
 }
