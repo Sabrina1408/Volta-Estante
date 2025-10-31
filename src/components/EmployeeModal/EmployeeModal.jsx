@@ -144,6 +144,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
                 value={userRole}
                 onChange={(e) => setUserRole(e.target.value)}
               >
+                <option value='Admin' disabled>Administrador</option>
                 <option value='Editor'>Editor</option>
                 <option value='Reader'>Leitor</option>
               </select>

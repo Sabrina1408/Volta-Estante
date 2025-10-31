@@ -68,6 +68,8 @@ const ManageEmployees = () => {
         return { text: 'Administrador', className: styles.roleAdmin };
       case 'Editor':
         return { text: 'Editor', className: styles.roleEditor };
+      case 'Reader':
+        return { text: 'Leitor', className: styles.roleReader };
       default:
         return { text: role, className: '' };
     }
