@@ -311,7 +311,7 @@ def add_new_employee_route():
     return jsonify(new_employee), 201
 
 @app.route("/users/<user_id>", methods=["PUT"])
-@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 @swag_from('swagger_docs/users_update.yml')
 def update_user_route(user_id): # admin pode atualizar qualquer user do sebo, editor apenas ele mesmo
     if g.user_role != UserRole.ADMIN.value and g.user_id != user_id:
