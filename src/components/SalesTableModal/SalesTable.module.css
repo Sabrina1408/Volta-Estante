@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem;
+  padding: 0 2rem;
   background-color: var(--secondaryBackground);
 }
 
@@ -54,7 +54,7 @@
 .salesTable {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px; /* Força a rolagem em telas menores */
+  min-width: 800px;
 }
 
 .salesTable th,
@@ -63,7 +63,18 @@
   text-align: left;
   vertical-align: middle;
   border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.salesTable th:nth-child(1), .salesTable td:nth-child(1) { width: 10%; }
+.salesTable th:nth-child(2), .salesTable td:nth-child(2) { width: 15%; }
+.salesTable th:nth-child(3), .salesTable td:nth-child(3) { width: 25%; }
+.salesTable th:nth-child(4), .salesTable td:nth-child(4) { width: 15%; }
+.salesTable th:nth-child(5), .salesTable td:nth-child(5) { width: 10%; }
+.salesTable th:nth-child(6), .salesTable td:nth-child(6) { width: 15%; }
+.salesTable th:nth-child(7), .salesTable td:nth-child(7) { width: 10%; }
 
 .salesTable th {
   background-color: #f9fafb;
@@ -78,8 +89,13 @@
   border-bottom: none; /* Remove a borda da última linha */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .salesCard {
-    padding: 1rem;
+    max-width: 1000px;
+  }
+
+  .tableWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
