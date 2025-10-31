@@ -36,7 +36,6 @@ const Dashboard = () => {
     category: 'all',
     conservation: 'all',
     month: 'all',
-    day: 'all',
     year: 'all',
   });
 
@@ -93,7 +92,6 @@ const Dashboard = () => {
         categories: [],
         conservations: [],
         months: [],
-        days: [],
         years: [],
       };
     }
@@ -102,10 +100,9 @@ const Dashboard = () => {
     const conservations = [...new Set(sales.map(sale => sale.conservationState))];
     const dates = sales.map(sale => new Date(sale.saleDate));
     const months = [...new Set(dates.map(date => date.toLocaleString('pt-BR', { month: 'long' })))];
-    const days = [...new Set(dates.map(date => date.getDate()))].sort((a, b) => a - b);
     const years = [...new Set(dates.map(date => date.getFullYear()))].sort((a, b) => a - b);
 
-    return { categories, conservations, months, days, years };
+    return { categories, conservations, months, years };
   }, [sales]);
 
   const processedData = useMemo(() => {
@@ -118,9 +115,6 @@ const Dashboard = () => {
         return false;
       }
       if (filters.month !== 'all' && saleDate.toLocaleString('pt-BR', { month: 'long' }) !== filters.month) {
-        return false;
-      }
-      if (filters.day !== 'all' && saleDate.getDate() !== parseInt(filters.day)) {
         return false;
       }
       if (filters.year !== 'all' && saleDate.getFullYear() !== parseInt(filters.year)) {
@@ -285,24 +279,6 @@ const Dashboard = () => {
                   <option value="all">Todos os meses</option>
                   {filterOptions.months.map(month => (
                     <option key={month} value={month}>{month}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Day Filter */}
-            <div className={styles.filterGroup}>
-              <label htmlFor="day-filter">Dia</label>
-              <div className={styles.selectWrapper}>
-                <select
-                  id="day-filter"
-                  className={styles.filterSelect}
-                  value={filters.day}
-                  onChange={(e) => setFilters(prev => ({ ...prev, day: e.target.value }))}
-                >
-                  <option value="all">Todos os dias</option>
-                  {filterOptions.days.map(day => (
-                    <option key={day} value={day}>{day}</option>
                   ))}
                 </select>
               </div>
