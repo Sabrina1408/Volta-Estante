@@ -29,16 +29,6 @@ parameters:
           type: string
           enum: [Editor, Reader]
           example: "Editor"
-        phone:
-          type: string
-          example: "+55 11 98888-7777"
-        address:
-          type: object
-          properties:
-            street: { type: string, example: "Rua A, 123" }
-            city: { type: string, example: "São Paulo" }
-            state: { type: string, example: "SP" }
-            zipCode: { type: string, example: "01234-567" }
 responses:
   201:
     description: Funcionário criado com sucesso (inclui credenciais temporárias)
