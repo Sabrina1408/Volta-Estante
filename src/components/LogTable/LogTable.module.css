@@ -1,40 +1,40 @@
 .logContainer {
-    margin-top: 2rem;
-    margin-bottom: 5rem;
-    width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 5rem;
+  width: 100%;
 }
 
 .logTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logTable th,
 .logTable td {
-    border: 1px solid var(--tertiaryBackground);
-    padding: 12px 15px;
-    text-align: left;
+  border: 1px solid var(--tertiaryBackground);
+  padding: 12px 15px;
+  text-align: left;
 }
 
 .logTable th {
-    background-color: var(--secondaryBackground);
-    color: var(--textColor);
-    font-weight: bold;
+  background-color: var(--secondaryBackground);
+  color: var(--textColor);
+  font-weight: bold;
 }
 
 .logTable tbody tr:nth-of-type(even) {
-    background-color: var(--secondaryBackground);
+  background-color: var(--secondaryBackground);
 }
 
 .loading {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .tableWrapper {
-    width: 100%;
-    overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
+  width: 100%;
+  overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
 }
 
 .logTable td:last-child {
@@ -69,10 +69,11 @@
 }
 
 @media (max-width: 1030px) {
-    .logTable {
-        min-width: 800px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
-    }
-    .logTable th, .logTable td {
-        white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
-    }
+  .logTable {
+    min-width: 800px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+  }
+  .logTable th,
+  .logTable td {
+    white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
+  }
 }

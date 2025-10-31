@@ -1,3 +1,10 @@
+.dashboardContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--background);
+}
+
 .centered {
   display: flex;
   justify-content: center;
@@ -167,40 +174,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
 }
 
-.viewSalesButton {
-  background-color: var(--logButtonBackground);
-  color: var(--white);
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
 
-.viewSalesButton:hover {
-  opacity: 0.9;
-}
-
-.pageContainer {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem;
-  background-color: var(--secondaryBackground);
-}
-
-@media (max-width: 576px) {
-  .dashboardHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .pageContainer {
-    padding: 1rem;
-  }
-}
 
