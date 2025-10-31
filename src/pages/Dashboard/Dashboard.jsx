@@ -18,8 +18,6 @@ import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa"
 import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
-import SalesTable from "../../components/SalesTableModal/SalesTable";
-
 /**
  * Helper para ler o valor de uma variável CSS do :root.
  * Necessário porque os atributos SVG (fill, stroke) não resolvem var() diretamente.
@@ -34,9 +32,6 @@ const getCssVariableValue = (variable) => {
 
 const Dashboard = () => {
   const { authFetch } = useApi();
-
-  const [showSalesTable, setShowSalesTable] = useState(false);
-
   const [filters, setFilters] = useState({
     category: 'all',
     conservation: 'all',
@@ -231,19 +226,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={styles.dashboardPage}>
+    <div className={styles.dashboardContainer}>
+      <div className={styles.dashboardPage}>
       <div className={styles.dashboardHeader}>
-        <h1>{showSalesTable ? 'Histórico de Vendas' : 'Dashboard'}</h1>
-        <button onClick={() => setShowSalesTable(!showSalesTable)} className={styles.viewSalesButton}>
-          {showSalesTable ? 'Voltar ao Dashboard' : 'Histórico de Vendas'}
-        </button>
-      </div>
-      {showSalesTable ? (
-        <div className={styles.pageContainer}>
-          <SalesTable isOpen={showSalesTable} />
+        <div className={styles.headerText}>
+          <h1 className={styles.title}>Dashboard</h1>
+          <p className={styles.subtitle}>Consulte as métricas de vendas e estoque.</p>
         </div>
-      ) : (
-        <>
+      </div>
+
           <div className={styles.filterCard}>
             {/* Category Filter */}
             <div className={styles.filterGroup}>
@@ -265,7 +256,7 @@ const Dashboard = () => {
 
             {/* Conservation Filter */}
             <div className={styles.filterGroup}>
-              <label htmlFor="conservation-filter">Estado de Conservação</label>
+              <label htmlFor="conservation-filter"> Conservação</label>
               <div className={styles.selectWrapper}>
                 <select
                   id="conservation-filter"
@@ -473,9 +464,9 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-        </>
-      )}
+        
     </div>
+  </div>
   );
 };
 

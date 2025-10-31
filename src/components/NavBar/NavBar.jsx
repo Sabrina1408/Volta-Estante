@@ -68,6 +68,16 @@ const NavBar = () => {
                   Dashboard
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/vendas" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Vendas
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/logs" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Logs
+                </NavLink>
+              </li>
             </>
           )}
         </ul>

@@ -11,6 +11,8 @@ import Perfil from "./pages/Perfil/Perfil";
 import Estoque from "./pages/Estoque/Estoque";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
+import Vendas from "./pages/Vendas/Vendas";
+import Logs from "./pages/Logs/Logs";
 // Components
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
@@ -53,6 +55,14 @@ function AppRoutes() {
       <Route
         path="/search"
         element={user ? <Search /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/vendas"
+        element={user ? <Vendas /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/logs"
+        element={user ? <Logs /> : <Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
     </Routes>
