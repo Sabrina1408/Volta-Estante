@@ -18,6 +18,7 @@ import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa"
 import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
+import SalesTable from "../../components/SalesTableModal/SalesTable";
 
 /**
  * Helper para ler o valor de uma variável CSS do :root.
@@ -33,6 +34,8 @@ const getCssVariableValue = (variable) => {
 
 const Dashboard = () => {
   const { authFetch } = useApi();
+
+  const [showSalesTable, setShowSalesTable] = useState(false);
 
   const [filters, setFilters] = useState({
     category: 'all',
@@ -229,236 +232,249 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboardPage}>
-      <h1>Dashboard</h1>
-      <div className={styles.filterCard}>
-        {/* Category Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="category-filter">Categorias</label>
-          <div className={styles.selectWrapper}>
-            <select 
-              id="category-filter" 
-              className={styles.filterSelect}
-              value={filters.category}
-              onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-            >
-              <option value="all">Todas as categorias</option>
-              {filterOptions.categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Conservation Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="conservation-filter">Estado de Conservação</label>
-          <div className={styles.selectWrapper}>
-            <select 
-              id="conservation-filter" 
-              className={styles.filterSelect}
-              value={filters.conservation}
-              onChange={(e) => setFilters(prev => ({ ...prev, conservation: e.target.value }))}
-            >
-              <option value="all">Todos os estados</option>
-              {filterOptions.conservations.map(conservation => (
-                <option key={conservation} value={conservation}>{conservation}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Month Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="month-filter">Mês</label>
-          <div className={styles.selectWrapper}>
-            <select 
-              id="month-filter" 
-              className={styles.filterSelect}
-              value={filters.month}
-              onChange={(e) => setFilters(prev => ({ ...prev, month: e.target.value }))}
-            >
-              <option value="all">Todos os meses</option>
-              {filterOptions.months.map(month => (
-                <option key={month} value={month}>{month}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Day Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="day-filter">Dia</label>
-          <div className={styles.selectWrapper}>
-            <select 
-              id="day-filter" 
-              className={styles.filterSelect}
-              value={filters.day}
-              onChange={(e) => setFilters(prev => ({ ...prev, day: e.target.value }))}
-            >
-              <option value="all">Todos os dias</option>
-              {filterOptions.days.map(day => (
-                <option key={day} value={day}>{day}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Year Filter */}
-        <div className={styles.filterGroup}>
-          <label htmlFor="year-filter">Ano</label>
-          <div className={styles.selectWrapper}>
-            <select 
-              id="year-filter" 
-              className={styles.filterSelect}
-              value={filters.year}
-              onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
-            >
-              <option value="all">Todos os anos</option>
-              {filterOptions.years.map(year => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+      <div className={styles.dashboardHeader}>
+        <h1>{showSalesTable ? 'Histórico de Vendas' : 'Dashboard'}</h1>
+        <button onClick={() => setShowSalesTable(!showSalesTable)} className={styles.viewSalesButton}>
+          {showSalesTable ? 'Voltar ao Dashboard' : 'Histórico de Vendas'}
+        </button>
       </div>
+      {showSalesTable ? (
+        <div className={styles.pageContainer}>
+          <SalesTable isOpen={showSalesTable} />
+        </div>
+      ) : (
+        <>
+          <div className={styles.filterCard}>
+            {/* Category Filter */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="category-filter">Categorias</label>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="category-filter"
+                  className={styles.filterSelect}
+                  value={filters.category}
+                  onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                >
+                  <option value="all">Todas as categorias</option>
+                  {filterOptions.categories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-      <div className={styles.metricsGrid}>
-        <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.metricGreenBg}`}>
-            <FaDollarSign />
-          </div>
-          <div className={styles.metricInfo}>
-            <span className={styles.metricTitle}>Receita Total</span>
-            <span className={`${styles.metricValue} ${styles.metricGreen}`}>
-              {processedData.totalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </span>
-          </div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.metricBlueBg}`}>
-            <FaTags />
-          </div>
-          <div className={styles.metricInfo}>
-            <span className={styles.metricTitle}>Preço Médio por Venda</span>
-            <span className={`${styles.metricValue} ${styles.metricBlue}`}>
-              {processedData.averagePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </span>
-          </div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.metricPurpleBg}`}>
-            <FaBoxOpen />
-          </div>
-          <div className={styles.metricInfo}>
-            <span className={styles.metricTitle}>Livros em Estoque</span>
-            <span className={`${styles.metricValue} ${styles.metricPurple}`}>{totalStock}</span>
-          </div>
-        </div>
-        <div className={styles.metricCard}>
-          <div className={`${styles.metricIcon} ${styles.metricOrangeBg}`}>
-            <FaShoppingCart />
-          </div>
-          <div className={styles.metricInfo}>
-            <span className={styles.metricTitle}>Total de Livros Vendidos</span>
-            <span className={`${styles.metricValue} ${styles.metricOrange}`}>{processedData.totalBooksSold}</span>
-          </div>
-        </div>
-      </div>
+            {/* Conservation Filter */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="conservation-filter">Estado de Conservação</label>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="conservation-filter"
+                  className={styles.filterSelect}
+                  value={filters.conservation}
+                  onChange={(e) => setFilters(prev => ({ ...prev, conservation: e.target.value }))}
+                >
+                  <option value="all">Todos os estados</option>
+                  {filterOptions.conservations.map(conservation => (
+                    <option key={conservation} value={conservation}>{conservation}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-      <div className={`${styles.chartCard} ${styles.fullWidth}`}>
-        <h3 className={styles.chartTitle}>Receita ao Longo do Tempo</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={processedData.revenueOverTimeData}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend
-              verticalAlign="top"
-              align="right"
-              wrapperStyle={{ color: "var(--text-light)" }}
-            />
-            <Line
-              type="monotone"
-              dataKey="Receita"
-              stroke={chartColors.metricBlue}
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+            {/* Month Filter */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="month-filter">Mês</label>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="month-filter"
+                  className={styles.filterSelect}
+                  value={filters.month}
+                  onChange={(e) => setFilters(prev => ({ ...prev, month: e.target.value }))}
+                >
+                  <option value="all">Todos os meses</option>
+                  {filterOptions.months.map(month => (
+                    <option key={month} value={month}>{month}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-      <div className={styles.secondaryChartsGrid}>
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Receita por Categoria</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={processedData.revenueByCategoryData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill={chartColors.chartBlueStrong} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+            {/* Day Filter */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="day-filter">Dia</label>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="day-filter"
+                  className={styles.filterSelect}
+                  value={filters.day}
+                  onChange={(e) => setFilters(prev => ({ ...prev, day: e.target.value }))}
+                >
+                  <option value="all">Todos os dias</option>
+                  {filterOptions.days.map(day => (
+                    <option key={day} value={day}>{day}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Vendas por Estado de Conservação</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={processedData.salesByStateData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                fill="#8884d8"
-                paddingAngle={5}
-                dataKey="value"
-              >
-                {processedData.salesByStateData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={[chartColors.pieColor1, chartColors.pieColor2, chartColors.pieColor3, chartColors.pieColor4][index % 4]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend
-                layout="vertical"
-                verticalAlign="middle"
-                align="right"
-                formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value.toFixed(2)}%`}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+            {/* Year Filter */}
+            <div className={styles.filterGroup}>
+              <label htmlFor="year-filter">Ano</label>
+              <div className={styles.selectWrapper}>
+                <select
+                  id="year-filter"
+                  className={styles.filterSelect}
+                  value={filters.year}
+                  onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
+                >
+                  <option value="all">Todos os anos</option>
+                  {filterOptions.years.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
 
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Vendas por Categoria</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={processedData.salesByCategoryData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill={chartColors.chartPurpleStrong} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+          <div className={styles.metricsGrid}>
+            <div className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricGreenBg}`}>
+                <FaDollarSign />
+              </div>
+              <div className={styles.metricInfo}>
+                <span className={styles.metricTitle}>Receita Total</span>
+                <span className={`${styles.metricValue} ${styles.metricGreen}`}>
+                  {processedData.totalRevenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </span>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricBlueBg}`}>
+                <FaTags />
+              </div>
+              <div className={styles.metricInfo}>
+                <span className={styles.metricTitle}>Preço Médio por Venda</span>
+                <span className={`${styles.metricValue} ${styles.metricBlue}`}>
+                  {processedData.averagePrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                </span>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricPurpleBg}`}>
+                <FaBoxOpen />
+              </div>
+              <div className={styles.metricInfo}>
+                <span className={styles.metricTitle}>Livros em Estoque</span>
+                <span className={`${styles.metricValue} ${styles.metricPurple}`}>{totalStock}</span>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricOrangeBg}`}>
+                <FaShoppingCart />
+              </div>
+              <div className={styles.metricInfo}>
+                <span className={styles.metricTitle}>Total de Livros Vendidos</span>
+                <span className={`${styles.metricValue} ${styles.metricOrange}`}>{processedData.totalBooksSold}</span>
+              </div>
+            </div>
+          </div>
 
-        <div className={styles.chartCard}>
-          <h3 className={styles.chartTitle}>Avaliação Média por Categoria</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={processedData.ratingByCategoryData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 5]} />
-              <Tooltip />
-              <Bar dataKey="value" fill={chartColors.chartOrangeVibrant} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+          <div className={`${styles.chartCard} ${styles.fullWidth}`}>
+            <h3 className={styles.chartTitle}>Receita ao Longo do Tempo</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={processedData.revenueOverTimeData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend
+                  verticalAlign="top"
+                  align="right"
+                  wrapperStyle={{ color: "var(--text-light)" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Receita"
+                  stroke={chartColors.metricBlue}
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className={styles.secondaryChartsGrid}>
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartTitle}>Receita por Categoria</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={processedData.revenueByCategoryData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill={chartColors.chartBlueStrong} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartTitle}>Vendas por Estado de Conservação</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={processedData.salesByStateData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {processedData.salesByStateData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={[chartColors.pieColor1, chartColors.pieColor2, chartColors.pieColor3, chartColors.pieColor4][index % 4]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend
+                    layout="vertical"
+                    verticalAlign="middle"
+                    align="right"
+                    formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value.toFixed(2)}%`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartTitle}>Vendas por Categoria</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={processedData.salesByCategoryData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill={chartColors.chartPurpleStrong} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className={styles.chartCard}>
+              <h3 className={styles.chartTitle}>Avaliação Média por Categoria</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={processedData.ratingByCategoryData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis domain={[0, 5]} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill={chartColors.chartOrangeVibrant} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

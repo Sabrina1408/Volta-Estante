@@ -1,0 +1,85 @@
+/* Container da página para centralização */
+.pageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  background-color: var(--secondaryBackground);
+}
+
+/* Card principal */
+.salesCard {
+  width: 100%;
+  max-width: 1100px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Cabeçalho do card */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1.5rem;
+}
+
+.headerText .title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.headerText .subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Wrapper da tabela para rolagem */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Habilita a rolagem horizontal */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+/* Tabela */
+.salesTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px; /* Força a rolagem em telas menores */
+}
+
+.salesTable th,
+.salesTable td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.salesTable th {
+  background-color: #f9fafb;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.salesTable tbody tr:last-child td {
+  border-bottom: none; /* Remove a borda da última linha */
+}
+
+@media (max-width: 768px) {
+  .salesCard {
+    padding: 1rem;
+  }
+}
