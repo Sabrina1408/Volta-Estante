@@ -86,6 +86,10 @@ def add_new_employee(admin_user_id, sebo_id, employee_data):  # aqui o admin e o
     admin_sebo_id = db.collection('Users').document(admin_user_id).get(['seboId', 'nameSebo'])
     if admin_sebo_id.get('seboId') != sebo_id:
         raise Forbidden("You can only add employees to your own sebo.")
+    
+    if employee_data.get('userRole') == 'Admin':
+        raise Forbidden("Cannot create an employee with Admin role.")
+
     employee_email = employee_data.get('email')
     employee_name = employee_data.get('name')
     firebase_user = create_employee_account(employee_email, employee_name)

@@ -7,7 +7,7 @@ const AlertModal = ({ open, title = 'Aviso', message, onClose, okText = 'OK' }) 
     <Modal open={open} onClose={onClose}>
       <div className={styles.container}>
         <h3 className={styles.title}>{title}</h3>
-        <p className={styles.message}>{message}</p>
+        <p className={styles.message} dangerouslySetInnerHTML={{ __html: message }} />
         <div className={styles.actions}>
           <button className={styles.ok} onClick={onClose}>{okText}</button>
         </div>
