@@ -31,7 +31,7 @@
 }
 
 .confirm {
-  background: var(--deleteBookBackground);
+  background: var(--deleteButtonBackground);
   color: var(--white);
   border: none;
   padding: 0.6em 1.2em;
@@ -42,5 +42,5 @@
 }
 
 .danger {
-  background: var(--deleteBookBackground);
+  background: var(--deleteButtonBackground);
 }

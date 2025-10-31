@@ -174,12 +174,12 @@
 
   .cancelButton {
     background-color: transparent;
-  color: var(--text-dark); /* Texto escuro */
-  border: 1px solid var(--border-color);
+    color: var(--text-dark); /* Texto escuro */
+    border: 1px solid var(--border-color);
   }
 
   .logoutButton {
-    background-color: var(--deleteBookBackground);
+    background-color: var(--logoutButtonBackground);
     color: var(--white);
     border: none;
   }

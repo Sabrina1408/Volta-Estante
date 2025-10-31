@@ -78,7 +78,7 @@
 }
 
 .deleteButton {
-  background-color: var(--deleteBookBackground);
+  background-color: var(--deleteButtonBackground);
   padding: 8px 12px;
   border-radius: 4px;
 }

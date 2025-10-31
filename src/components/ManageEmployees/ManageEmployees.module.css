@@ -134,18 +134,18 @@
 }
 
 .roleAdmin {
-  background-color: #dc2626; /* Vermelho forte */
-  color: #ffffff;
+  background-color: var(--role-AdminBackground); /* Vermelho*/
+  color: var(--white);
 }
 
 .roleEditor {
-  background-color: #2563eb; /* Azul vibrante */
-  color: #ffffff;
+  background-color: var(--role-EditorBackground); /* Azul */
+  color: var(--white);
 }
 
 .roleReader {
-  background-color: #d1fae5; /* Verde claro */
-  color: #065f46; /* Texto escuro para contraste */
+  background-color: var(--role-ReaderBackground); /* Verde */
+  color: var(--white); /* Contraste para fundo escuro */
 }
 
 /* Célula de Ações */
@@ -172,8 +172,5 @@
 }
 
 .deleteButton {
-  color: #ef4444; /* Vermelho sutil */
-}
-.deleteButton:hover {
-  color: #b91c1c;
+  color: var(--deleteButtonBackground);
 }

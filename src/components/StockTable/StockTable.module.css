@@ -154,7 +154,7 @@
 }
 
 .deleteButton {
-    background-color: var(--deleteBookBackground); 
+  background-color: var(--deleteButtonBackground); 
 }
 
 .tableWrapper {
