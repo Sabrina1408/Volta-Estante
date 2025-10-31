@@ -96,7 +96,7 @@
 }
 
 .editCopyForm button:disabled {
-  background-color: #ccc;
+  background-color: var(--border-color);
   cursor: not-allowed;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .info {
-  color: #6b6b6b;
+  color: var(--text-light);
   font-size: 0.9rem;
   text-align: center;
   margin-top: 0.5rem;

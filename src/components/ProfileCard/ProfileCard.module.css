@@ -12,7 +12,7 @@
   .profileCard {
     width: 100%;
     max-width: 1100px;
-    background-color: #ffffff; /* Fundo branco puro */
+  background-color: var(--white); /* Fundo branco */
     border-radius: 12px; /* Cantos arredondados */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
     overflow: hidden;
@@ -23,20 +23,20 @@
   /* Cabeçalho do card */
   .cardHeader {
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid #e5e7eb; /* Cinza claro */
+  border-bottom: 1px solid var(--border-color); /* Cinza claro */
   }
   
   .title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
-    color: #111827; /* Cor escura */
+  color: var(--text-dark); /* Cor escura */
   }
   
   .subtitle {
     margin: 0.25rem 0 0;
     font-size: 0.9rem;
-    color: #6b7280; /* Tom de cinza claro */
+  color: var(--text-light); /* Tom de cinza claro */
   }
   
   /* Conteúdo principal do card */
@@ -60,18 +60,18 @@
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151; /* Cinza escuro */
+  color: var(--text-dark); /* Cinza escuro */
   }
   
   .formGroup input,
   .readOnlyInput {
     width: 100%;
     padding: 0.75rem 1rem;
-    background-color: #f9fafb; /* Cinza muito suave */
-    border: 1px solid #d1d5db;
+  background-color: var(--input-background); /* Cinza muito suave */
+  border: 1px solid var(--border-color);
     border-radius: 8px; /* Cantos arredondados */
     font-size: 1rem;
-    color: #111827;
+  color: var(--text-dark);
     box-sizing: border-box;
   }
   
@@ -83,7 +83,7 @@
   
   /* Estilos para campos somente leitura */
   .readOnlyInput {
-    background-color: #f3f4f6; /* Um pouco mais escuro para indicar não editável */
+  background-color: var(--input-background); /* Um pouco mais escuro para indicar não editável */
     cursor: not-allowed;
     display: flex;
     align-items: center;
@@ -99,7 +99,7 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #9ca3af; /* Cinza */
+  color: var(--quaternaryBackground); /* Cinza */
   }
   
   /* Ajuste no padding do input com ícone */
@@ -111,7 +111,7 @@
   .memberSince {
     margin-top: 2rem;
     font-size: 0.875rem;
-    color: #6b7280; /* Cinza claro */
+  color: var(--text-light); /* Cinza claro */
     text-align: left;
   }
   
@@ -122,7 +122,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1.5rem 2rem;
-    background-color: #f9fafb; /* Fundo cinza suave */
+  background-color: var(--input-background); /* Fundo cinza suave */
   }
 
   .leftActions {
@@ -174,8 +174,8 @@
 
   .cancelButton {
     background-color: transparent;
-    color: #111827; /* Texto escuro */
-    border: 1px solid #d1d5db;
+  color: var(--text-dark); /* Texto escuro */
+  border: 1px solid var(--border-color);
   }
 
   .logoutButton {

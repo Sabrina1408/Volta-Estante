@@ -105,9 +105,9 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
           <div className={styles.formGroup}>
             <label htmlFor="userRole">Função</label>
             <select id="userRole" value={userRole} onChange={(e) => setUserRole(e.target.value)}>
+              <option value="ADMIN">Administrador</option>
               <option value="EDITOR">Editor</option>
               <option value="LEITOR">Leitor</option>
-              <option value="ADMIN">Administrador</option>
               {/* If the employee has a role not present in the above list, include it so the select displays it */}
               {isEditing && userRole && !["EDITOR", "LEITOR", "ADMIN"].includes(userRole) && (
                 <option value={userRole}>{userRole}</option>
