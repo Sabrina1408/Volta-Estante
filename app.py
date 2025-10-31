@@ -22,7 +22,7 @@ from services.auth_service import permission_required
 from services.users_service import *
 from services.books_service import *
 from services.sales_service import * 
-from services.google_books_service import fetch_book_by_isbn
+from services.google_books_service import fetch_book_by_isbn, fetch_top_rated_books
 
 # Via auth vou ter o user_id, sebo_id e user_role
 
@@ -204,6 +204,19 @@ def delete_copy_route(ISBN, copy_id):
         "message": "Book copy deleted successfully",
         "book": deleted,
         }), 200
+
+@app.route("/books/topRated", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def fetch_top_rated_books_route():
+    data = request.get_json()
+    subject = data.get("subject")
+    max_results = data.get("maxResults", 10)
+    per_request = data.get("perRequest", 10)
+    pages = data.get("pages", 3)
+    if not subject:
+        raise BadRequest("subject is required")
+    top_books = fetch_top_rated_books(subjects=[subject], max_results=max_results, per_request=per_request, pages=pages)
+    return jsonify(top_books), 200
 
 
 # ============================================   
@@ -393,5 +406,8 @@ def update_log_route(log_id):
 def fetch_all_logs_route():
     logs = fetch_all_logs(g.sebo_id)
     return jsonify(logs), 200
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
