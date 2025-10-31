@@ -1,36 +1,63 @@
+.estoqueContainer {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  margin-bottom: 5rem;
+  background-color: var(--background);
+}
+
 .estoque {
-    padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  background-color: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.headerText .title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.headerText .subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
 }
 
 .actions {
-    display: flex;
-    gap: 1rem;
+  display: flex;
+  gap: 1rem;
 }
 
 .addButton, .logButton {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .logButton {
-    background-color: var(--logButtonBackground); /* Azul */
-    color: var(--white); /* Texto branco para contraste */
+  background-color: var(--logButtonBackground);
+  color: var(--white);
 }
 
 .addButton {
-    background-color: var(--addBookBackground); /* Verde */
-    color: var(--white); /* Texto branco para contraste */
+  background-color: var(--addBookBackground);
+  color: var(--white);
 }
