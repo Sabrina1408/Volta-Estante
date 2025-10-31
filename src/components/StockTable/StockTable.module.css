@@ -1,3 +1,90 @@
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto; /* Habilita a rolagem horizontal */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+/* Tabela */
+.stockTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.stockTable th,
+.stockTable td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stockTable th:first-child,
+.stockTable td:first-child {
+  width: 350px;
+  max-width: 350px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.stockTable th {
+  background-color: var(--input-background);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stockTable tbody tr:last-child td {
+  border-bottom: none; /* Remove a borda da última linha */
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actions button {    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+}
+
+.actions button:hover {
+    opacity: 0.8;
+}
+
+.titleLink {
+  color: var(--linkGeneralColor);
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titleLink:hover {
+  text-decoration: underline;
+}
+
+.deleteButton {
+  background-color: var(--deleteButtonBackground); 
+}
+
 .stockContainer {
     margin-top: 1.5rem;
     margin-bottom: 5rem;
@@ -79,129 +166,9 @@
   }
 }
 
-.stockTable {
-  width: 100%;
-  border-collapse: collapse;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  table-layout: fixed;
-}
-
-.stockTable th,
-.stockTable td {
-  border: 1px solid var(--tertiaryBackground);
-  padding: 12px 15px;
-  text-align: left;
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; /* evita quebras que mudam a largura da tabela */
-}
-
-.stockTable th {
-  background-color: var(--secondaryBackground);
-  color: var(--textColor);
-  font-weight: bold;
-}
-
-/* Definindo larguras fixas para as colunas para manter a grade estável */
-.stockTable th:nth-child(1), .stockTable td:nth-child(1) { width: 30%; } /* Título */
-.stockTable th:nth-child(2), .stockTable td:nth-child(2) { width: 20%; } /* Autores */
-.stockTable th:nth-child(3), .stockTable td:nth-child(3) { width: 20%; } /* Categorias */
-.stockTable th:nth-child(4), .stockTable td:nth-child(4) { width: 15%; } /* ISBN */
-.stockTable th:nth-child(5), .stockTable td:nth-child(5) { width: 8%;  text-align: center; } /* Quantidade */
-.stockTable th:nth-child(6), .stockTable td:nth-child(6) { width: 7%;  text-align: center; } /* Ações */
-
-.stockTable tbody tr:nth-of-type(even) {
-    background-color: var(--secondaryBackground);
-}
-
-.actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.actions button {    
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-    font-size: 0.9rem;
-    transition: opacity 0.2s;
-}
-
-.actions button:hover {
-    opacity: 0.8;
-}
-
-.titleLink {
-  color: var(--linkGeneralColor);
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.titleLink:hover {
-  text-decoration: underline;
-}
-
-.deleteButton {
-  background-color: var(--deleteButtonBackground); 
-}
-
-.tableWrapper {
-    width: 100%;
-    overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
-}
-
-/* --- Estilos Responsivos --- */
-@media screen and (max-width: 768px) {
-    .stockTable {
-        min-width: 700px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
-    }
-
-    .stockTable th, .stockTable td {
-        white-space: nowrap; /* Impede que o conteúdo das células quebre linha */
-    }
-}
-
-@media (max-width: 576px) {
+@media (max-width: 690px) {
   .filterCard {
     grid-template-columns: 1fr; /* 1 coluna em celulares */
   }
 }
 
-.paginationControls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.paginationControls > button {
-  padding: 8px 16px;
-  border: 1px solid var(--tertiaryBackground);
-  background-color: var(--primaryBackground);
-  color: var(--primaryColor);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.paginationControls > button:hover:not(:disabled) {
-  background-color: var(--tertiaryBackground);
-}
-
-.paginationControls > button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}

@@ -1,4 +1,4 @@
-.estoqueContainer {
+.logsContainer {
   display: flex;
   justify-content: center;
   padding: 2rem;
@@ -6,7 +6,8 @@
   background-color: var(--background);
 }
 
-.estoque {
+/* Card principal */
+.logsCard {
   width: 100%;
   max-width: 1200px;
   background-color: var(--white);
@@ -18,7 +19,8 @@
   gap: 1.5rem;
 }
 
-.header {
+/* Cabeçalho do card */
+.cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,25 +41,29 @@
   color: var(--text-light);
 }
 
-.actions {
+.paginationControls {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
-.addButton, .logButton {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+.paginationControls button {
+  padding: 8px 16px;
+  border: 1px solid var(--tertiaryBackground);
+  background-color: var(--primaryBackground);
+  color: var(--primaryColor);
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.2s;
 }
 
-.logButton {
-  background-color: var(--logButtonBackground);
-  color: var(--white);
+.paginationControls button:hover:not(:disabled) {
+  background-color: var(--tertiaryBackground);
 }
 
-.addButton {
-  background-color: var(--addBookBackground);
-  color: var(--white);
+.paginationControls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

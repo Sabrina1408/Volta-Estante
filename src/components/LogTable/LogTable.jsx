@@ -50,7 +50,7 @@ const LogTable = () => {
 
 
   return (
-    <div className={styles.logContainer}>
+    <>
       <div className={styles.tableWrapper}>
         <table className={styles.logTable}>
           <thead>
@@ -92,7 +92,7 @@ const LogTable = () => {
           </button>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

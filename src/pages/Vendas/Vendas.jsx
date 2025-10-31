@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useApi } from '../../hooks/useApi';
 import styles from './Vendas.module.css';
 import Spinner from '../../components/Spinner/Spinner';
@@ -6,10 +7,24 @@ import Spinner from '../../components/Spinner/Spinner';
 const Vendas = () => {
   const { authFetch } = useApi();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const SALES_PER_PAGE = 20;
+
   const { data: sales, isLoading, error } = useQuery({
     queryKey: ['sales'],
     queryFn: () => authFetch('/sales').then((res) => res.json()),
   });
+
+  const sortedSales = sales
+    ? [...sales].sort((a, b) => new Date(b.saleDate) - new Date(a.saleDate))
+    : [];
+
+  const totalPages = Math.ceil(sortedSales.length / SALES_PER_PAGE);
+
+  const paginatedSales = sortedSales.slice(
+    (currentPage - 1) * SALES_PER_PAGE,
+    currentPage * SALES_PER_PAGE
+  );
 
   return (
     <div className={styles.vendasContainer}>
@@ -37,7 +52,7 @@ const Vendas = () => {
               </tr>
             </thead>
             <tbody>
-              {sales.map((sale) => (
+              {paginatedSales.map((sale) => (
                 <tr key={sale.sale_id}>
                   <td data-label="ID da Venda">{sale.saleId}</td>
                   <td data-label="Data">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
@@ -48,7 +63,7 @@ const Vendas = () => {
                   <td data-label="Vendido por">{sale.userName}</td>
                 </tr>
               ))}
-              {sales.length === 0 && (
+              {paginatedSales.length === 0 && (
                 <tr>
                   <td colSpan="7">Nenhuma venda encontrada.</td>
                 </tr>
@@ -56,6 +71,23 @@ const Vendas = () => {
             </tbody>
           </table>
         )}
+        {totalPages > 1 && (
+        <div className={styles.paginationControls}>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          <span>Página {currentPage} de {totalPages}</span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Próximo
+          </button>
+        </div>
+      )}
       </div>
     </div>
   </div>

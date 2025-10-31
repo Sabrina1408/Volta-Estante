@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   padding: 2rem;
+  margin-bottom: 5rem;
   background-color: var(--background);
 }
 
@@ -94,6 +95,33 @@
 
 .salesTable tbody tr:last-child td {
   border-bottom: none; /* Remove a borda da última linha */
+}
+
+.paginationControls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.paginationControls button {
+  padding: 8px 16px;
+  border: 1px solid var(--tertiaryBackground);
+  background-color: var(--primaryBackground);
+  color: var(--primaryColor);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.paginationControls button:hover:not(:disabled) {
+  background-color: var(--tertiaryBackground);
+}
+
+.paginationControls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1200px) {
