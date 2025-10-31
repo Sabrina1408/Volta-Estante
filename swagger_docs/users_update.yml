@@ -10,19 +10,13 @@ parameters:
     type: string
   - in: body
     name: update
-    required: true
     schema:
       type: object
       properties:
         name: { type: string, example: "João Silva Jr." }
-        phone: { type: string, example: "+55 11 91111-2222" }
-        address:
-          type: object
-          properties:
-            street: { type: string }
-            city: { type: string }
-            state: { type: string }
-            zipCode: { type: string }
+        email: { type: string, example: "joao.silva@example.com" }
+        
+        
 responses:
   200:
     description: Usuário atualizado com sucesso

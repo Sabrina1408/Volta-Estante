@@ -28,7 +28,8 @@
   border-radius: var(--borderRadius);
   box-shadow: var(--shadow-sm);
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 2. Layout e Grid (5 colunas) */
+  /* Layout fluido mantendo largura confortável de cada filtro */
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
 }
 
@@ -67,6 +68,19 @@
 
 .filterSelect:hover {
   cursor: pointer;
+}
+
+@media (min-width: 993px) {
+  .filterCard {
+    grid-template-columns: 1fr repeat(4, minmax(240px, 1fr)) 1fr;
+  }
+}
+
+@media (min-width: 993px) {
+  .filterCard > .filterGroup:nth-of-type(1) { grid-column: 2; }
+  .filterCard > .filterGroup:nth-of-type(2) { grid-column: 3; }
+  .filterCard > .filterGroup:nth-of-type(3) { grid-column: 4; }
+  .filterCard > .filterGroup:nth-of-type(4) { grid-column: 5; }
 }
 
 /* --- Responsividade dos Filtros --- */
