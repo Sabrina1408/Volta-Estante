@@ -163,6 +163,7 @@ def delete_user(user_id, sebo_id):
         raise Forbidden("You can only delete users from your own sebo.")
     try:
         user_ref.delete()
+        auth.delete_user(user_id)
     except Exception as e:
         raise BadRequest(f"Failed to delete user {user_id}: {e}")
     return validated_user.model_dump(by_alias=True)
