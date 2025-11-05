@@ -1,5 +1,5 @@
 from firebase_admin import firestore, auth
-from models.users import User
+from models.users import User, UpdateUser
 from models.sebos import Sebo
 from pydantic import ValidationError 
 from werkzeug.exceptions import NotFound, Conflict, BadRequest, Forbidden
@@ -128,8 +128,9 @@ def update_user(user_id, update_data):
         raise NotFound(f"User with ID {user_id} not found")
     try:
         user_data = user_doc.to_dict()
-        validaded_user = User.model_validate(user_data)
-        updated_fields = validaded_user.model_copy(update=update_data)
+        validated_user = User.model_validate(user_data)
+        validated_updates = UpdateUser.model_validate(update_data)
+        updated_fields = validated_user.model_copy(update=validated_updates.model_dump(exclude_unset=True))
         user_ref.update(updated_fields.model_dump(by_alias=True))
         return updated_fields.model_dump(by_alias=True)
     except ValidationError as e:
