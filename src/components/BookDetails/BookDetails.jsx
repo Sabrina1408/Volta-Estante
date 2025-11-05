@@ -36,6 +36,14 @@ const BookDetails = ({ book }) => {
 
   const { isbn, copies } = book;
 
+  const sortedCopies = copies?.length > 0 
+    ? [...copies].sort((a, b) => {
+        const dateA = a.registeredAt || '';
+        const dateB = b.registeredAt || '';
+        return dateA.localeCompare(dateB);
+      })
+    : [];
+
   const { mutate: sellCopy } = useMutation({
     mutationFn: (copyId) => authFetch(`/sales/${isbn}/${copyId}`, { method: 'POST' }).then(async (res) => {
         if (!res.ok) {
@@ -134,7 +142,7 @@ const BookDetails = ({ book }) => {
 
           <div className={styles.copiesSection}>
             <h3>Cópias Disponíveis ({book.totalQuantity})</h3>
-            {copies?.length > 0 ? (
+            {sortedCopies?.length > 0 ? (
                 <div className={styles.tableWrapper}>
                   <table className={styles.copiesTable}>
                     <thead>
@@ -146,7 +154,7 @@ const BookDetails = ({ book }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {copies.map((copy) => (
+                      {sortedCopies.map((copy) => (
                         <tr key={copy.copyId}>
                           <td data-label="ID da Cópia">{copy.copyId}</td>
                           <td data-label="Estado">{copy.conservationState}</td>
