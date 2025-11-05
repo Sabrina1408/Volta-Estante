@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
+import { useAuth } from "../../context/AuthContext";
 import styles from "./StockTable.module.css";
 import { FaTrash } from "react-icons/fa";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
@@ -15,6 +16,7 @@ const StockTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const BOOKS_PER_PAGE = 15;
   const { authFetch } = useApi();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -26,6 +28,20 @@ const StockTable = () => {
 
     queryFn: () => authFetch("/books").then((res) => res.json()),
   });
+
+  const { data: profileData, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ["userProfile", user?.uid],
+    queryFn: async () => {
+      const res = await authFetch(`/users/${user.uid}`);
+      if (!res.ok) {
+        throw new Error("Não foi possível carregar os dados do perfil.");
+      }
+      return res.json();
+    },
+    enabled: !!user,
+  });
+
+  const isReader = profileData?.userRole === "Reader";
 
   const { mutate: deleteBook } = useMutation({
     mutationFn: (isbn) => authFetch(`/books/${isbn}`, { method: "DELETE" }),
@@ -68,7 +84,7 @@ const StockTable = () => {
     setCurrentPage(1);
   }, [filter, authorFilter, categoryFilter, stockLevelFilter]);
 
-  if (isLoading) return <p>Carregando estoque...</p>;
+  if (isLoading || isLoadingProfile) return <p>Carregando estoque...</p>;
   if (error)
     return <p className="error">Erro ao carregar o estoque: {error.message}</p>;
 
@@ -186,7 +202,7 @@ const StockTable = () => {
               <th>Categorias</th>
               <th>ISBN</th>
               <th>Quantidade</th>
-              <th>Ações</th>
+              {!isReader && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
@@ -205,21 +221,23 @@ const StockTable = () => {
                   <td>{book.categories?.join(", ") || "N/A"}</td>
                   <td>{book.isbn}</td>
                   <td>{book.totalQuantity}</td>
-                  <td>
-                    <div className={styles.actions}>
-                      <button
-                        onClick={() => handleDelete(book)}
-                        className={styles.deleteButton}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
+                  {!isReader && (
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          onClick={() => handleDelete(book)}
+                          className={styles.deleteButton}
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6">
+                <td colSpan={isReader ? "5" : "6"}>
                   Nenhum livro encontrado com os filtros aplicados.
                 </td>
               </tr>

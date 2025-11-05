@@ -40,7 +40,8 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
     return <div className={styles.profileCardContainer}><p>Carregando perfil...</p></div>;
   }
 
-  const isRoleAdmin = user.userRole === "ADMIN";
+  const isRoleAdmin = user.userRole === "Admin";
+  const isRoleReader = user.userRole === "Reader";
 
   return (
     <div className={styles.profileCardContainer}>
@@ -67,7 +68,14 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
 
             <div className={styles.formGroup}>
               <label htmlFor="seboName">Nome do Sebo</label>
-              <input id="seboName" type="text" value={seboName} onChange={(e) => setSeboName(e.target.value)} />
+              <input 
+                id="seboName" 
+                type="text" 
+                value={seboName} 
+                onChange={(e) => setSeboName(e.target.value)}
+                readOnly={isRoleReader}
+                className={isRoleReader ? styles.readOnlyInput : ''}
+              />
             </div>
 
             <div className={styles.formGroup}>

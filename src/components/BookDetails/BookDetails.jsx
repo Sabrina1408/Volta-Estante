@@ -2,8 +2,9 @@ import { useState } from 'react';
 import styles from './BookDetails.module.css';
 import MaturityRating from './MaturityRating';
 import { FaEdit, FaTrash, FaDollarSign } from 'react-icons/fa';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import EditCopyModal from '../EditCopyModal/EditCopyModal';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
 import AlertModal from '../AlertModal/AlertModal';
@@ -12,9 +13,24 @@ const BookDetails = ({ book }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCopy, setSelectedCopy] = useState(null);
   const { authFetch } = useApi();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  if (!book) {
+  const { data: profileData, isLoading: isLoadingProfile } = useQuery({
+    queryKey: ["userProfile", user?.uid],
+    queryFn: async () => {
+      const res = await authFetch(`/users/${user.uid}`);
+      if (!res.ok) {
+        throw new Error("Não foi possível carregar os dados do perfil.");
+      }
+      return res.json();
+    },
+    enabled: !!user,
+  });
+
+  const isReader = profileData?.userRole === "Reader";
+
+  if (!book || isLoadingProfile) {
     return null;
   }
 
@@ -126,7 +142,7 @@ const BookDetails = ({ book }) => {
                         <th>ID da Cópia</th>
                         <th>Estado</th>
                         <th>Preço</th>
-                        <th>Ações</th>
+                        {!isReader && <th>Ações</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -135,19 +151,21 @@ const BookDetails = ({ book }) => {
                           <td data-label="ID da Cópia">{copy.copyId}</td>
                           <td data-label="Estado">{copy.conservationState}</td>
                           <td data-label="Preço">{`R$ ${copy.price.toFixed(2).replace('.', ',')}`}</td>
-                          <td data-label="Ações">
-                            <div className={styles.actions}>
-                              <button onClick={() => handleSellCopy(copy.copyId)} className={styles.saleButton} title="Registrar Venda">
-                                <FaDollarSign />
-                              </button>
-                              <button onClick={() => handleEditCopy(copy)} className={styles.editButton} title="Editar Cópia">
-                                <FaEdit />
-                              </button>
-                              <button onClick={() => handleDeleteCopy(copy.copyId)} className={styles.deleteButton} title="Excluir Cópia">
-                                <FaTrash />
-                              </button>
-                            </div>
-                          </td>
+                          {!isReader && (
+                            <td data-label="Ações">
+                              <div className={styles.actions}>
+                                <button onClick={() => handleSellCopy(copy.copyId)} className={styles.saleButton} title="Registrar Venda">
+                                  <FaDollarSign />
+                                </button>
+                                <button onClick={() => handleEditCopy(copy)} className={styles.editButton} title="Editar Cópia">
+                                  <FaEdit />
+                                </button>
+                                <button onClick={() => handleDeleteCopy(copy.copyId)} className={styles.deleteButton} title="Excluir Cópia">
+                                  <FaTrash />
+                                </button>
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
