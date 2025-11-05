@@ -99,6 +99,10 @@ function AppRoutes() {
           path="/logs"
           element={user ? <Logs /> : <Navigate to="/login" replace />}
         />
+        <Route
+          path="/trending"
+          element={user ? <Trending /> : <Navigate to="/login" replace />}
+        />
         <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
       </Routes>
       <AlertModal
