@@ -208,11 +208,10 @@ def delete_copy_route(ISBN, copy_id):
 @app.route("/books/topRated", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 def fetch_top_rated_books_route():
-    data = request.get_json()
-    subject = data.get("subject")
-    max_results = data.get("maxResults", 10)
-    per_request = data.get("perRequest", 10)
-    pages = data.get("pages", 3)
+    subject = request.args.get("subject")
+    max_results = request.args.get("maxResults", 10, type=int)
+    per_request = request.args.get("perRequest", 10, type=int)
+    pages = request.args.get("pages", 10, type=int)
     if not subject:
         raise BadRequest("subject is required")
     top_books = fetch_top_rated_books(subjects=[subject], max_results=max_results, per_request=per_request, pages=pages)

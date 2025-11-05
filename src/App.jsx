@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
 import Vendas from "./pages/Vendas/Vendas";
 import Logs from "./pages/Logs/Logs";
+import Trending from "./pages/Trending/Trending";
 
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
