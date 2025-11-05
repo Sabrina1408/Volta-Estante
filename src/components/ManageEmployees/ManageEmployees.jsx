@@ -4,11 +4,17 @@ import { useApi } from '../../hooks/useApi';
 import styles from './ManageEmployees.module.css';
 import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
+import AlertModal from '../AlertModal/AlertModal';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 const ManageEmployees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
@@ -42,14 +48,27 @@ const ManageEmployees = () => {
   };
 
   const handleDelete = (userId, userName) => {
-    const employeeToDelete = employees.find(emp => emp.userId === userId);
-    if (employeeToDelete && employeeToDelete.userRole === 'Admin') {
-      alert('Não é possível excluir um usuário com o papel de Administrador.');
+    const employee = employees.find(emp => emp.userId === userId);
+    if (employee && employee.userRole === 'Admin') {
+      setAlertMessage('Não é possível excluir um usuário com o papel de Administrador.');
+      setAlertOpen(true);
     } else {
-      if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
-        deleteEmployee(userId);
-      }
+      setEmployeeToDelete({ userId, userName });
+      setConfirmOpen(true);
     }
+  };
+
+  const confirmDelete = () => {
+    if (employeeToDelete) {
+      deleteEmployee(employeeToDelete.userId);
+      setConfirmOpen(false);
+      setEmployeeToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setConfirmOpen(false);
+    setEmployeeToDelete(null);
   };
 
   const filteredEmployees = (employees || []).filter(
@@ -153,6 +172,26 @@ const ManageEmployees = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         employee={selectedEmployee}
+      />
+      <AlertModal
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title="Aviso"
+        message={alertMessage}
+      />
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Confirmar exclusão"
+        message={
+          employeeToDelete
+            ? `Tem certeza que deseja excluir o funcionário ${employeeToDelete.userName}?`
+            : 'Tem certeza que deseja excluir este funcionário?'
+        }
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
       />
     </div>
   );
