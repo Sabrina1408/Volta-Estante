@@ -34,6 +34,9 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
     }
   }, [employee, isOpen]);
 
+  const originalRole = employee?.userRole || 'Editor';
+  const isDirty = isEditing ? userRole !== originalRole : true;
+
   const { mutate: addEmployee, isLoading: isAdding } = useMutation({
     mutationFn: (newEmployee) =>
       authFetch(`/users/employees/`, {
@@ -102,6 +105,15 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
+      if (!isDirty) {
+        setAlertInfo({
+          open: true,
+          title: 'Nada para salvar',
+          message: 'Nenhuma alteração foi feita na função do funcionário.',
+          isSuccess: false,
+        });
+        return;
+      }
       updateEmployee({ userRole });
     } else {
       addEmployee({ name, email, userRole });
@@ -162,7 +174,12 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
               </select>
             </div>
 
-            <button type='submit' disabled={isLoading}>
+            <button
+              type='submit'
+              className={`${styles.submitButton} ${isEditing ? styles.submitEdit : styles.submitAdd}`}
+              disabled={isLoading || (isEditing && !isDirty)}
+              aria-disabled={isLoading || (isEditing && !isDirty)}
+            >
               {isLoading
                 ? 'Salvando...'
                 : isEditing
