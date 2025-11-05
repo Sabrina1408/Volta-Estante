@@ -353,7 +353,11 @@ const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{ color: 'var(--text-dark)' }}
+                  itemStyle={{ color: 'var(--text-dark)' }}
+                  labelStyle={{ color: 'var(--text-dark)' }}
+                />
                 <Legend
                   verticalAlign="top"
                   align="right"
@@ -379,7 +383,11 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{ color: 'var(--text-dark)' }}
+                    itemStyle={{ color: 'var(--text-dark)' }}
+                    labelStyle={{ color: 'var(--text-dark)' }}
+                  />
                   <Bar dataKey="value" fill={chartColors.chartBlueStrong} />
                 </BarChart>
               </ResponsiveContainer>
@@ -403,7 +411,17 @@ const Dashboard = () => {
                       <Cell key={`cell-${index}`} fill={[chartColors.pieColor1, chartColors.pieColor2, chartColors.pieColor3, chartColors.pieColor4][index % 4]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    formatter={(value, name, entry) => {
+                      const num = typeof value === 'number' ? value : Number(value || 0);
+                      const formatted = `${num.toFixed(2).replace('.', ',')}%`;
+                      const label = entry?.payload?.name ?? name;
+                      return [formatted, label];
+                    }}
+                    contentStyle={{ color: 'var(--text-dark)' }}
+                    itemStyle={{ color: 'var(--text-dark)' }}
+                    labelStyle={{ color: 'var(--text-dark)' }}
+                  />
                   <Legend
                     layout="vertical"
                     verticalAlign="middle"
@@ -421,7 +439,11 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{ color: 'var(--text-dark)' }}
+                    itemStyle={{ color: 'var(--text-dark)' }}
+                    labelStyle={{ color: 'var(--text-dark)' }}
+                  />
                   <Bar dataKey="value" fill={chartColors.chartPurpleStrong} />
                 </BarChart>
               </ResponsiveContainer>
@@ -434,7 +456,11 @@ const Dashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" />
                   <YAxis domain={[0, 5]} />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{ color: 'var(--text-dark)' }}
+                    itemStyle={{ color: 'var(--text-dark)' }}
+                    labelStyle={{ color: 'var(--text-dark)' }}
+                  />
                   <Bar dataKey="value" fill={chartColors.chartOrangeVibrant} />
                 </BarChart>
               </ResponsiveContainer>
