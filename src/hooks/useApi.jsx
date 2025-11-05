@@ -17,7 +17,7 @@ export const useApi = () => {
         const headers = { ...(opts.headers || {}), Authorization: `Bearer ${token}` };
         let res = await fetch(`${API_BASE_URL}${endpoint}`, { ...opts, headers });
 
-        if (res.status === 401) {
+        if (res.status === 401 || res.status === 403) {
 
           const freshToken = await getToken(true);
           if (!freshToken) {

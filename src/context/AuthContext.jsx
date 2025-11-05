@@ -69,9 +69,18 @@ export const AuthProvider = ({ children }) => {
     if (!currentUser) return null;
     return await currentUser.getIdToken(force);
   };
+  
+  const refreshUserToken = async () => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return null;
+    await currentUser.getIdToken(true);
+    await currentUser.reload();
+    setUser({ ...currentUser });
+    return currentUser;
+  };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout, resetPassword, getToken }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, logout, resetPassword, getToken, refreshUserToken }}>
       {children}
     </AuthContext.Provider>
   );
