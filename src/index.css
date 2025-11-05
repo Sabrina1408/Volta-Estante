@@ -2,40 +2,31 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: var(--black);
   background-color: var(--secondaryBackground);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* --- Variáveis de Cor e Estilo --- */
-  /* Cores Base */
   --white: #FFFFFF;
   --black: #000000;
-  --background: #f8f9fa; /* Fundo geral da página */
-  --primaryBackground: #F9FAFB; /* Mantido para compatibilidade */
-  --secondaryBackground: #F9FAFB; /* Mantido para compatibilidade */
+  --background: #f8f9fa; 
+  --primaryBackground: #F9FAFB; 
+  --secondaryBackground: #F9FAFB; 
   --tertiaryBackground: #ECECF0;
   --quaternaryBackground: #818181;
   --quinaryBackground: #030213;
   --sixnaryBackground: #646cff;
-  --text-dark: #111827; /* Texto principal escuro */
-  --text-light: #6b7280; /* Texto secundário/labels */
+  --text-dark: #111827; 
+  --text-light: #6b7280; 
   --inputColor: #2c2c2c;
-  --input-background: #f9fafb; /* Fundo de inputs/selects */
-  --border-color: #e5e7eb; /* Cor de borda sutil */
-
-  /* Cores de Feedback */
+  --input-background: #f9fafb; 
+  --border-color: #e5e7eb; 
   --error: rgb(165, 62, 62);
   --errorBorder: #e74c3c;
   --successBackground: #218838;
   --successBorder: #218838;
-
-  /* Cores de Ação */
   --addBookBackground: #00A63E;
   --logButtonBackground: #2B7FFF;
   --logoutButtonBackground: #d9534f;
@@ -43,13 +34,9 @@
   --editBookBackground: var(--logButtonBackground);
   --linkGeneralColor: #888eff;
   --sellBookBackground: #28a745;
-  
-  /* Cores de Função */
   --role-AdminBackground: #dc2626;
   --role-EditorBackground: #2563eb;
   --role-ReaderBackground: #065f46;
-  
-  /* Cores de Destaque para Métricas e Gráficos */
   --metric-green: #10b981;
   --metric-green-bg: #e7f8f3;
   --metric-blue: #3b82f6;
@@ -58,8 +45,6 @@
   --metric-purple-bg: #f5f3ff;
   --metric-orange: #f97316;
   --metric-orange-bg: #fff5ee;
-
-  /* Cores para Gráficos */
   --chart-blue-strong: #2563eb;
   --chart-purple-strong: #7c3aed;
   --chart-orange-vibrant: #ea580c;
@@ -67,12 +52,9 @@
   --pie-color-2: #8b5cf6;
   --pie-color-3: #f97316;
   --pie-color-4: #10b981;
-
-  /* Estilos de Card */
   --borderRadius: 12px;
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-
 * {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
@@ -82,7 +64,6 @@
   text-decoration: none;
   border: none;
 }
-
 a {
   font-weight: 500;
   color: var(--quinaryBackground);
@@ -91,25 +72,14 @@ a {
 a:hover {
   opacity: 0.7;
 }
-
-/* body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-} */
-
 h1 {
   font-size: 32px;
   font-weight: 600;
   line-height: 1.5;
 }
-
 p {
   font-size: 14px;
 }
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -125,7 +95,6 @@ button {
 button:hover {
   opacity: 0.7;
 }
-
 .error {
   color: var(--white);
   background-color: var(--error);
@@ -135,7 +104,6 @@ button:hover {
   text-align: center;
   font-weight: bold;
 }
-
 .success {
   color: var(--white);
   background-color: var(--successBackground);

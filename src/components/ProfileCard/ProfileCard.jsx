@@ -3,11 +3,10 @@ import styles from './ProfileCard.module.css';
 import { FaEnvelope } from 'react-icons/fa';
 
 const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
-  // Estado para os campos editáveis do formulário
+
   const [name, setName] = useState('');
   const [seboName, setSeboName] = useState('');
 
-  // Popula o formulário com os dados do usuário quando o componente é montado ou o usuário muda
   useEffect(() => {
     if (user) {
       setName(user.name || '');
@@ -15,13 +14,11 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
     }
   }, [user]);
 
-  // Calcula se houve alterações nos campos editáveis em relação aos dados originais do usuário
   const isDirty = (
     (name || '').trim() !== ((user?.name || '')).trim() ||
     (seboName || '').trim() !== ((user?.nameSebo || '')).trim()
   );
 
-  // Função para lidar com o salvamento das alterações
   const handleSave = (e) => {
     e.preventDefault();
     if (onSave) {
@@ -29,7 +26,6 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
     }
   };
 
-  // Função para formatar a data
   const formatDate = (dateString) => {
     if (!dateString) return 'Data indisponível';
     const date = new Date(dateString);
@@ -40,7 +36,6 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
     });
   };
 
-  // Renderiza um estado de carregamento se não houver dados do usuário
   if (!user) {
     return <div className={styles.profileCardContainer}><p>Carregando perfil...</p></div>;
   }
@@ -57,13 +52,11 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
 
         <main className={styles.cardContent}>
           <div className={styles.formGrid}>
-            {/* Campo Nome Completo */}
             <div className={styles.formGroup}>
               <label htmlFor="fullName">Nome Completo</label>
               <input id="fullName" type="text" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
 
-            {/* Campo E-mail */}
             <div className={styles.formGroup}>
               <label htmlFor="email">E-mail</label>
               <div className={styles.inputWrapper}>
@@ -72,13 +65,11 @@ const ProfileCard = ({ user, onSave, onCancel, isSaving, onLogout }) => {
               </div>
             </div>
 
-            {/* Campo Nome do Sebo */}
             <div className={styles.formGroup}>
               <label htmlFor="seboName">Nome do Sebo</label>
               <input id="seboName" type="text" value={seboName} onChange={(e) => setSeboName(e.target.value)} />
             </div>
 
-            {/* Campo Função */}
             <div className={styles.formGroup}>
               <label htmlFor="role">Função</label>
               <div className={styles.inputWrapper}>

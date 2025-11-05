@@ -13,26 +13,24 @@ const StockTable = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [stockLevelFilter, setStockLevelFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const BOOKS_PER_PAGE = 15; // Define quantos livros serão exibidos por página
+  const BOOKS_PER_PAGE = 15;
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
-  // Busca os livros do estoque
   const {
     data: books,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["stock"],
-    // Assumindo que existe um endpoint GET /books para listar o estoque
+
     queryFn: () => authFetch("/books").then((res) => res.json()),
   });
 
-  // Mutação para deletar um livro
   const { mutate: deleteBook } = useMutation({
     mutationFn: (isbn) => authFetch(`/books/${isbn}`, { method: "DELETE" }),
     onSuccess: () => {
-      // Invalida a query do estoque para atualizar a lista
+
       queryClient.invalidateQueries(["stock"]);
     },
     onError: (err) => {
@@ -42,12 +40,11 @@ const StockTable = () => {
     },
   });
 
-  // Modal state for confirming delete
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookToDelete, setBookToDelete] = useState(null);
 
   const handleDelete = (book) => {
-    // Open modal instead of using window.confirm
+
     setBookToDelete(book);
     setShowDeleteModal(true);
   };
@@ -64,11 +61,9 @@ const StockTable = () => {
     setBookToDelete(null);
   };
 
-  // Alert modal state
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
-  // Reseta para a primeira página sempre que um filtro for alterado
   useEffect(() => {
     setCurrentPage(1);
   }, [filter, authorFilter, categoryFilter, stockLevelFilter]);
@@ -77,7 +72,6 @@ const StockTable = () => {
   if (error)
     return <p className="error">Erro ao carregar o estoque: {error.message}</p>;
 
-  // Extrai categorias únicas para o dropdown de filtro
   const allCategories = books
     ? [...new Set(books.flatMap((book) => book.categories || []))].sort()
     : [];
@@ -87,24 +81,20 @@ const StockTable = () => {
         const filterText = filter.toLowerCase();
         const authorFilterText = authorFilter.toLowerCase();
 
-        // Filtro por título ou ISBN
         const titleIsbnMatch =
           !filterText ||
           book.title.toLowerCase().includes(filterText) ||
           book.isbn.toLowerCase().includes(filterText);
 
-        // Filtro por autor
         const authorFilterMatch =
           !authorFilterText ||
           book.authors?.some((author) =>
             author.toLowerCase().includes(authorFilterText)
           );
 
-        // Filtro por categoria
         const categoryFilterMatch =
           categoryFilter === "all" || book.categories?.includes(categoryFilter);
 
-        // Filtro por quantidade em estoque
         const stockLevelMatch =
           stockLevelFilter === "all" ||
           (stockLevelFilter === "low" &&
@@ -124,10 +114,8 @@ const StockTable = () => {
       })
     : [];
 
-  // Calcula o total de páginas com base nos livros filtrados
   const totalPages = Math.ceil(filteredBooks.length / BOOKS_PER_PAGE);
 
-  // "Fatia" o array de livros filtrados para obter apenas os da página atual
   const paginatedBooks = filteredBooks.slice(
     (currentPage - 1) * BOOKS_PER_PAGE,
     currentPage * BOOKS_PER_PAGE
@@ -260,7 +248,6 @@ const StockTable = () => {
           </button>
         </div>
       )}
-      {/* Delete confirmation modal (uses shared ConfirmModal) */}
       <ConfirmModal
         open={showDeleteModal}
         onClose={cancelDelete}

@@ -1,8 +1,7 @@
-// React Router
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// Hook/Context
+
 import { useAuth, AuthProvider } from "./context/AuthContext";
-// Pages
+
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
@@ -13,7 +12,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
 import Vendas from "./pages/Vendas/Vendas";
 import Logs from "./pages/Logs/Logs";
-// Components
+
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
 
@@ -26,7 +25,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* If user is logged, redirect root to dashboard; otherwise show Home */}
+      {}
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Home />} />
       <Route
         path="/login"

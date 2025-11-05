@@ -10,7 +10,6 @@
   align-items: center;
   z-index: 1000;
 }
-
 .modalContent {
   background-color: var(--white);
   position: relative;
@@ -20,7 +19,6 @@
   width: 90%;
   max-width: 500px;
 }
-
 .closeButton {
   position: absolute;
   top: 0.5rem;
@@ -35,27 +33,22 @@
   align-items: center;
   justify-content: center;
 }
-
 .closeButton:hover {
   opacity: 0.8;
 }
-
 .addBookForm {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .addBookForm h2 {
   margin-top: 0;
   color: var(--primaryText);
   text-align: center;
 }
-
 .addBookForm label {
   font-weight: bold;
 }
-
 .addBookForm input,
 .addBookForm select {
   padding: 0.75rem;
@@ -65,7 +58,6 @@
   background-color: var(--white);
   color: var(--primaryText);
 }
-
 .addBookForm button {
   padding: 0.75rem;
   background-color: var(--quinaryBackground);
@@ -77,16 +69,13 @@
   font-weight: bold;
   transition: background-color 0.2s;
 }
-
 .addBookForm button:hover:not(:disabled) {
   opacity: 0.7;
 }
-
 .addBookForm button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-
 .success {
   color: green;
   text-align: center;

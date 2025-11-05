@@ -9,7 +9,7 @@ const SalesTable = ({ isOpen }) => {
   const { data: sales, isLoading, error } = useQuery({
     queryKey: ['sales'],
     queryFn: () => authFetch('/sales').then((res) => res.json()),
-    enabled: isOpen, // Only fetch when the modal is open
+    enabled: isOpen,
   });
 
   return (

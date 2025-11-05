@@ -41,8 +41,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Este listener único gerencia o estado de autenticação.
-    // Ele é acionado na inicialização e sempre que o estado de auth muda.
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (email, password, name) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // Após criar o usuário, atualiza o perfil com o nome
+
     if (userCredential.user && name) {
       await updateProfile(userCredential.user, {
         displayName: name
@@ -65,7 +64,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = (email) => sendPasswordResetEmail(auth, email);
 
   const getToken = async (force = false) => {
-    // Retorna o ID token do usuário atual. `force` controla se força refresh.
+
     const currentUser = auth.currentUser;
     if (!currentUser) return null;
     return await currentUser.getIdToken(force);

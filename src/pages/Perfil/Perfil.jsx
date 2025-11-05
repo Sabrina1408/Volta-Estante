@@ -14,7 +14,6 @@ const Perfil = () => {
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
-  // Mutação para atualizar os dados do perfil
   const { mutate: updateUser, isLoading: isSaving } = useMutation({
     mutationFn: (updatedData) =>
       authFetch(`/users/${user.uid}`, {
@@ -38,7 +37,7 @@ const Perfil = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["userProfile", user?.uid], // Chave única para o cache
+    queryKey: ["userProfile", user?.uid],
     queryFn: async () => {
       const res = await authFetch(`/users/${user.uid}`);
       if (!res.ok) {
@@ -46,7 +45,7 @@ const Perfil = () => {
       }
       return res.json();
     },
-    enabled: !!user, // Só executa a query se o 'user' existir
+    enabled: !!user,
   });
 
   const handleLogout = async () => {
@@ -59,12 +58,12 @@ const Perfil = () => {
   };
 
   const handleSave = (updatedData) => {
-    // A API espera 'nameSebo' e 'name', que são os campos editáveis no card.
+
     updateUser(updatedData);
   };
 
   const handleCancel = () => {
-    // Ao cancelar, podemos navegar de volta para a página inicial, por exemplo.
+
     navigate("/dashboard");
   };
 
@@ -76,7 +75,7 @@ const Perfil = () => {
   }
 
   if (error) {
-    // O objeto de erro do React Query já tem a mensagem
+
     return (
       <div className={styles.perfil}>
         <p className="error">Erro ao carregar o perfil: {error.message}</p>
@@ -86,7 +85,7 @@ const Perfil = () => {
 
   return (
     <div className={styles.perfil}>
-      {/* O ProfileCard agora gerencia a exibição e edição dos dados */}
+      {}
       <ProfileCard
         user={profileData}
         onSave={handleSave}
@@ -95,7 +94,7 @@ const Perfil = () => {
         onLogout={handleLogout}
       />
 
-      {/* Seção para gerenciar funcionários, visível apenas para admins */}
+      {}
       {profileData?.userRole === "Admin" && (
         <div className={styles.manageSection}>
           <ManageEmployees />

@@ -13,14 +13,13 @@ const BookDetails = ({ book }) => {
   const [selectedCopy, setSelectedCopy] = useState(null);
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
-  
+
   if (!book) {
     return null;
   }
 
   const { isbn, copies } = book;
 
-  // Mutação para registrar a venda de uma cópia
   const { mutate: sellCopy } = useMutation({
     mutationFn: (copyId) => authFetch(`/sales/${isbn}/${copyId}`, { method: 'POST' }).then(async (res) => {
         if (!res.ok) {
@@ -32,9 +31,8 @@ const BookDetails = ({ book }) => {
         return res.json();
       }),
     onSuccess: () => {
-      // Invalida as queries para atualizar a UI: a lista de cópias e os dados do livro (totalQuantity)
-      // A query 'bookSearch' já contém as cópias, invalidá-la é suficiente.
-      queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] }); // Invalida a busca para atualizar o objeto 'book' completo
+
+      queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
       setAlertMessage('Venda registrada com sucesso!');
       setAlertOpen(true);
     },
@@ -44,7 +42,6 @@ const BookDetails = ({ book }) => {
     },
   });
 
-  // Mutação para deletar uma cópia
   const { mutate: deleteCopy } = useMutation({
     mutationFn: (copyId) => authFetch(`/books/${isbn}/copies/${copyId}`, { method: 'DELETE' }).then(async (res) => {
         if (!res.ok) {
@@ -56,8 +53,7 @@ const BookDetails = ({ book }) => {
         return res.json();
       }),
     onSuccess: () => {
-      // A query 'bookSearch' já contém as cópias, invalidá-la é suficiente.
-      queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] }); // Invalida a busca para atualizar o objeto 'book' completo
+      queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
       setAlertMessage('Cópia excluída com sucesso!');
       setAlertOpen(true);
     },
@@ -67,11 +63,9 @@ const BookDetails = ({ book }) => {
     },
   });
 
-  // Alert modal state
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
-  // Confirm modal state (reusable for different confirm actions)
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(() => () => {});

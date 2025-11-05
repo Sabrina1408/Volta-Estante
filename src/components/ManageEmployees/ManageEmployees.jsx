@@ -12,14 +12,12 @@ const ManageEmployees = () => {
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
-  // Busca os funcionários da API
   const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees'],
     queryFn: () => authFetch('/users').then((res) => res.json()),
-    select: (data) => (data ? Object.values(data) : []), // Transforma o objeto em um array
+    select: (data) => (data ? Object.values(data) : []),
   });
 
-  // Mutação para deletar um funcionário
   const { mutate: deleteEmployee } = useMutation({
     mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
@@ -54,14 +52,12 @@ const ManageEmployees = () => {
     }
   };
 
-  // Filtra os funcionários com base no termo de busca (nome ou email)
   const filteredEmployees = (employees || []).filter(
     (employee) =>
       (employee.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (employee.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Mapeia a role para um texto e uma classe de estilo
   const getRoleInfo = (role) => {
     switch (role) {
       case 'Admin':
@@ -77,7 +73,6 @@ const ManageEmployees = () => {
 
   if (isLoading) return <p>Carregando funcionários...</p>;
   if (error) return <p className="error">Erro ao carregar funcionários: {error.message}</p>;
-
 
   return (
     <div className={styles.pageContainer}>
@@ -129,16 +124,16 @@ const ManageEmployees = () => {
                       </span>
                     </td>
                     <td data-label="Ações" className={styles.actionsCell}>
-                      <button 
+                      <button
                         onClick={() => handleOpenModal(employee)}
-                        className={`${styles.actionButton} ${styles.editButton}`} 
+                        className={`${styles.actionButton} ${styles.editButton}`}
                         title="Editar"
                       >
                         <FaPencilAlt />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(employee.userId, employee.name)}
-                        className={`${styles.actionButton} ${styles.deleteButton}`} 
+                        className={`${styles.actionButton} ${styles.deleteButton}`}
                         title="Excluir"
                       >
                         <FaTrash />

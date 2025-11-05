@@ -17,7 +17,6 @@ const Cadastro = () => {
   const { authFetch } = useApi();
   const navigate = useNavigate();
 
-  // React Query mutation hook
   const { mutateAsync: createUser, isLoading } = useMutation({
     mutationFn: (payload) =>
       authFetch("/users", {
@@ -38,11 +37,10 @@ const Cadastro = () => {
       return;
     }
 
-    let cred = null; // Declarar fora para ser acessível no catch
+    let cred = null;
     try {
       cred = await signup(email, senha, nome);
 
-      // Payload para o seu backend
       const payload = {
         userId: cred.user.uid,
         name: nome,
@@ -56,8 +54,7 @@ const Cadastro = () => {
   setAlertOpen(true);
 
     } catch (error) {
-      // Se a criação no backend falhar, o usuário do Firebase já foi criado.
-      // Precisamos deletá-lo para manter a consistência (rollback).
+
       if (cred?.user) {
         await cred.user.delete().catch(err => console.error("Falha ao fazer rollback do usuário no Firebase:", err));
       }
