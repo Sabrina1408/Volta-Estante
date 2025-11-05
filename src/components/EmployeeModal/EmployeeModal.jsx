@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import styles from './EmployeeModal.module.css';
 import { FaTimes } from 'react-icons/fa';
 import AlertModal from '../AlertModal/AlertModal';
@@ -17,6 +18,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   });
 
   const { authFetch } = useApi();
+  const { user, refreshUserToken } = useAuth();
   const queryClient = useQueryClient();
   const isEditing = !!employee;
 
@@ -67,7 +69,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData),
       }).then((res) => res.json()),
-    onSuccess: () => {
+    onSuccess: async () => {
       setAlertInfo({
         open: true,
         title: 'Sucesso',
@@ -75,6 +77,16 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
         isSuccess: true,
       });
       queryClient.invalidateQueries(['employees']);
+      
+      if (user && employee.userId === user.uid) {
+        try {
+          await refreshUserToken();
+          queryClient.invalidateQueries(['userProfile', user.uid]);
+        } catch (error) {
+          console.error('Erro ao atualizar token:', error);
+        }
+      }
+      
       setTimeout(onClose, 1500);
     },
     onError: (err) => {
