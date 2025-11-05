@@ -1,5 +1,6 @@
 import os
 import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv
 from services.isbn_utils import sanitize_isbn
 
@@ -85,7 +86,7 @@ def fetch_top_rated_books(
     queries=None,
     subjects=None,
     max_results: int = 10,
-    min_ratings: int = 5,
+    min_ratings: int = 0,
     per_request: int = 40,
     pages: int = 1,
 ) -> list:
@@ -136,12 +137,15 @@ def fetch_top_rated_books(
         pages = max(1, int(pages))
 
         seen = {}
+
+        tasks = []
         for t_type, t_val in targets:
             for p in range(pages):
                 params = {
                     "printType": "books",
                     "maxResults": per_request,
                     "startIndex": p * per_request,
+                    "fields": "items(volumeInfo(title,authors,publisher,categories,publishedDate,description,pageCount,ratingsCount,averageRating,imageLinks/smallThumbnail,imageLinks/thumbnail,language,maturityRating,industryIdentifiers),searchInfo/textSnippet),totalItems",
                 }
                 if t_type == "subject":
                     params["q"] = f"subject:{t_val}"
@@ -149,44 +153,58 @@ def fetch_top_rated_books(
                     params["q"] = t_val or ""
                 if API_KEY:
                     params["key"] = API_KEY
+                tasks.append(params)
 
-                try:
-                    resp = requests.get(BASE_URL, params=params)
-                    resp.raise_for_status()
-                except Exception as e:
-                    print(f"Warning: request failed for target={t_type}:{t_val} page={p}: {e}")
-                    continue
+        def fetch(params):
+            try:
+                resp = requests.get(BASE_URL, params=params, timeout=8)
+                resp.raise_for_status()
+                return resp.json() or {}
+            except Exception as e:
+                print(f"Warning: request failed params={params.get('q')} startIndex={params.get('startIndex')}: {e}")
+                return {"items": []}
 
-                data = resp.json() or {}
-                items = data.get("items") or []
-                for vol in items:
-                    isbn = _extract_isbn_from_volume(vol)
-                    norm = _normalize_google_volume(isbn, vol)
-                    avg = norm.get("averageRating")
-                    ratings_count = norm.get("ratingsCount") or 0
-                    if avg is None:
-                        continue
-                    if ratings_count < min_ratings:
-                        continue
-
-                    
-                    key = isbn or (norm.get("title") or "") + "|" + ",".join(norm.get("authors") or [])
-
-                    existing = seen.get(key)
-                    if not existing:
-                        seen[key] = norm
-                    else:
-                        
-                        if (norm.get("averageRating") or 0, norm.get("ratingsCount") or 0) > (
-                            existing.get("averageRating") or 0,
-                            existing.get("ratingsCount") or 0,
-                        ):
+        # Fetch with limited concurrency
+        max_workers = min(8, max(1, len(tasks)))
+        if tasks:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = [executor.submit(fetch, p) for p in tasks]
+                for fut in as_completed(futures):
+                    data = fut.result() or {}
+                    items = data.get("items") or []
+                    for vol in items:
+                        isbn = _extract_isbn_from_volume(vol)
+                        norm = _normalize_google_volume(isbn, vol)
+                        key = isbn or (norm.get("title") or "") + "|" + ",".join(norm.get("authors") or [])
+                        existing = seen.get(key)
+                        if not existing:
                             seen[key] = norm
+                        else:
+                            # Keep the one with better rating signal
+                            if (norm.get("averageRating") or 0, norm.get("ratingsCount") or 0) > (
+                                existing.get("averageRating") or 0,
+                                existing.get("ratingsCount") or 0,
+                            ):
+                                seen[key] = norm
 
         normalized = list(seen.values())
-        normalized.sort(key=lambda b: ((b.get("averageRating") or 0), (b.get("ratingsCount") or 0)), reverse=True)
+        rated_with_threshold = [b for b in normalized if (b.get("averageRating") is not None) and ((b.get("ratingsCount") or 0) >= min_ratings)]
+        rated_with_threshold.sort(key=lambda b: ((b.get("averageRating") or 0), (b.get("ratingsCount") or 0)), reverse=True)
 
-        return normalized[:max_results]
+        result = []
+        result.extend(rated_with_threshold[:max_results])
+        if len(result) < max_results:
+            remaining = max_results - len(result)
+            rated_any = [b for b in normalized if (b.get("averageRating") is not None) and (b not in result)]
+            rated_any.sort(key=lambda b: ((b.get("averageRating") or 0), (b.get("ratingsCount") or 0)), reverse=True)
+            result.extend(rated_any[:remaining])
+        if len(result) < max_results:
+            remaining = max_results - len(result)
+            unrated = [b for b in normalized if (b.get("averageRating") is None) and (b not in result)]
+            unrated.sort(key=lambda b: (b.get("ratingsCount") or 0), reverse=True)
+            result.extend(unrated[:remaining])
+
+        return result[:max_results]
 
     except Exception as e:
         print(f"Error fetching top rated books: {str(e)}")
