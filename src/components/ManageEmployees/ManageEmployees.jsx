@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import styles from './ManageEmployees.module.css';
 import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
@@ -16,7 +18,9 @@ const ManageEmployees = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const { authFetch } = useApi();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees'],
