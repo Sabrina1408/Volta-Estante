@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Trending.module.css";
 import Spinner from "../../components/Spinner/Spinner";
@@ -7,11 +7,23 @@ import TrendingTable from "../../components/TrendingTable/TrendingTable";
 
 const Trending = () => {
   const { authFetch } = useApi();
-  const [subject, setSubject] = useState("Fiction");
+  const [subject, setSubject] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchTerm(subject);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [subject]);
 
   const { data: topRatedBooks, isLoading, isError, error } = useQuery({
-    queryKey: ["topRatedBooks", subject],
-    queryFn: () => authFetch(`/books/topRated?subject=${subject}`).then((res) => res.json()),
+    queryKey: ["topRatedBooks", searchTerm],
+    queryFn: () => authFetch(`/books/topRated?subject=${searchTerm}`).then((res) => res.json()),
+    enabled: !!searchTerm,
   });
 
   if (isLoading) {
@@ -43,7 +55,7 @@ const Trending = () => {
             />
           </div>
         </div>
-        <TrendingTable books={topRatedBooks} />
+        <TrendingTable books={topRatedBooks || []} />
       </div>
     </div>
   );
