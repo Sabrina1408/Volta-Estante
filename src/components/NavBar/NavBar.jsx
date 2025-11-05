@@ -77,6 +77,11 @@ const NavBar = () => {
                   Logs
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/trending" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Em Alta
+                </NavLink>
+              </li>
             </>
           )}
         </ul>

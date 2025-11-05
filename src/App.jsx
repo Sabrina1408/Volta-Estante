@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import Search from "./pages/Search/Search";
 import Vendas from "./pages/Vendas/Vendas";
 import Logs from "./pages/Logs/Logs";
+import Trending from "./pages/Trending/Trending";
 
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
@@ -62,6 +63,10 @@ function AppRoutes() {
       <Route
         path="/logs"
         element={user ? <Logs /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/trending"
+        element={user ? <Trending /> : <Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
     </Routes>
