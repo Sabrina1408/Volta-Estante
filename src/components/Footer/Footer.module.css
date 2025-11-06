@@ -9,25 +9,21 @@
   flex-direction: row;
   justify-content: space-between;
   padding: 0 20px;
-  
   text-align: center;
   background-color: var(--white);
   border: 1px solid var(--tertiaryBackground);
 }
-
 .footer a {
   display: flex;
   align-items: center;
-  gap: 8px; /* Espaço entre o ícone e o texto */
-  color: var(--black); /* Ou a cor que preferir */
+  gap: 8px; 
+  color: var(--black); 
   text-decoration: none;
   font-size: 14px;
 }
-
 .footer a:hover {
   opacity: 0.8;
 }
-
 .footer svg {
   width: 24px;
   height: 24px;

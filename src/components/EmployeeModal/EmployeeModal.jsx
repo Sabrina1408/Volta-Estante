@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
+import { sendPasswordResetEmail, getAuth } from 'firebase/auth';
 import styles from './EmployeeModal.module.css';
 import { FaTimes } from 'react-icons/fa';
 import AlertModal from '../AlertModal/AlertModal';
@@ -17,6 +19,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   });
 
   const { authFetch } = useApi();
+  const { user, refreshUserToken } = useAuth();
   const queryClient = useQueryClient();
   const isEditing = !!employee;
 
@@ -32,6 +35,9 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
     }
   }, [employee, isOpen]);
 
+  const originalRole = employee?.userRole || 'Editor';
+  const isDirty = isEditing ? userRole !== originalRole : true;
+
   const { mutate: addEmployee, isLoading: isAdding } = useMutation({
     mutationFn: (newEmployee) =>
       authFetch(`/users/employees/`, {
@@ -39,16 +45,30 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEmployee),
       }).then((res) => res.json()),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const { employee_user, temporary_password, password_reset_link } = data;
-      setAlertInfo({
-        open: true,
-        title: 'Funcionário Adicionado com Sucesso!',
-        message: `O funcionário ${employee_user.name} foi adicionado. <br /> Senha temporária: <strong>${temporary_password}</strong> <br /> Peça para que o usuário acesse o link para redefinir a senha: <a href='${password_reset_link}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a>`,
-        isSuccess: true,
-      });
+      
+      try {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, employee_user.email);
+        
+        setAlertInfo({
+          open: true,
+          title: 'Funcionário Adicionado com Sucesso!',
+          message: `O funcionário ${employee_user.name} foi adicionado e um e-mail foi enviado para ${employee_user.email} com instruções para redefinir a senha.<br /><br />Senha temporária (caso necessário): <strong>${temporary_password}</strong>`,
+          isSuccess: true,
+        });
+      } catch (emailError) {
+        console.error('Erro ao enviar email:', emailError);
+        setAlertInfo({
+          open: true,
+          title: 'Funcionário Adicionado com Sucesso!',
+          message: `O funcionário ${employee_user.name} foi adicionado.<br />Senha temporária: <strong>${temporary_password}</strong><br />Link para redefinir senha: <a href='${password_reset_link}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a><br /><br /><em>Nota: Não foi possível enviar o e-mail automaticamente. Compartilhe estas informações com o funcionário.</em>`,
+          isSuccess: true,
+        });
+      }
+      
       queryClient.invalidateQueries(['employees']);
-      setTimeout(onClose, 5000);
     },
     onError: (err) => {
       setAlertInfo({
@@ -67,7 +87,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData),
       }).then((res) => res.json()),
-    onSuccess: () => {
+    onSuccess: async () => {
       setAlertInfo({
         open: true,
         title: 'Sucesso',
@@ -75,6 +95,16 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
         isSuccess: true,
       });
       queryClient.invalidateQueries(['employees']);
+      
+      if (user && employee.userId === user.uid) {
+        try {
+          await refreshUserToken();
+          queryClient.invalidateQueries(['userProfile', user.uid]);
+        } catch (error) {
+          console.error('Erro ao atualizar token:', error);
+        }
+      }
+      
       setTimeout(onClose, 1500);
     },
     onError: (err) => {
@@ -90,6 +120,15 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
+      if (!isDirty) {
+        setAlertInfo({
+          open: true,
+          title: 'Nada para salvar',
+          message: 'Nenhuma alteração foi feita na função do funcionário.',
+          isSuccess: false,
+        });
+        return;
+      }
       updateEmployee({ userRole });
     } else {
       addEmployee({ name, email, userRole });
@@ -150,7 +189,12 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
               </select>
             </div>
 
-            <button type='submit' disabled={isLoading}>
+            <button
+              type='submit'
+              className={`${styles.submitButton} ${isEditing ? styles.submitEdit : styles.submitAdd}`}
+              disabled={isLoading || (isEditing && !isDirty)}
+              aria-disabled={isLoading || (isEditing && !isDirty)}
+            >
               {isLoading
                 ? 'Salvando...'
                 : isEditing

@@ -131,6 +131,17 @@ def update_user(user_id, update_data):
         validated_user = User.model_validate(user_data)
         validated_updates = UpdateUser.model_validate(update_data)
         updated_fields = validated_user.model_copy(update=validated_updates.model_dump(exclude_unset=True))
+
+        if validated_updates.user_role is not None:
+            try:
+                claims = {
+                    "seboId": updated_fields.sebo_id,
+                    "userRole": updated_fields.user_role.value
+                }
+                auth.set_custom_user_claims(user_id, claims)
+            except Exception as e:
+                raise BadRequest(f"Failed to update custom claims for user {user_id}: {e}")
+        
         user_ref.update(updated_fields.model_dump(by_alias=True))
         return updated_fields.model_dump(by_alias=True)
     except ValidationError as e:
@@ -152,6 +163,7 @@ def delete_user(user_id, sebo_id):
         raise Forbidden("You can only delete users from your own sebo.")
     try:
         user_ref.delete()
+        auth.delete_user(user_id)
     except Exception as e:
         raise BadRequest(f"Failed to delete user {user_id}: {e}")
     return validated_user.model_dump(by_alias=True)

@@ -7,22 +7,18 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   color: var(--textColor);
 }
-
 .login h1 {
   text-align: center;
   margin-bottom: 24px;
 }
-
 .login form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-
 .login label {
   font-weight: bold;
 }
-
 .login input[type="email"],
 .login input[type="password"] {
   width: 100%;
@@ -32,7 +28,6 @@
   background-color: var(--tertiaryBackground);
   color: var(--textColor);
 }
-
 .login button {
   padding: 12px;
   border: 1px solid transparent;
@@ -44,27 +39,22 @@
   cursor: pointer;
   transition: border-color 0.25s;
 }
-
 .login button:hover {
   opacity: 0.9;
   border-color: var(--sixnaryBackground);
 }
-
 .login button:focus,
 .login button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-
 .forgotPassword {
   text-align: center;
   margin-top: 16px;
 }
-
 .forgotPassword a {
   color: var(--primaryColor);
   text-decoration: none;
 }
-
 .forgotPassword a:hover {
   text-decoration: underline;
 }

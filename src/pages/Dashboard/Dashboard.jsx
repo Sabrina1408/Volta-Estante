@@ -18,14 +18,9 @@ import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa"
 import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
-/**
- * Helper para ler o valor de uma variável CSS do :root.
- * Necessário porque os atributos SVG (fill, stroke) não resolvem var() diretamente.
- * @param {string} variable - O nome da variável CSS (ex: '--metric-blue').
- * @returns {string} O valor computado da cor (ex: '#3b82f6').
- */
+
 const getCssVariableValue = (variable) => {
-  // Garante que o código não quebre em ambientes sem DOM (ex: SSR)
+
   if (typeof window === 'undefined') return '';
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 };
@@ -51,7 +46,6 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    // Garante que o código não quebre em ambientes sem DOM (ex: SSR)
     if (typeof window === "undefined") return;
 
     const metricBlue = getCssVariableValue("--metric-blue");
@@ -82,7 +76,6 @@ const Dashboard = () => {
 
   const { data: stock, isLoading: isLoadingStock, isError: isErrorStock, error: errorStock } = useQuery({
     queryKey: ['stock'],
-    // O endpoint /books retorna a lista de livros com a quantidade total de cada um
     queryFn: () => authFetch('/books').then(res => res.json())
   });
 
@@ -142,7 +135,6 @@ const Dashboard = () => {
 
     let revenueOverTimeData;
     if (filters.month !== 'all') {
-      // A month is selected, group by day
       const revenueByDay = filteredSales.reduce((acc, sale) => {
         const day = new Date(sale.saleDate).getDate();
         acc[day] = (acc[day] || 0) + sale.bookPrice;
@@ -152,7 +144,6 @@ const Dashboard = () => {
         .map(([name, Receita]) => ({ name: `Dia ${name}`, Receita }))
         .sort((a, b) => parseInt(a.name.split(' ')[1]) - parseInt(b.name.split(' ')[1]));
     } else {
-      // No month selected, group by month
       const revenueByMonth = filteredSales.reduce((acc, sale) => {
         const month = new Date(sale.saleDate).toLocaleString('default', { month: 'short' });
         acc[month] = (acc[month] || 0) + sale.bookPrice;
@@ -206,7 +197,6 @@ const Dashboard = () => {
 
   const totalStock = useMemo(() => {
     if (!stock) return 0;
-    // Soma a 'totalQuantity' de cada livro para obter o estoque total
     return stock.reduce((acc, book) => acc + (book.totalQuantity || 0), 0);
   }, [stock]);
 
@@ -230,7 +220,6 @@ const Dashboard = () => {
       </div>
 
           <div className={styles.filterCard}>
-            {/* Category Filter */}
             <div className={styles.filterGroup}>
               <label htmlFor="category-filter">Categorias</label>
               <div className={styles.selectWrapper}>
@@ -248,7 +237,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Conservation Filter */}
             <div className={styles.filterGroup}>
               <label htmlFor="conservation-filter"> Conservação</label>
               <div className={styles.selectWrapper}>
@@ -266,7 +254,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Month Filter */}
             <div className={styles.filterGroup}>
               <label htmlFor="month-filter">Mês</label>
               <div className={styles.selectWrapper}>
@@ -284,7 +271,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Year Filter */}
             <div className={styles.filterGroup}>
               <label htmlFor="year-filter">Ano</label>
               <div className={styles.selectWrapper}>
@@ -466,7 +452,6 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
-        
     </div>
   </div>
   );

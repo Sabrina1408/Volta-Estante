@@ -205,6 +205,28 @@ def delete_copy_route(ISBN, copy_id):
         "book": deleted,
         }), 200
 
+<<<<<<< HEAD
+=======
+@app.route("/books/topRated", methods=["GET"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
+def fetch_top_rated_books_route():
+    subject = request.args.get("subject")
+    max_results = request.args.get("maxResults", 10, type=int)
+    per_request = request.args.get("perRequest", 40, type=int)
+    pages = request.args.get("pages", 1, type=int)
+    min_ratings = request.args.get("minRatings", 0, type=int)
+    if not subject:
+        raise BadRequest("subject is required")
+    top_books = fetch_top_rated_books(
+        subjects=[subject],
+        max_results=max_results,
+        per_request=per_request,
+        pages=pages,
+        min_ratings=min_ratings,
+    )
+    return jsonify(top_books), 200
+
+>>>>>>> d18459faf01cc799f1cf82ad654dcf3e1a434a6e
 
 # ============================================   
 #                   User

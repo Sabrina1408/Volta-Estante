@@ -7,7 +7,7 @@ const LogTable = () => {
   const { authFetch } = useApi();
 
   const {
-    // Renomeando 'data' para 'allLogs' para maior clareza
+
     data: logs,
     isLoading,
     error,
@@ -16,16 +16,12 @@ const LogTable = () => {
     queryFn: () => authFetch("/logs").then((res) => res.json()),
   });
 
-  // Estado para controlar a página atual
   const [currentPage, setCurrentPage] = useState(1);
-  const LOGS_PER_PAGE = 20; // Define quantos logs serão exibidos por página
+  const LOGS_PER_PAGE = 20;
 
-  // Ordena os logs pela data mais recente primeiro
   const sortedLogs = logs
     ? [...logs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     : [];
-
-  // Lógica de paginação
 
   if (isLoading) {
     return <p className={styles.loading}>Carregando histórico...</p>;
@@ -39,15 +35,12 @@ const LogTable = () => {
     return <p>Nenhum registro de alteração encontrado.</p>;
   }
 
-  // Calcula o total de páginas
   const totalPages = Math.ceil(sortedLogs.length / LOGS_PER_PAGE);
 
-  // "Fatia" o array de logs para obter apenas os da página atual
   const paginatedLogs = sortedLogs.slice(
     (currentPage - 1) * LOGS_PER_PAGE,
     currentPage * LOGS_PER_PAGE
   );
-
 
   return (
     <>
@@ -63,12 +56,11 @@ const LogTable = () => {
           </thead>
           <tbody>
             {paginatedLogs.map((log, index) => (
-              // Usando o índice + timestamp para garantir uma chave única, resolvendo o warning.
+
               <tr key={`${log.timestamp}-${index}`}>
                 <td>{log.timestamp ? new Date(log.timestamp).toLocaleString("pt-BR") : "-"}</td>
                 <td>{log.userName}</td>
                 <td>{log.action}</td>
-                {/* Verifica se 'details' é um objeto e o converte para string se for, corrigindo o erro de renderização. */}
                 <td>{typeof log.details === 'object' && log.details !== null ? JSON.stringify(log.details) : log.details}</td>
               </tr>
             ))}

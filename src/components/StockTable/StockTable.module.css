@@ -1,17 +1,14 @@
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* Habilita a rolagem horizontal */
+  overflow-x: auto; 
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
-
-/* Tabela */
 .stockTable {
   width: 100%;
   border-collapse: collapse;
   min-width: 800px;
 }
-
 .stockTable th,
 .stockTable td {
   padding: 1rem 1.25rem;
@@ -21,7 +18,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .stockTable th:first-child,
 .stockTable td:first-child {
   width: 350px;
@@ -29,7 +25,6 @@
   white-space: normal;
   word-wrap: break-word;
 }
-
 .stockTable th {
   background-color: var(--input-background);
   font-size: 0.875rem;
@@ -38,16 +33,13 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
 .stockTable tbody tr:last-child td {
-  border-bottom: none; /* Remove a borda da última linha */
+  border-bottom: none; 
 }
-
 .actions {
     display: flex;
     gap: 0.5rem;
 }
-
 .actions button {    
     display: flex;
     align-items: center;
@@ -61,11 +53,9 @@
     font-size: 0.9rem;
     transition: opacity 0.2s;
 }
-
 .actions button:hover {
     opacity: 0.8;
 }
-
 .titleLink {
   color: var(--linkGeneralColor);
   text-decoration: none;
@@ -76,32 +66,26 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .titleLink:hover {
   text-decoration: underline;
 }
-
 .deleteButton {
   background-color: var(--deleteButtonBackground); 
 }
-
 .stockContainer {
     margin-top: 1.5rem;
     margin-bottom: 5rem;
     width: 100%;
 }
-
 .header {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 1rem;
 }
-
 .topActions {
     display: flex;
     gap: 1rem;
 }
-
 .actionButton {
     display: flex;
     align-items: center;
@@ -110,65 +94,55 @@
     font-size: 1rem;
     font-weight: bold;
 }
-
-/* --- Estilos dos Filtros (Padrão do Dashboard) --- */
 .filterCard {
   background-color: var(--white);
   padding: 1.5rem;
   border-radius: var(--borderRadius);
   box-shadow: var(--shadow-sm);
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+  grid-template-columns: repeat(4, 1fr); 
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
-
 .filterGroup {
   display: flex;
   flex-direction: column;
 }
-
 .filterGroup label {
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151; /* Cinza escuro para o rótulo */
+  color: #374151; 
 }
-
 .filterInput,
 .filterSelect {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb; /* Cinza extremamente claro */
-  border: 1px solid #d1d5db; /* Borda sutil */
+  background-color: #f9fafb; 
+  border: 1px solid #d1d5db; 
   border-radius: 8px;
   font-size: 1rem;
-  color: #111827; /* Texto escuro */
+  color: #111827; 
   box-sizing: border-box;
 }
-
 .filterSelect {
-  appearance: none; /* Remove a seta padrão do navegador */
+  appearance: none; 
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1.25em;
-  padding-right: 2.5rem; /* Espaço para a nova seta */
+  padding-right: 2.5rem; 
 }
-
 .filterSelect:hover {
     cursor: pointer;
 }
-
 @media (max-width: 992px) {
   .filterCard {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablets */
+    grid-template-columns: repeat(2, 1fr); 
   }
 }
-
 @media (max-width: 690px) {
   .filterCard {
-    grid-template-columns: 1fr; /* 1 coluna em celulares */
+    grid-template-columns: 1fr; 
   }
 }
-

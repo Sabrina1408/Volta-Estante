@@ -9,12 +9,11 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
   const [conservationState, setConservationState] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
+  const [messageType, setMessageType] = useState("");
 
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
 
-  // Popula o formulário quando o modal abre com uma nova cópia
   useEffect(() => {
     if (copy) {
       setPrice(copy.price || "");
@@ -22,7 +21,6 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
     }
   }, [copy]);
 
-  // Determine se o usuário fez alguma alteração em relação aos valores originais
   const originalPrice = copy?.price ?? null;
   const originalConservation = copy?.conservationState ?? "";
   const parsedPrice = parseFloat(price);
@@ -51,18 +49,18 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
       setMessageType("success");
       setMessage("Cópia atualizada com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["bookSearch", bookIsbn] });
-      // Mantém o estado de 'submitting' até o modal fechar
+
       setTimeout(() => {
         onClose();
       }, 1500);
     },
     onError: (error) => {
-      setIsSubmitting(false); // Libera o botão em caso de erro
+      setIsSubmitting(false);
       setMessageType("error");
       setMessage(error.message || "Ocorreu um erro ao atualizar a cópia.");
       console.error("Erro ao atualizar cópia:", error);
     },
-    onSettled: () => {}, // onSettled é chamado após sucesso ou erro
+    onSettled: () => {},
   });
 
   const handleSubmit = (e) => {
@@ -79,13 +77,12 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
     mutate(updatedData);
   };
 
-  // Limpa o estado quando o modal é fechado
   useEffect(() => {
     if (!isOpen) {
       setTimeout(() => {
         setMessage("");
         setMessageType("");
-        setIsSubmitting(false); // Reseta o estado de submissão ao fechar
+        setIsSubmitting(false);
       }, 300);
     }
   }, [isOpen]);
@@ -103,7 +100,7 @@ const EditCopyModal = ({ isOpen, onClose, bookIsbn, copy }) => {
           <p><strong>ISBN:</strong> {bookIsbn}</p>
           <p><strong>ID da Cópia:</strong> {copy.copyId}</p>
           {message && <p className={messageType === "error" ? "error" : styles.success}>{message}</p>}
-          
+
           <label htmlFor="price">Preço (R$):</label>
           <input type="number" id="price" value={price} onChange={(e) => setPrice(e.target.value)} required placeholder="Ex: 39.90" step="0.01" />
 

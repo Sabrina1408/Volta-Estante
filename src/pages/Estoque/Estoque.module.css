@@ -5,7 +5,6 @@
   margin-bottom: 5rem;
   background-color: var(--background);
 }
-
 .estoque {
   width: 100%;
   max-width: 1200px;
@@ -17,7 +16,6 @@
   flex-direction: column;
   gap: 1.5rem;
 }
-
 .header {
   display: flex;
   justify-content: space-between;
@@ -25,25 +23,21 @@
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 1.5rem;
 }
-
 .headerText .title {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--text-dark);
 }
-
 .headerText .subtitle {
   margin: 0.25rem 0 0;
   font-size: 0.9rem;
   color: var(--text-light);
 }
-
 .actions {
   display: flex;
   gap: 1rem;
 }
-
 .addButton, .logButton {
   padding: 10px 20px;
   border: none;
@@ -51,12 +45,10 @@
   cursor: pointer;
   font-weight: bold;
 }
-
 .logButton {
   background-color: var(--logButtonBackground);
   color: var(--white);
 }
-
 .addButton {
   background-color: var(--addBookBackground);
   color: var(--white);

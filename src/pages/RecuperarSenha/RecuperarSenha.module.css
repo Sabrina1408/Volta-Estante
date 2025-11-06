@@ -8,27 +8,22 @@
   color: var(--textColor);
   text-align: center;
 }
-
 .recuperarSenha h1 {
   margin-bottom: 16px;
 }
-
 .recuperarSenha p {
   margin-bottom: 24px;
   color: var(--text-light);
 }
-
 .recuperarSenha form {
   display: flex;
   flex-direction: column;
   gap: 16px;
   text-align: left;
 }
-
 .recuperarSenha label {
   font-weight: bold;
 }
-
 .recuperarSenha input[type="email"] {
   width: 100%;
   padding: 10px;
@@ -38,7 +33,6 @@
   color: var(--textColor);
   box-sizing: border-box;
 }
-
 .recuperarSenha button {
   padding: 12px;
   border: 1px solid transparent;
@@ -49,17 +43,14 @@
   background-color: var(--quinaryBackground);
   transition: border-color 0.25s;
 }
-
 .recuperarSenha button:hover {
   opacity: 0.9;
   border-color: var(--sixnaryBackground);
 }
-
 .recuperarSenha .success {
   color: var(--successBackground);
   margin-top: 16px;
 }
-
 .recuperarSenha .error {
   color: var(--error);
   margin-top: 16px;

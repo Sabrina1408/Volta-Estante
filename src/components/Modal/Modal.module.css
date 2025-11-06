@@ -10,7 +10,6 @@
   justify-content: center;
   z-index: 2000;
 }
-
 .modal {
   background: var(--white);
   color: var(--black);

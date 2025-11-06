@@ -10,7 +10,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
   const [price, setPrice] = useState("");
   const [conservationState, setConservationState] = useState("");
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
+  const [messageType, setMessageType] = useState("");
 
   const { authFetch } = useApi();
   const queryClient = useQueryClient();
@@ -38,10 +38,10 @@ const AddBookModal = ({ isOpen, onClose }) => {
       setIsbn("");
       setPrice("");
       setConservationState("");
-      // Invalida queries relacionadas ao estoque para que os dados sejam atualizados
+
       queryClient.invalidateQueries(["stock"]);
       setTimeout(() => {
-        onClose(); // Fecha o modal após um curto período de sucesso
+        onClose();
       }, 1500);
     },
     onError: (error) => {
@@ -55,13 +55,11 @@ const AddBookModal = ({ isOpen, onClose }) => {
     },
   });
 
-  // Prevenir múltiplos cliques no botão de envio
   const submittingRef = useRef(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verifica se já está enviando para evitar múltiplos cliques
     if (submittingRef.current) return;
     submittingRef.current = true;
 
@@ -75,7 +73,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
     };
 
     try {
-      // Valida os campos antes de enviar
+
       await mutateAsync(bookData);
     } catch (err) {
 
@@ -85,7 +83,6 @@ const AddBookModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Limpa o estado quando o modal é fechado
   useEffect(() => {
     if (!isOpen) {
       setTimeout(() => {
@@ -94,11 +91,10 @@ const AddBookModal = ({ isOpen, onClose }) => {
         setIsbn("");
         setPrice("");
         setConservationState("");
-      }, 300); // Aguarda a animação de fechamento
+      }, 300);
     }
   }, [isOpen]);
 
-  // Fecha o modal ao pressionar Esc
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e) => {

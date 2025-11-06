@@ -12,9 +12,8 @@ const firebaseConfig = {
   measurementId: "G-15SHL658CD"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getFirestore(app); // Banco de dados
+const db = getFirestore(app);
 
 export {db, app, analytics};

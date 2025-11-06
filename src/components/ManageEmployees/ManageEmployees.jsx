@@ -1,25 +1,33 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../../hooks/useApi';
+import { useAuth } from '../../context/AuthContext';
 import styles from './ManageEmployees.module.css';
 import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
+import AlertModal from '../AlertModal/AlertModal';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 const ManageEmployees = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const { authFetch } = useApi();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  // Busca os funcionários da API
   const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees'],
     queryFn: () => authFetch('/users').then((res) => res.json()),
-    select: (data) => (data ? Object.values(data) : []), // Transforma o objeto em um array
+    select: (data) => (data ? Object.values(data) : []),
   });
 
-  // Mutação para deletar um funcionário
   const { mutate: deleteEmployee } = useMutation({
     mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
@@ -44,24 +52,35 @@ const ManageEmployees = () => {
   };
 
   const handleDelete = (userId, userName) => {
-    const employeeToDelete = employees.find(emp => emp.userId === userId);
-    if (employeeToDelete && employeeToDelete.userRole === 'Admin') {
-      alert('Não é possível excluir um usuário com o papel de Administrador.');
+    const employee = employees.find(emp => emp.userId === userId);
+    if (employee && employee.userRole === 'Admin') {
+      setAlertMessage('Não é possível excluir um usuário com o papel de Administrador.');
+      setAlertOpen(true);
     } else {
-      if (window.confirm(`Tem certeza que deseja excluir o funcionário ${userName}?`)) {
-        deleteEmployee(userId);
-      }
+      setEmployeeToDelete({ userId, userName });
+      setConfirmOpen(true);
     }
   };
 
-  // Filtra os funcionários com base no termo de busca (nome ou email)
+  const confirmDelete = () => {
+    if (employeeToDelete) {
+      deleteEmployee(employeeToDelete.userId);
+      setConfirmOpen(false);
+      setEmployeeToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setConfirmOpen(false);
+    setEmployeeToDelete(null);
+  };
+
   const filteredEmployees = (employees || []).filter(
     (employee) =>
       (employee.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (employee.email || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Mapeia a role para um texto e uma classe de estilo
   const getRoleInfo = (role) => {
     switch (role) {
       case 'Admin':
@@ -77,7 +96,6 @@ const ManageEmployees = () => {
 
   if (isLoading) return <p>Carregando funcionários...</p>;
   if (error) return <p className="error">Erro ao carregar funcionários: {error.message}</p>;
-
 
   return (
     <div className={styles.pageContainer}>
@@ -129,16 +147,16 @@ const ManageEmployees = () => {
                       </span>
                     </td>
                     <td data-label="Ações" className={styles.actionsCell}>
-                      <button 
+                      <button
                         onClick={() => handleOpenModal(employee)}
-                        className={`${styles.actionButton} ${styles.editButton}`} 
+                        className={`${styles.actionButton} ${styles.editButton}`}
                         title="Editar"
                       >
                         <FaPencilAlt />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(employee.userId, employee.name)}
-                        className={`${styles.actionButton} ${styles.deleteButton}`} 
+                        className={`${styles.actionButton} ${styles.deleteButton}`}
                         title="Excluir"
                       >
                         <FaTrash />
@@ -158,6 +176,26 @@ const ManageEmployees = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         employee={selectedEmployee}
+      />
+      <AlertModal
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title="Aviso"
+        message={alertMessage}
+      />
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Confirmar exclusão"
+        message={
+          employeeToDelete
+            ? `Tem certeza que deseja excluir o funcionário ${employeeToDelete.userName}?`
+            : 'Tem certeza que deseja excluir este funcionário?'
+        }
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
       />
     </div>
   );

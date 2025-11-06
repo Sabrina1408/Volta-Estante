@@ -5,167 +5,136 @@
   border-radius: 8px;
   background-color: var(--primaryBackground);
 }
-
 .bookInfo {
-  flex: 1; /* Ocupa o espaço restante */
-  min-width: 0; /* Impede que o conteúdo interno (como a tabela) force o container a expandir além do limite */
+  flex: 1; 
+  min-width: 0; 
 }
-
 .thumbnail {
-  width: 180px; /* Largura fixa para a imagem */
+  width: 180px; 
   height: auto;
   object-fit: cover;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-/* Header within bookInfo: left is metadata, right is thumbnail column */
 .infoHeader {
   display: grid;
   grid-template-columns: 1fr 200px;
   gap: 1rem;
   align-items: start;
 }
-
 .infoMain {
   min-width: 0;
 }
-
 .thumbColumn {
   display: flex;
   justify-content: flex-end;
   align-items: start;
 }
-
 .bookDetails h2 {
   margin-top: 0;
   color: var(--sixnaryBackground);
   font-size: 1.8rem;
   margin-bottom: 1rem;
 }
-
 .bookDetails p {
   margin: 0.4rem 0;
   line-height: 1.6;
   color: var(--inputColor);
 }
-
 .bookDetails h3 {
   margin-top: 1.5rem;
   border-bottom: 1px solid var(--tertiaryBackground);
   padding-bottom: 0.5rem;
   color: var(--inputColor);
 }
-
 .bookDetails p strong {
   color: var(--quaternaryBackground);
-  min-width: 160px; /* Garante um alinhamento visual dos valores */
+  min-width: 160px; 
   display: inline-block;
   font-weight: 600;
 }
-
 .bookDetails p em {
   color: var(--quaternaryBackground);
   font-style: italic;
   display: block;
   margin-top: 0.5rem;
 }
-
 .editButton {
   background-color: var(--editBookBackground);
   padding: 8px 12px;
   border-radius: 4px;
 }
-
 .deleteButton {
   background-color: var(--deleteButtonBackground);
   padding: 8px 12px;
   border-radius: 4px;
 }
-
 .saleButton {
   background-color: var(--sellBookBackground);
   padding: 8px 12px;
   border-radius: 4px;
 }
-
 .copiesSection {
   margin-top: 2rem;
 }
-
 .copiesTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
-  table-layout: fixed; /* Essencial para alinhar as colunas */
+  table-layout: fixed; 
 }
-
 .copiesTable th,
 .copiesTable td {
   border: 1px solid var(--tertiaryBackground);
   padding: 10px 12px;
   text-align: left;
   vertical-align: middle;
-  word-wrap: break-word; /* Quebra palavras longas para evitar overflow */
+  word-wrap: break-word; 
 }
-
 .copiesTable th {
   background-color: var(--secondaryBackground);
 }
-
-/* Definindo larguras para as colunas */
-.copiesTable th:nth-child(1), .copiesTable td:nth-child(1) { width: 40%; } /* ID da Cópia */
-.copiesTable th:nth-child(2), .copiesTable td:nth-child(2) { width: 25%; } /* Estado */
-.copiesTable th:nth-child(3), .copiesTable td:nth-child(3) { width: 20%; } /* Preço */
-.copiesTable th:nth-child(4), .copiesTable td:nth-child(4) { width: 15%; } /* Ações */
-
+.copiesTable th:nth-child(1), .copiesTable td:nth-child(1) { width: 40%; } 
+.copiesTable th:nth-child(2), .copiesTable td:nth-child(2) { width: 25%; } 
+.copiesTable th:nth-child(3), .copiesTable td:nth-child(3) { width: 20%; } 
+.copiesTable th:nth-child(4), .copiesTable td:nth-child(4) { width: 15%; } 
 .copiesTable .actions {
   display: flex;
-  flex-wrap: wrap; /* Permite que os botões quebrem a linha quando necessário */
-  justify-content: flex-start; /* Alinha os botões de ação */
-  gap: 0.5rem; /* Espaçamento entre os botões */
+  flex-wrap: wrap; 
+  justify-content: flex-start; 
+  gap: 0.5rem; 
 }
-
 .copiesTable .actions button {
   padding: 6px 10px;
 }
-
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* Adiciona a rolagem horizontal quando necessário */
+  overflow-x: auto; 
 }
-
 @media (max-width: 1200px) {
   .copiesTable {
-    min-width: 600px; /* Força a tabela a ter uma largura mínima, ativando a rolagem */
+    min-width: 600px; 
   }
 }
-
-/* Em telas pequenas, empilha a infoHeader em coluna: metadata então thumbnail, e faz ações empilharem */
 @media (max-width: 800px) {
   .infoHeader {
     grid-template-columns: 1fr;
   }
-
   .thumbnail {
     width: 140px;
     display: block;
-    margin: 0 auto 1rem; /* centraliza a imagem */
+    margin: 0 auto 1rem; 
   }
 }
-
-/* Mobile: empilha os botões de ação um sobre o outro para evitar overflow */
 @media (max-width: 600px) {
   .copiesTable {
-    min-width: unset; /* Permite que a tabela se ajuste ao viewport em telas muito pequenas */
+    min-width: unset; 
   }
-
   .copiesTable .actions {
     flex-direction: column;
-    align-items: stretch; /* Faz os botões ocuparem toda a largura disponível */
+    align-items: stretch; 
     gap: 0.5rem;
   }
-
   .copiesTable .actions button {
     width: 100%;
   }

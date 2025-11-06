@@ -156,14 +156,11 @@
   padding-bottom: 1.5rem;
 }
 
-.headerText .title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--text-dark);
-}
-.headerText .subtitle {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  color: var(--text-light);
+.jsonOutput {
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: var(--white);
+  padding: 1rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-sm);
 }

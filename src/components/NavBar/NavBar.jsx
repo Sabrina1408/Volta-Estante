@@ -6,7 +6,7 @@ import AlertModal from '../AlertModal/AlertModal';
 
 const NavBar = () => {
   const [search, setSearch] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para o menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -19,13 +19,12 @@ const NavBar = () => {
     }
     navigate(`/search?q=${search}`);
     setSearch("");
-    setIsMenuOpen(false); // Fecha o menu após a busca
+    setIsMenuOpen(false);
   };
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
-  // Fecha o menu ao clicar em um link
   const handleLinkClick = () => {
     setIsMenuOpen(false);
   };
@@ -76,6 +75,11 @@ const NavBar = () => {
               <li>
                 <NavLink to="/logs" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
                   Logs
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/trending" className={({ isActive }) => (isActive ? styles.active : "")} onClick={handleLinkClick}>
+                  Em Alta
                 </NavLink>
               </li>
             </>

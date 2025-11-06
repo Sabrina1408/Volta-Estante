@@ -10,7 +10,6 @@
   align-items: center;
   z-index: 1000;
 }
-
 .modalContent {
   background-color: var(--white);
   padding: 2rem;
@@ -20,7 +19,6 @@
   max-width: 500px;
   position: relative;
 }
-
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -31,29 +29,24 @@
   cursor: pointer;
   color: var(--text-light);
 }
-
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-
 .form h2 {
   margin-top: 0;
   color: var(--color-primary);
 }
-
 .formGroup {
   display: flex;
   flex-direction: column;
 }
-
 .formGroup label {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--color-text-primary);
 }
-
 .formGroup input,
 .formGroup select {
   padding: 0.75rem;
@@ -62,16 +55,40 @@
   background-color: var(--color-background-paper);
   color: var(--color-text-primary);
 }
-
 .formGroup input:disabled {
   background-color: var(--color-background-disabled);
   cursor: not-allowed;
 }
-
 .success {
-  color: var(--metric-green); /* Texto verde para sucesso */
+  color: var(--metric-green); 
   background-color: transparent;
   padding: 0.75rem;
   border-radius: 4px;
   text-align: center;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+  background-color: var(--quaternaryBackground);
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.submitButton:not(:disabled):hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+.submitAdd:not(:disabled) {
+  background-color: var(--successBackground);
+}
+
+.submitEdit:not(:disabled) {
+  background-color: var(--successBackground);
 }

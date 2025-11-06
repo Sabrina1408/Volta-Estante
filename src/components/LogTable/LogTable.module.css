@@ -1,17 +1,14 @@
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* Habilita a rolagem horizontal */
+  overflow-x: auto; 
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
-
-/* Tabela */
 .logTable {
   width: 100%;
   border-collapse: collapse;
   min-width: 800px;
 }
-
 .logTable th,
 .logTable td {
   padding: 1rem 1.25rem;
@@ -22,7 +19,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .logTable th {
   background-color: var(--input-background);
   font-size: 0.875rem;
@@ -31,11 +27,9 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-
 .logTable tbody tr:last-child td {
-  border-bottom: none; /* Remove a borda da última linha */
+  border-bottom: none; 
 }
-
 .paginationControls {
   display: flex;
   justify-content: center;
@@ -43,7 +37,6 @@
   gap: 1rem;
   margin-top: 1.5rem;
 }
-
 .paginationControls button {
   padding: 8px 16px;
   border: 1px solid var(--tertiaryBackground);
@@ -53,11 +46,9 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 .paginationControls button:hover:not(:disabled) {
   background-color: var(--tertiaryBackground);
 }
-
 .paginationControls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

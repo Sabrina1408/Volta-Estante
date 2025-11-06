@@ -3,23 +3,18 @@
   padding: 16px;
   border-radius: 4px;
 }
-
 .roleSelection p {
   font-weight: bold;
 }
-
 .roleSelection div {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
 }
-
 .roleSelection label {
   font-weight: normal;
 }
-
-/* Espaço extra entre a seção de gerenciar funcionários e o footer da página */
 .manageSection {
   margin-bottom: 5rem;
 }

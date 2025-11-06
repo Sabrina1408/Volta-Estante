@@ -1,6 +1,4 @@
-// CSS
 import styles from "./Home.module.css";
-// Hooks
 import stackBooks from "../../assets/books.png";
 import dash from "../../assets/dash.png";
 import googleBooks from "../../assets/Google_Play_Books.png";

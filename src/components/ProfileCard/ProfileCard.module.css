@@ -1,142 +1,112 @@
-/* Container principal para centralizar o card na tela */
 .profileCardContainer {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Alinha no topo */
-
+    align-items: flex-start; 
     padding: 2rem;
     background-color: var(--secondaryBackground);
   }
-  
-  /* O card em si */
   .profileCard {
     width: 100%;
     max-width: 1100px;
-  background-color: var(--white); /* Fundo branco */
-    border-radius: 12px; /* Cantos arredondados */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+  background-color: var(--white); 
+    border-radius: 12px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
     overflow: hidden;
     display: flex;
     flex-direction: column;
   }
-  
-  /* Cabeçalho do card */
   .cardHeader {
     padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--border-color); /* Cinza claro */
+  border-bottom: 1px solid var(--border-color); 
   }
-  
   .title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
-  color: var(--text-dark); /* Cor escura */
+  color: var(--text-dark); 
   }
-  
   .subtitle {
     margin: 0.25rem 0 0;
     font-size: 0.9rem;
-  color: var(--text-light); /* Tom de cinza claro */
+  color: var(--text-light); 
   }
-  
-  /* Conteúdo principal do card */
   .cardContent {
     padding: 2rem;
   }
-  
-  /* Grid para os campos do formulário */
   .formGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Duas colunas */
+    grid-template-columns: 1fr 1fr; 
     gap: 1.5rem;
   }
-  
   .formGroup {
     display: flex;
     flex-direction: column;
   }
-  
   .formGroup label {
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
     font-weight: 500;
-  color: var(--text-dark); /* Cinza escuro */
+  color: var(--text-dark); 
   }
-  
   .formGroup input,
   .readOnlyInput {
     width: 100%;
     padding: 0.75rem 1rem;
-  background-color: var(--input-background); /* Cinza muito suave */
+  background-color: var(--input-background); 
   border: 1px solid var(--border-color);
-    border-radius: 8px; /* Cantos arredondados */
+    border-radius: 8px; 
     font-size: 1rem;
   color: var(--text-dark);
     box-sizing: border-box;
   }
-  
   .formGroup input:focus {
     outline: none;
     border-color: var(--editBookBackground);
     box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
   }
-  
-  /* Estilos para campos somente leitura */
   .readOnlyInput {
-  background-color: var(--input-background); /* Um pouco mais escuro para indicar não editável */
+  background-color: var(--input-background); 
     cursor: not-allowed;
     display: flex;
     align-items: center;
   }
-  
-  /* Wrapper para o input com ícone */
   .inputWrapper {
     position: relative;
   }
-  
   .inputIcon {
     position: absolute;
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-  color: var(--quaternaryBackground); /* Cinza */
+  color: var(--quaternaryBackground); 
   }
-  
-  /* Ajuste no padding do input com ícone */
   .inputWrapper input {
     padding-left: 2.75rem;
   }
-  
-  /* Metadado "Membro desde" */
   .memberSince {
     margin-top: 2rem;
     font-size: 0.875rem;
-  color: var(--text-light); /* Cinza claro */
+  color: var(--text-light); 
     text-align: left;
   }
-  
-  /* Rodapé com os botões */
   .cardFooter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
     padding: 1.5rem 2rem;
-  background-color: var(--input-background); /* Fundo cinza suave */
+  background-color: var(--input-background); 
   }
-
   .leftActions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
-
   .rightActions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
-
   .saveButton,
   .cancelButton,
   .logoutButton {
@@ -148,49 +118,37 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
-  /* Save button: default (disabled-looking) is gray; when enabled it becomes green
-     Use CSS variables defined in src/index.css to stay consistent with the theme */
   .saveButton {
-    background-color: var(--quaternaryBackground); /* gray */
-    color: var(--white); /* Texto branco */
+    background-color: var(--quaternaryBackground); 
+    color: var(--white); 
   }
-
-  /* Enabled state (when not disabled) shows success green from the global vars */
   .saveButton:not(:disabled) {
     background-color: var(--successBackground);
     color: var(--white);
   }
-
   .saveButton:disabled {
     cursor: not-allowed;
     opacity: 0.95;
   }
-
   .saveButton:not(:disabled):hover {
     filter: brightness(0.95);
     transform: translateY(-1px);
   }
-
   .cancelButton {
     background-color: transparent;
-    color: var(--text-dark); /* Texto escuro */
+    color: var(--text-dark); 
     border: 1px solid var(--border-color);
   }
-
   .logoutButton {
     background-color: var(--logoutButtonBackground);
     color: var(--white);
     border: none;
   }
-
   .logoutButton:hover {
     opacity: 0.9;
   }
-  
-  /* Responsividade para telas menores */
   @media (max-width: 768px) {
     .formGrid {
-      grid-template-columns: 1fr; /* Uma coluna */
+      grid-template-columns: 1fr; 
     }
   }
