@@ -63,7 +63,6 @@ def fetch_sale(sale_id, sebo_id):
     sale_doc = sale_ref.get()
     if not sale_doc.exists:
         raise NotFound(f"Sale with ID {sale_id} not found")
-    # Direct return - skip unnecessary validation
     return sale_doc.to_dict()
 
 def delete_sale(sale_id, sebo_id):
