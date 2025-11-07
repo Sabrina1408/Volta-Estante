@@ -94,48 +94,14 @@
   text-align: center;
 }
 .hotFilterButton.active {
-  background-color: var(--quaternaryBackground);
+  background-color: var(--quaternaryBackground
+);
   color: var(--white);
   border-color: var(--primary-color);
 }
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-}
-.salesTable {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px;
-}
-.salesTable th,
-.salesTable td {
-  padding: 1rem 1.25rem;
-  text-align: left;
-  vertical-align: middle;
-  border-bottom: 1px solid var(--border-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.salesTable th:nth-child(1), .salesTable td:nth-child(1) { width: 10%; }
-.salesTable th:nth-child(2), .salesTable td:nth-child(2) { width: 15%; }
-.salesTable th:nth-child(3), .salesTable td:nth-child(3) { width: 25%; }
-.salesTable th:nth-child(4), .salesTable td:nth-child(4) { width: 15%; }
-.salesTable th:nth-child(5), .salesTable td:nth-child(5) { width: 10%; }
-.salesTable th:nth-child(6), .salesTable td:nth-child(6) { width: 15%; }
-.salesTable th:nth-child(7), .salesTable td:nth-child(7) { width: 10%; }
-.salesTable th {
-  background-color: var(--input-background);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.salesTable tbody tr:last-child td {
-  border-bottom: none;
 }
 .paginationControls {
   display: flex;
