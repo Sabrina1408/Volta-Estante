@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./Cadastro.module.css";
 import { useApi } from "../../hooks/useApi";
-import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
+import { getFriendlyError } from "../../utils/errorMessages";
 import AlertModal from '../../components/AlertModal/AlertModal';
 
 const Cadastro = () => {
@@ -48,9 +48,9 @@ const Cadastro = () => {
         nameSebo: nomeSebo,
       };
 
-      await createUser(payload);
-  setAlertMessage('Usuário cadastrado com sucesso!');
-  setAlertOnClose(() => () => navigate('/login'));
+    await createUser(payload);
+  setAlertMessage(getFriendlyError('USER_SIGNUP_SUCCESS'));
+  setAlertOnClose(() => () => navigate('/perfil'));
   setAlertOpen(true);
 
     } catch (error) {
@@ -59,7 +59,7 @@ const Cadastro = () => {
         await cred.user.delete().catch(err => console.error("Falha ao fazer rollback do usuário no Firebase:", err));
       }
 
-      const friendlyError = getFriendlyFirebaseError(error?.code, "Erro ao cadastrar");
+      const friendlyError = getFriendlyError(error?.code, "SIGNUP_FAILED");
       setError(friendlyError);
     }
 

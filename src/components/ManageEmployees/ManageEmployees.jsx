@@ -8,6 +8,7 @@ import { FaSearch, FaUserPlus, FaPencilAlt, FaTrash } from 'react-icons/fa';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
 import AlertModal from '../AlertModal/AlertModal';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const ManageEmployees = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,11 +33,11 @@ const ManageEmployees = () => {
     mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['employees']);
-      setAlertMessage('Funcionário excluído com sucesso!');
+      setAlertMessage(getFriendlyError('EMPLOYEE_DELETE_SUCCESS'));
       setAlertOpen(true);
     },
-    onError: (err) => {
-      setAlertMessage(`Erro ao excluir funcionário: ${err.message}`);
+    onError: (_err) => {
+      setAlertMessage(getFriendlyError('EMPLOYEE_DELETE_FAILED'));
       setAlertOpen(true);
     },
   });
@@ -95,7 +96,7 @@ const ManageEmployees = () => {
   };
 
   if (isLoading) return <p>Carregando funcionários...</p>;
-  if (error) return <p className="error">Erro ao carregar funcionários: {error.message}</p>;
+  if (error) return <p className="error">{getFriendlyError('EMPLOYEE_LOAD_FAILED')}</p>;
 
   return (
     <div className={styles.pageContainer}>

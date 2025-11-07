@@ -7,6 +7,7 @@ import styles from "./Perfil.module.css";
 import ProfileCard from "../../components/ProfileCard/ProfileCard";
 import ManageEmployees from "../../components/ManageEmployees/ManageEmployees";
 import AlertModal from '../../components/AlertModal/AlertModal';
+import { getFriendlyError } from "../../utils/errorMessages";
 
 const Perfil = () => {
   const { user, logout } = useAuth();
@@ -27,7 +28,7 @@ const Perfil = () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", user?.uid] });
     },
     onError: (error) => {
-      setAlertMessage(`Erro ao atualizar perfil: ${error.message}`);
+  setAlertMessage(getFriendlyError('PROFILE_UPDATE_FAILED'));
       setAlertOpen(true);
     },
   });
@@ -63,8 +64,7 @@ const Perfil = () => {
   };
 
   const handleCancel = () => {
-
-    navigate("/dashboard");
+    navigate("/perfil");
   };
 
   const [alertOpen, setAlertOpen] = useState(false);
@@ -78,14 +78,13 @@ const Perfil = () => {
 
     return (
       <div className={styles.perfil}>
-        <p className="error">Erro ao carregar o perfil: {error.message}</p>
+        <p className="error">{getFriendlyError('PROFILE_LOAD_FAILED')}</p>
       </div>
     );
   }
 
   return (
     <div className={styles.perfil}>
-      {}
       <ProfileCard
         user={profileData}
         onSave={handleSave}
@@ -93,8 +92,6 @@ const Perfil = () => {
         isSaving={isSaving}
         onLogout={handleLogout}
       />
-
-      {}
       {profileData?.userRole === "Admin" && (
         <div className={styles.manageSection}>
           <ManageEmployees />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import styles from './RecuperarSenha.module.css';
 import { useAuth } from '../../context/AuthContext';
-import { getFriendlyFirebaseError } from '../../utils/firebaseErrors';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const RecuperarSenha = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ const RecuperarSenha = () => {
     },
     onError: (err) => {
       console.error("reset password error:", err);
-      const friendlyError = getFriendlyFirebaseError(err?.code, "Erro ao enviar e-mail de recuperação.");
+      const friendlyError = getFriendlyError(err?.code, "PASSWORD_RESET_FAILED");
       setError(friendlyError);
     }
   });

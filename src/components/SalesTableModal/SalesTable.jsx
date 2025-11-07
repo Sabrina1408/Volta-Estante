@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import styles from './SalesTable.module.css';
 import Spinner from '../Spinner/Spinner';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const SalesTable = ({ isOpen }) => {
   const { authFetch } = useApi();
@@ -16,7 +17,7 @@ const SalesTable = ({ isOpen }) => {
     <div className={styles.salesCard}>
       <div className={styles.tableWrapper}>
         {isLoading && <Spinner />}
-        {error && <p className="error">Erro ao carregar vendas: {error.message}</p>}
+        {error && <p className="error">{getFriendlyError('SALE_LOAD_FAILED')}</p>}
         {sales && (
           <table className={styles.salesTable}>
             <thead>

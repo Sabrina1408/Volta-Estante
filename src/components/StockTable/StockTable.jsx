@@ -7,6 +7,7 @@ import styles from "./StockTable.module.css";
 import { FaTrash } from "react-icons/fa";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import AlertModal from "../AlertModal/AlertModal";
+import { getFriendlyError } from "../../utils/errorMessages";
 
 const StockTable = () => {
   const [filter, setFilter] = useState("");
@@ -51,7 +52,7 @@ const StockTable = () => {
     },
     onError: (err) => {
       console.error("Erro ao deletar livro:", err);
-      setAlertMessage("Não foi possível excluir o livro. Tente novamente.");
+      setAlertMessage(getFriendlyError('BOOK_DELETE_FAILED'));
       setShowAlert(true);
     },
   });
@@ -86,7 +87,7 @@ const StockTable = () => {
 
   if (isLoading || isLoadingProfile) return <p>Carregando estoque...</p>;
   if (error)
-    return <p className="error">Erro ao carregar o estoque: {error.message}</p>;
+    return <p className="error">{getFriendlyError('STOCK_LOAD_FAILED')}</p>;
 
   const allCategories = books
     ? [...new Set(books.flatMap((book) => book.categories || []))].sort()

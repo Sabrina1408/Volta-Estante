@@ -19,6 +19,7 @@ import Logs from "./pages/Logs/Logs";;
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
 import AlertModal from "./components/AlertModal/AlertModal";
+import { getFriendlyError } from "./utils/errorMessages";
 
 function AppRoutes() {
   const { user, loading, logout } = useAuth();
@@ -61,14 +62,14 @@ function AppRoutes() {
   return (
     <>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Home />} />
+  <Route path="/" element={user ? <Navigate to="/perfil" replace /> : <Home />} />
         <Route
           path="/login"
           element={!user ? <Login /> : <Navigate to="/perfil" replace />}
         />
         <Route
           path="/cadastro"
-          element={!user ? <Cadastro /> : <Navigate to="/dashboard" replace />}
+          element={!user ? <Cadastro /> : <Navigate to="/perfil" replace />}
         />
         <Route
           path="/recuperarSenha"
@@ -98,13 +99,13 @@ function AppRoutes() {
           path="/logs"
           element={user ? <Logs /> : <Navigate to="/login" replace />}
         />
-        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
+  <Route path="*" element={<Navigate to={user ? "/perfil" : "/"} replace />} />
       </Routes>
       <AlertModal
         open={deletedProfileModalOpen}
         onClose={handleDeletedProfileClose}
         title="Conta excluída"
-        message={"Sua conta foi excluída por um administrador. Clique em Continuar para ir para a página de cadastro."}
+        message={getFriendlyError('ACCOUNT_DELETED')}
         okText="Continuar"
       />
     </>

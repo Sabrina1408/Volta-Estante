@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import EditCopyModal from '../EditCopyModal/EditCopyModal';
 import ConfirmModal from '../ConfirmModal/ConfirmModal';
 import AlertModal from '../AlertModal/AlertModal';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const BookDetails = ({ book }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -57,11 +58,11 @@ const BookDetails = ({ book }) => {
     onSuccess: () => {
 
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
-      setAlertMessage('Venda registrada com sucesso!');
+      setAlertMessage(getFriendlyError('SALE_REGISTER_SUCCESS'));
       setAlertOpen(true);
     },
     onError: (err) => {
-      setAlertMessage(`Erro ao registrar venda: ${err.message}`);
+  setAlertMessage(getFriendlyError('SALE_REGISTER_FAILED'));
       setAlertOpen(true);
     },
   });
@@ -78,11 +79,11 @@ const BookDetails = ({ book }) => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
-      setAlertMessage('Cópia excluída com sucesso!');
+      setAlertMessage(getFriendlyError('COPY_DELETE_SUCCESS'));
       setAlertOpen(true);
     },
     onError: (err) => {
-      setAlertMessage(`Erro ao excluir cópia: ${err.message}`);
+  setAlertMessage(getFriendlyError('COPY_DELETE_FAILED'));
       setAlertOpen(true);
     },
   });
