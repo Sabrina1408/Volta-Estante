@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { useApi } from '../../hooks/useApi';
 import styles from './Vendas.module.css';
-import Spinner from '../../components/Spinner/Spinner';
-import { getFriendlyError } from '../../utils/errorMessages';
 import SalesTable from '../../components/SalesTableModal/SalesTable';
 
 const Vendas = () => {
@@ -27,12 +25,23 @@ const Vendas = () => {
         categories: [],
       };
     }
-    // Extrai todas as categorias únicas, tratando arrays de categorias
+    
+    const splitCategories = (categoryString) => {
+      if (!categoryString) return [];
+      return categoryString.split(',').map(cat => cat.trim()).filter(Boolean);
+    };
+
     const categories = [...new Set(
-      sales.flatMap(sale => 
-        Array.isArray(sale.bookCategory) ? sale.bookCategory : [sale.bookCategory]
-      ).filter(Boolean) // Remove valores nulos/undefined
-    )].sort(); // Ordena alfabeticamente
+      sales.flatMap(sale => {
+        const categories = sale.bookCategory;
+        if (!categories) return [];
+        if (typeof categories === 'string') return splitCategories(categories);
+        if (Array.isArray(categories)) {
+          return categories.flatMap(cat => splitCategories(cat));
+        }
+        return [];
+      })
+    )].sort();
     
     return { categories };
   }, [sales]);
@@ -43,9 +52,22 @@ const Vendas = () => {
       : [];
 
     if (filters.category !== 'all') {
-      sortedSales = sortedSales.filter(sale => 
-        Array.isArray(sale.bookCategory) && sale.bookCategory.includes(filters.category)
-      );
+      sortedSales = sortedSales.filter(sale => {
+        const categories = sale.bookCategory;
+        if (!categories) return false;
+
+        const hasCategory = (categoryStr) => {
+          return categoryStr.split(',')
+            .map(cat => cat.trim())
+            .some(cat => cat === filters.category);
+        };
+
+        if (typeof categories === 'string') return hasCategory(categories);
+        if (Array.isArray(categories)) {
+          return categories.some(cat => hasCategory(cat));
+        }
+        return false;
+      });
     }
 
     if (filters.isHot) {
