@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
 import styles from "./LogTable.module.css";
+import { getFriendlyError } from "../../utils/errorMessages";
 
 const LogTable = () => {
   const { authFetch } = useApi();
@@ -28,7 +29,7 @@ const LogTable = () => {
   }
 
   if (error) {
-    return <p className="error">Erro ao carregar o histórico: {error.message}</p>;
+    return <p className="error">{getFriendlyError('LOG_LOAD_FAILED')}</p>;
   }
 
   if (!sortedLogs || sortedLogs.length === 0) {

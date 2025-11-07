@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Login.module.css';
-import { getFriendlyFirebaseError } from '../../utils/firebaseErrors';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ const Login = () => {
     },
     onError: (err) => {
       console.error("login error:", err);
-      const friendlyError = getFriendlyFirebaseError(err?.code, "Erro ao efetuar login.");
+      const friendlyError = getFriendlyError(err?.code, "LOGIN_FAILED");
       setError(friendlyError);
     }
   });

@@ -18,6 +18,7 @@ import { FaDollarSign, FaTags, FaBoxOpen, FaShoppingCart } from "react-icons/fa"
 import { useApi } from "../../hooks/useApi";
 import styles from "./Dashboard.module.css";
 import Spinner from "../../components/Spinner/Spinner";
+import { getFriendlyError } from "../../utils/errorMessages";
 
 const getCssVariableValue = (variable) => {
 
@@ -205,8 +206,7 @@ const Dashboard = () => {
   }
 
   if (isErrorSales || isErrorStock) {
-    const errorMessage = errorSales?.message || errorStock?.message;
-    return <div className={styles.centered}>Erro ao carregar dados: {errorMessage}</div>;
+    return <div className={styles.centered}>{getFriendlyError('DASHBOARD_LOAD_FAILED')}</div>;
   }
 
   return (

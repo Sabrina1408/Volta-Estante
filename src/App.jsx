@@ -19,6 +19,7 @@ import Logs from "./pages/Logs/Logs";;
 import Footer from "./components/Footer/Footer";
 import NavBar from "./components/NavBar/NavBar";
 import AlertModal from "./components/AlertModal/AlertModal";
+import { getFriendlyError } from "./utils/errorMessages";
 
 function AppRoutes() {
   const { user, loading, logout } = useAuth();
@@ -104,7 +105,7 @@ function AppRoutes() {
         open={deletedProfileModalOpen}
         onClose={handleDeletedProfileClose}
         title="Conta excluída"
-        message={"Sua conta foi excluída por um administrador. Clique em Continuar para ir para a página de cadastro."}
+        message={getFriendlyError('ACCOUNT_DELETED')}
         okText="Continuar"
       />
     </>

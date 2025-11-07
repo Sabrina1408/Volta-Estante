@@ -6,6 +6,7 @@ import { sendPasswordResetEmail, getAuth } from 'firebase/auth';
 import styles from './EmployeeModal.module.css';
 import { FaTimes } from 'react-icons/fa';
 import AlertModal from '../AlertModal/AlertModal';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const EmployeeModal = ({ isOpen, onClose, employee }) => {
   const [name, setName] = useState('');
@@ -53,20 +54,20 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
       const temp = data?.temporary_password;
       const link = data?.password_reset_link;
       if (!emp?.email) {
-        setAlertInfo({ open: true, title: 'Erro ao Adicionar Funcionário', message: 'Resposta inválida do servidor. Tente novamente.', isSuccess: false });
+        setAlertInfo({ open: true, title: getFriendlyError('EMPLOYEE_ADD_FAILED'), message: getFriendlyError('EMPLOYEE_ADD_INVALID_RESPONSE'), isSuccess: false });
         return;
       }
       try {
         const auth = getAuth();
         await sendPasswordResetEmail(auth, emp.email);
-        setAlertInfo({ open: true, title: 'Funcionário Adicionado com Sucesso!', message: `O funcionário ${emp.name || ''} foi adicionado e um e-mail foi enviado para ${emp.email} com instruções para redefinir a senha.<br /><br />Senha temporária (caso necessário): <strong>${temp || ''}</strong>`, isSuccess: true });
+        setAlertInfo({ open: true, title: getFriendlyError('EMPLOYEE_ADD_SUCCESS'), message: `O funcionário ${emp.name || ''} foi adicionado e um e-mail foi enviado para ${emp.email} com instruções para redefinir a senha.<br /><br />Senha temporária (caso necessário): <strong>${temp || ''}</strong>`, isSuccess: true });
       } catch {
-        setAlertInfo({ open: true, title: 'Funcionário Adicionado com Sucesso!', message: `O funcionário ${emp.name || ''} foi adicionado.<br />Senha temporária: <strong>${temp || ''}</strong><br />Link para redefinir senha: <a href='${link || '#'}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a><br /><br /><em>Nota: Não foi possível enviar o e-mail automaticamente. Compartilhe estas informações com o funcionário.</em>`, isSuccess: true });
+        setAlertInfo({ open: true, title: getFriendlyError('EMPLOYEE_ADD_SUCCESS'), message: `O funcionário ${emp.name || ''} foi adicionado.<br />Senha temporária: <strong>${temp || ''}</strong><br />Link para redefinir senha: <a href='${link || '#'}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a><br /><br /><em>Nota: Não foi possível enviar o e-mail automaticamente. Compartilhe estas informações com o funcionário.</em>`, isSuccess: true });
       }
       queryClient.invalidateQueries(['employees']);
     },
     onError: () => {
-      setAlertInfo({ open: true, title: 'Erro ao Adicionar Funcionário', message: 'Não foi possível adicionar o funcionário. Tente novamente.', isSuccess: false });
+      setAlertInfo({ open: true, title: getFriendlyError('EMPLOYEE_ADD_FAILED'), message: getFriendlyError('EMPLOYEE_ADD_FAILED'), isSuccess: false });
     },
   });
 
@@ -84,7 +85,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
       setAlertInfo({
         open: true,
         title: 'Sucesso',
-        message: 'Função atualizada com sucesso!',
+        message: getFriendlyError('EMPLOYEE_UPDATE_SUCCESS'),
         isSuccess: true,
       });
       queryClient.invalidateQueries(['employees']);
@@ -101,7 +102,7 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
       setTimeout(onClose, 1500);
     },
     onError: () => {
-      setAlertInfo({ open: true, title: 'Erro ao Atualizar', message: 'Erro ao atualizar. Tente novamente.', isSuccess: false });
+      setAlertInfo({ open: true, title: getFriendlyError('EMPLOYEE_UPDATE_FAILED'), message: getFriendlyError('EMPLOYEE_UPDATE_FAILED'), isSuccess: false });
     },
   });
 

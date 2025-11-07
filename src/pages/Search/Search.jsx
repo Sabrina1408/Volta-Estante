@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../hooks/useApi';
 import BookDetails from '../../components/BookDetails/BookDetails';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -27,7 +28,7 @@ const Search = () => {
     <div className={styles.search}>
       <h1>Resultados para: {query}</h1>
       {isLoading && query && <p>Carregando...</p>} {}
-      {error && <p className="error">Ocorreu um erro ao buscar o livro: {error.message}</p>}
+      {error && <p className="error">{getFriendlyError('BOOK_SEARCH_FAILED')}</p>}
       {isSuccess && (
         <>
           {book ? (

@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react';
 import { useApi } from '../../hooks/useApi';
 import styles from './Vendas.module.css';
 import Spinner from '../../components/Spinner/Spinner';
+import { getFriendlyError } from '../../utils/errorMessages';
 
 const Vendas = () => {
   const { authFetch } = useApi();
@@ -109,7 +110,7 @@ const Vendas = () => {
 
         <div className={styles.tableWrapper}>
           {isLoading && <Spinner />}
-          {error && <p className="error">Erro ao carregar vendas: {error.message}</p>}
+          {error && <p className="error">{getFriendlyError('SALE_LOAD_FAILED')}</p>}
           {sales && (
             <table className={styles.salesTable}>
               <thead>

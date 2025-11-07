@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "../../hooks/useApi";
-import { getFriendlyFirebaseError } from "../../utils/firebaseErrors";
+import { getFriendlyError } from "../../utils/errorMessages";
 
 const AddBookModal = ({ isOpen, onClose }) => {
   const [isbn, setIsbn] = useState("");
@@ -45,7 +45,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
       }, 1500);
     },
     onError: (error) => {
-      const friendlyError = getFriendlyFirebaseError(
+      const friendlyError = getFriendlyError(
         error.code,
         error.message || "Ocorreu um erro ao adicionar o livro."
       );
