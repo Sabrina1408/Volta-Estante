@@ -41,9 +41,66 @@
   font-size: 0.9rem;
   color: var(--text-light);
 }
+.filterCard {
+  background-color: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+}
+.filterGroup label {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-light);
+}
+.selectWrapper {
+  position: relative;
+}
+.filterSelect {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--input-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--text-dark);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em;
+  padding-right: 2.5rem;
+}
+.filterSelect:hover {
+  cursor: pointer;
+}
+.hotFilterButton {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--input-background);
+  color: var(--text-dark);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 1rem;
+  text-align: center;
+}
+.hotFilterButton.active {
+  background-color: var(--quaternaryBackground);
+  color: var(--white);
+  border-color: var(--primary-color);
+}
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
@@ -78,7 +135,7 @@
   letter-spacing: 0.05em;
 }
 .salesTable tbody tr:last-child td {
-  border-bottom: none; 
+  border-bottom: none;
 }
 .paginationControls {
   display: flex;
@@ -109,5 +166,10 @@
   }
   .tableWrapper {
     overflow-x: auto;
+  }
+}
+@media (max-width: 768px) {
+  .filterCard {
+    grid-template-columns: 1fr;
   }
 }
