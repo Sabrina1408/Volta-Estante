@@ -4,9 +4,20 @@ import { getFriendlyError } from "../../utils/errorMessages";
 
 const formatCategories = (categories) => {
   if (!categories) return "N/A";
-  if (typeof categories === "string") return categories;
+  
+  const formatCategory = (categoryStr) => {
+    return categoryStr.split(',')
+      .map(cat => cat.trim())
+      .filter(Boolean)
+      .join("\n");
+  };
+
+  if (typeof categories === "string") return formatCategory(categories);
   if (Array.isArray(categories)) {
-    return categories.map(cat => cat.trim()).filter(Boolean).join("\n");
+    return categories
+      .flatMap(cat => formatCategory(cat))
+      .filter(Boolean)
+      .join("\n");
   }
   return "N/A";
 };
