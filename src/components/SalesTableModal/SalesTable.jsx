@@ -45,7 +45,7 @@ const SalesTable = ({ sales, isLoading, error }) => {
           </thead>
           <tbody>
             {sales.map((sale) => (
-              <tr key={sale.sale_id}>
+              <tr key={sale.saleId}>
                 <td data-label="ID da Venda">{sale.saleId}</td>
                 <td data-label="Data">
                   {new Date(sale.saleDate).toLocaleDateString("pt-BR")}
