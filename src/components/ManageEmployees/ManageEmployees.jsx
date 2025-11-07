@@ -35,8 +35,8 @@ const ManageEmployees = () => {
       setAlertMessage('Funcionário excluído com sucesso!');
       setAlertOpen(true);
     },
-    onError: (err) => {
-      setAlertMessage(`Erro ao excluir funcionário: ${err.message}`);
+    onError: (_err) => {
+      setAlertMessage('Erro ao excluir funcionário. Tente novamente.');
       setAlertOpen(true);
     },
   });

@@ -39,54 +39,47 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
   const isDirty = isEditing ? userRole !== originalRole : true;
 
   const { mutate: addEmployee, isLoading: isAdding } = useMutation({
-    mutationFn: (newEmployee) =>
-      authFetch(`/users/employees/`, {
+    mutationFn: async (newEmployee) => {
+      const res = await authFetch(`/users/employees/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEmployee),
-      }).then((res) => res.json()),
+      });
+      if (!res.ok) throw new Error();
+      return res.json();
+    },
     onSuccess: async (data) => {
-      const { employee_user, temporary_password, password_reset_link } = data;
-      
+      const emp = data?.employee_user;
+      const temp = data?.temporary_password;
+      const link = data?.password_reset_link;
+      if (!emp?.email) {
+        setAlertInfo({ open: true, title: 'Erro ao Adicionar Funcionário', message: 'Resposta inválida do servidor. Tente novamente.', isSuccess: false });
+        return;
+      }
       try {
         const auth = getAuth();
-        await sendPasswordResetEmail(auth, employee_user.email);
-        
-        setAlertInfo({
-          open: true,
-          title: 'Funcionário Adicionado com Sucesso!',
-          message: `O funcionário ${employee_user.name} foi adicionado e um e-mail foi enviado para ${employee_user.email} com instruções para redefinir a senha.<br /><br />Senha temporária (caso necessário): <strong>${temporary_password}</strong>`,
-          isSuccess: true,
-        });
-      } catch (emailError) {
-        console.error('Erro ao enviar email:', emailError);
-        setAlertInfo({
-          open: true,
-          title: 'Funcionário Adicionado com Sucesso!',
-          message: `O funcionário ${employee_user.name} foi adicionado.<br />Senha temporária: <strong>${temporary_password}</strong><br />Link para redefinir senha: <a href='${password_reset_link}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a><br /><br /><em>Nota: Não foi possível enviar o e-mail automaticamente. Compartilhe estas informações com o funcionário.</em>`,
-          isSuccess: true,
-        });
+        await sendPasswordResetEmail(auth, emp.email);
+        setAlertInfo({ open: true, title: 'Funcionário Adicionado com Sucesso!', message: `O funcionário ${emp.name || ''} foi adicionado e um e-mail foi enviado para ${emp.email} com instruções para redefinir a senha.<br /><br />Senha temporária (caso necessário): <strong>${temp || ''}</strong>`, isSuccess: true });
+      } catch {
+        setAlertInfo({ open: true, title: 'Funcionário Adicionado com Sucesso!', message: `O funcionário ${emp.name || ''} foi adicionado.<br />Senha temporária: <strong>${temp || ''}</strong><br />Link para redefinir senha: <a href='${link || '#'}' target='_blank' rel='noopener noreferrer'>Redefinir Senha</a><br /><br /><em>Nota: Não foi possível enviar o e-mail automaticamente. Compartilhe estas informações com o funcionário.</em>`, isSuccess: true });
       }
-      
       queryClient.invalidateQueries(['employees']);
     },
-    onError: (err) => {
-      setAlertInfo({
-        open: true,
-        title: 'Erro ao Adicionar Funcionário',
-        message: err.message,
-        isSuccess: false,
-      });
+    onError: () => {
+      setAlertInfo({ open: true, title: 'Erro ao Adicionar Funcionário', message: 'Não foi possível adicionar o funcionário. Tente novamente.', isSuccess: false });
     },
   });
 
   const { mutate: updateEmployee, isLoading: isUpdating } = useMutation({
-    mutationFn: (updatedData) =>
-      authFetch(`/users/${employee.userId}`, {
+    mutationFn: async (updatedData) => {
+      const res = await authFetch(`/users/${employee.userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData),
-      }).then((res) => res.json()),
+      });
+      if (!res.ok) throw new Error();
+      return res.json();
+    },
     onSuccess: async () => {
       setAlertInfo({
         open: true,
@@ -107,13 +100,8 @@ const EmployeeModal = ({ isOpen, onClose, employee }) => {
       
       setTimeout(onClose, 1500);
     },
-    onError: (err) => {
-      setAlertInfo({
-        open: true,
-        title: 'Erro ao Atualizar',
-        message: err.message,
-        isSuccess: false,
-      });
+    onError: () => {
+      setAlertInfo({ open: true, title: 'Erro ao Atualizar', message: 'Erro ao atualizar. Tente novamente.', isSuccess: false });
     },
   });
 

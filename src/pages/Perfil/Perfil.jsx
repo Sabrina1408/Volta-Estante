@@ -27,7 +27,7 @@ const Perfil = () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", user?.uid] });
     },
     onError: (error) => {
-      setAlertMessage(`Erro ao atualizar perfil: ${error.message}`);
+  setAlertMessage('Erro ao atualizar perfil. Tente novamente.');
       setAlertOpen(true);
     },
   });
@@ -85,7 +85,6 @@ const Perfil = () => {
 
   return (
     <div className={styles.perfil}>
-      {}
       <ProfileCard
         user={profileData}
         onSave={handleSave}
@@ -93,8 +92,6 @@ const Perfil = () => {
         isSaving={isSaving}
         onLogout={handleLogout}
       />
-
-      {}
       {profileData?.userRole === "Admin" && (
         <div className={styles.manageSection}>
           <ManageEmployees />

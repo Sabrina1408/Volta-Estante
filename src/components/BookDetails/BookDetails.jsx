@@ -61,7 +61,7 @@ const BookDetails = ({ book }) => {
       setAlertOpen(true);
     },
     onError: (err) => {
-      setAlertMessage(`Erro ao registrar venda: ${err.message}`);
+  setAlertMessage('Erro ao registrar venda. Tente novamente.');
       setAlertOpen(true);
     },
   });
@@ -82,7 +82,7 @@ const BookDetails = ({ book }) => {
       setAlertOpen(true);
     },
     onError: (err) => {
-      setAlertMessage(`Erro ao excluir cópia: ${err.message}`);
+  setAlertMessage('Erro ao excluir cópia. Tente novamente.');
       setAlertOpen(true);
     },
   });
