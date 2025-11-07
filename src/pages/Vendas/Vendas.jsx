@@ -42,8 +42,8 @@ const Vendas = () => {
       sortedSales = sortedSales.filter(sale => 
         sale.ratingsCount !== undefined && 
         sale.averageRating !== undefined &&
-        sale.ratingsCount >= 100 && 
-        sale.averageRating >= 4
+        sale.ratingsCount >= 1 && 
+        sale.averageRating >= 1
       );
     }
 
@@ -102,7 +102,7 @@ const Vendas = () => {
               className={`${styles.hotFilterButton} ${filters.isHot ? styles.active : ''}`}
               onClick={toggleHotFilter}
             >
-              Em Alta
+              Mais avaliados
             </button>
           </div>
         </div>
@@ -120,6 +120,8 @@ const Vendas = () => {
                   <th>ISBN</th>
                   <th>Preço</th>
                   <th>Estado</th>
+                  <th>Avaliação</th>
+                  <th>Número de Avaliações</th>
                   <th>Vendido por</th>
                 </tr>
               </thead>
@@ -132,12 +134,14 @@ const Vendas = () => {
                     <td data-label="ISBN">{sale.isbn}</td>
                     <td data-label="Preço">{sale.bookPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     <td data-label="Estado">{sale.conservationState}</td>
+                    <td data-label="Avaliação">{sale.averageRating ? sale.averageRating.toFixed(1) : 'N/A'}</td>
+                    <td data-label="Número de Avaliações">{sale.ratingsCount || 'N/A'}</td>
                     <td data-label="Vendido por">{sale.userName}</td>
                   </tr>
                 ))}
                 {paginatedSales.length === 0 && (
                   <tr>
-                    <td colSpan="7">Nenhuma venda encontrada.</td>
+                    <td colSpan="9">Nenhuma venda encontrada.</td>
                   </tr>
                 )}
               </tbody>

@@ -13,7 +13,7 @@ def create_sale(user_id, sebo_id, ISBN, copy_id):
     copy_ref = book_ref.collection('Copies').document(copy_id)
 
     user_doc = user_ref.get(['name'])
-    book_doc = book_ref.get(['title', 'authors', 'categories', 'averageRating'])
+    book_doc = book_ref.get(['title', 'authors', 'categories', 'averageRating', 'ratingsCount'])
     copy_doc = copy_ref.get(['price', 'conservationState'])
 
 
@@ -36,6 +36,7 @@ def create_sale(user_id, sebo_id, ISBN, copy_id):
         "authors": book_data.get('authors', ['Unknown']),
         "book_category": book_data.get('categories', ['Unknown']),
         "average_rating": book_data.get('averageRating', 0.0),
+        "ratings_count": book_data.get('ratingsCount', 0),
         "book_price": copy_data.get('price', 0.0),
         "conservation_state": copy_data.get('conservationState', 'Novo'),
     }

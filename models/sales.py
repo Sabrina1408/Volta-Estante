@@ -16,6 +16,7 @@ class Sales(BaseModel):
     authors: List[str] = Field(default_factory=list)
     book_category: List[str] = Field(default_factory=list)
     average_rating: Optional[float] = None
+    ratings_count: Optional[int] = None
     book_price: float
     conservation_state: ConservationState
     sale_date: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())

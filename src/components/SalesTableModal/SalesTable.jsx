@@ -27,6 +27,8 @@ const SalesTable = ({ isOpen }) => {
                 <th>ISBN</th>
                 <th>Preço</th>
                 <th>Estado</th>
+                <th>Avaliação</th>
+                <th>Número de Avaliações</th>
                 <th>Vendido por</th>
               </tr>
             </thead>
@@ -39,12 +41,14 @@ const SalesTable = ({ isOpen }) => {
                   <td data-label="ISBN">{sale.isbn}</td>
                   <td data-label="Preço">{sale.bookPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                   <td data-label="Estado">{sale.conservationState}</td>
+                  <td data-label="Avaliação">{sale.average_rating ? sale.average_rating.toFixed(1) : 'N/A'}</td>
+                  <td data-label="Número de Avaliações">{sale.ratings_count || 'N/A'}</td>
                   <td data-label="Vendido por">{sale.userName}</td>
                 </tr>
               ))}
               {sales.length === 0 && (
                 <tr>
-                  <td colSpan="7">Nenhuma venda encontrada.</td>
+                  <td colSpan="9">Nenhuma venda encontrada.</td>
                 </tr>
               )}
             </tbody>
