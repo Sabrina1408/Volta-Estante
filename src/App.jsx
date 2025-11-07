@@ -61,14 +61,14 @@ function AppRoutes() {
   return (
     <>
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Home />} />
+  <Route path="/" element={user ? <Navigate to="/perfil" replace /> : <Home />} />
         <Route
           path="/login"
           element={!user ? <Login /> : <Navigate to="/perfil" replace />}
         />
         <Route
           path="/cadastro"
-          element={!user ? <Cadastro /> : <Navigate to="/dashboard" replace />}
+          element={!user ? <Cadastro /> : <Navigate to="/perfil" replace />}
         />
         <Route
           path="/recuperarSenha"
@@ -98,7 +98,7 @@ function AppRoutes() {
           path="/logs"
           element={user ? <Logs /> : <Navigate to="/login" replace />}
         />
-        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} replace />} />
+  <Route path="*" element={<Navigate to={user ? "/perfil" : "/"} replace />} />
       </Routes>
       <AlertModal
         open={deletedProfileModalOpen}

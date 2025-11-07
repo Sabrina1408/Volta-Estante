@@ -63,8 +63,7 @@ const Perfil = () => {
   };
 
   const handleCancel = () => {
-
-    navigate("/dashboard");
+    navigate("/perfil");
   };
 
   const [alertOpen, setAlertOpen] = useState(false);

@@ -15,7 +15,7 @@ const Login = () => {
   const { mutate, isLoading } = useMutation({
     mutationFn: ({ email, password }) => login(email, password),
     onSuccess: () => {
-      navigate("/");
+      navigate("/perfil");
     },
     onError: (err) => {
       console.error("login error:", err);

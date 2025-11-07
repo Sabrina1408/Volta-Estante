@@ -48,9 +48,9 @@ const Cadastro = () => {
         nameSebo: nomeSebo,
       };
 
-      await createUser(payload);
+    await createUser(payload);
   setAlertMessage('Usuário cadastrado com sucesso!');
-  setAlertOnClose(() => () => navigate('/login'));
+  setAlertOnClose(() => () => navigate('/perfil'));
   setAlertOpen(true);
 
     } catch (error) {
