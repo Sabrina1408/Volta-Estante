@@ -1,12 +1,21 @@
-import styles from './SalesTable.module.css';
-import Spinner from '../Spinner/Spinner';
-import { getFriendlyError } from '../../utils/errorMessages';
+import styles from "./SalesTable.module.css";
+import Spinner from "../Spinner/Spinner";
+import { getFriendlyError } from "../../utils/errorMessages";
+
+const formatCategories = (categories) => {
+  if (!categories) return "N/A";
+  if (typeof categories === "string") return categories;
+  if (Array.isArray(categories)) {
+    return categories.map(cat => cat.trim()).filter(Boolean).join("\n");
+  }
+  return "N/A";
+};
 
 const SalesTable = ({ sales, isLoading, error }) => {
   return (
     <div className={styles.tableWrapper}>
       {isLoading && <Spinner />}
-      {error && <p className="error">{getFriendlyError('SALE_LOAD_FAILED')}</p>}
+      {error && <p className="error">{getFriendlyError("SALE_LOAD_FAILED")}</p>}
       {sales && (
         <table className={styles.salesTable}>
           <thead>
@@ -15,6 +24,7 @@ const SalesTable = ({ sales, isLoading, error }) => {
               <th>Data</th>
               <th>Livro</th>
               <th>ISBN</th>
+              <th>Categoria</th>
               <th>Preço</th>
               <th>Estado</th>
               <th>Avaliação</th>
@@ -26,19 +36,33 @@ const SalesTable = ({ sales, isLoading, error }) => {
             {sales.map((sale) => (
               <tr key={sale.sale_id}>
                 <td data-label="ID da Venda">{sale.saleId}</td>
-                <td data-label="Data">{new Date(sale.saleDate).toLocaleDateString('pt-BR')}</td>
+                <td data-label="Data">
+                  {new Date(sale.saleDate).toLocaleDateString("pt-BR")}
+                </td>
                 <td data-label="Livro">{sale.bookTitle}</td>
                 <td data-label="ISBN">{sale.isbn}</td>
-                <td data-label="Preço">{sale.bookPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                <td data-label="Categoria">
+                  {formatCategories(sale.bookCategory)}
+                </td>
+                <td data-label="Preço">
+                  {sale.bookPrice.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </td>
                 <td data-label="Estado">{sale.conservationState}</td>
-                <td data-label="Avaliação">{sale.averageRating ? sale.averageRating.toFixed(1) : 'N/A'}</td>
-                <td data-label="Número de Avaliações">{sale.ratingsCount || 'N/A'}</td>
+                <td data-label="Avaliação">
+                  {sale.averageRating ? sale.averageRating.toFixed(1) : "N/A"}
+                </td>
+                <td data-label="Número de Avaliações">
+                  {sale.ratingsCount || "N/A"}
+                </td>
                 <td data-label="Vendido por">{sale.userName}</td>
               </tr>
             ))}
             {sales.length === 0 && (
               <tr>
-                <td colSpan="9">Nenhuma venda encontrada.</td>
+                <td colSpan="10">Nenhuma venda encontrada.</td>
               </tr>
             )}
           </tbody>

@@ -27,7 +27,13 @@ const Vendas = () => {
         categories: [],
       };
     }
-    const categories = [...new Set(sales.flatMap(sale => sale.bookCategory))];
+    // Extrai todas as categorias únicas, tratando arrays de categorias
+    const categories = [...new Set(
+      sales.flatMap(sale => 
+        Array.isArray(sale.bookCategory) ? sale.bookCategory : [sale.bookCategory]
+      ).filter(Boolean) // Remove valores nulos/undefined
+    )].sort(); // Ordena alfabeticamente
+    
     return { categories };
   }, [sales]);
 
@@ -37,7 +43,9 @@ const Vendas = () => {
       : [];
 
     if (filters.category !== 'all') {
-      sortedSales = sortedSales.filter(sale => sale.bookCategory.includes(filters.category));
+      sortedSales = sortedSales.filter(sale => 
+        Array.isArray(sale.bookCategory) && sale.bookCategory.includes(filters.category)
+      );
     }
 
     if (filters.isHot) {

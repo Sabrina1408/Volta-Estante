@@ -17,20 +17,31 @@
   text-align: left;
   vertical-align: middle;
   border-bottom: 1px solid var(--border-color);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.salesTable th:nth-child(1), .salesTable td:nth-child(1) { width: 10%; }
-.salesTable th:nth-child(2), .salesTable td:nth-child(2) { width: 15%; }
-.salesTable th:nth-child(3), .salesTable td:nth-child(3) { width: 25%; }
-.salesTable th:nth-child(4), .salesTable td:nth-child(4) { width: 15%; }
-.salesTable th:nth-child(5), .salesTable td:nth-child(5) { width: 10%; }
-.salesTable th:nth-child(6), .salesTable td:nth-child(6) { width: 15%; }
-.salesTable th:nth-child(7), .salesTable td:nth-child(7) { width: 10%; }
-.salesTable th:nth-child(8), .salesTable td:nth-child(8) { width: 10%; }
-.salesTable th:nth-child(9), .salesTable td:nth-child(9) { width: 10%; }
+/* Removido white-space: nowrap para a coluna de categoria */
+.salesTable td:not(:nth-child(5)) {
+  white-space: nowrap;
+}
+
+/* Estilo específico para a coluna de categoria */
+.salesTable td:nth-child(5) {
+  white-space: pre-line;
+  line-height: 1.4;
+}
+
+.salesTable th:nth-child(1), .salesTable td:nth-child(1) { width: 8%; }
+.salesTable th:nth-child(2), .salesTable td:nth-child(2) { width: 10%; }
+.salesTable th:nth-child(3), .salesTable td:nth-child(3) { width: 15%; }
+.salesTable th:nth-child(4), .salesTable td:nth-child(4) { width: 10%; }
+.salesTable th:nth-child(5), .salesTable td:nth-child(5) { width: 12%; }
+.salesTable th:nth-child(6), .salesTable td:nth-child(6) { width: 8%; }
+.salesTable th:nth-child(7), .salesTable td:nth-child(7) { width: 8%; }
+.salesTable th:nth-child(8), .salesTable td:nth-child(8) { width: 8%; }
+.salesTable th:nth-child(9), .salesTable td:nth-child(9) { width: 8%; }
+.salesTable th:nth-child(10), .salesTable td:nth-child(10) { width: 13%; }
 
 .salesTable th {
   background-color: var(--input-background);
