@@ -21,6 +21,7 @@ const errorMessages = {
   "STOCK_LOAD_FAILED": "Erro ao carregar o estoque.",
   "BOOK_DELETE_FAILED": "Erro ao excluir livro.",
   "BOOK_SEARCH_FAILED": "Ocorreu um erro ao buscar o livro.",
+  "BOOK_GOOGLE_NOT_FOUND": "Livro com este ISBN não foi encontrado na Google Books. Verifique o ISBN (use 13 dígitos começando com 978).",
   "SALE_LOAD_FAILED": "Erro ao carregar vendas.",
   "SALE_REGISTER_FAILED": "Erro ao registrar venda. Tente novamente.",
   "COPY_DELETE_FAILED": "Erro ao excluir exemplar. Tente novamente.",

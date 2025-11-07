@@ -45,10 +45,18 @@ const AddBookModal = ({ isOpen, onClose }) => {
       }, 1500);
     },
     onError: (error) => {
-      const friendlyError = getFriendlyError(
-        error.code,
-        error.message || "Ocorreu um erro ao adicionar o livro."
-      );
+      let rawMsg = error.message || "";
+      let friendlyError;
+      if (/not found via Google Books API/i.test(rawMsg)) {
+        const match = rawMsg.match(/ISBN\s+(\S+)/i);
+        const isbnNotFound = match ? match[1] : isbn;
+        friendlyError = `O Livro com a ISBN ${isbnNotFound} não foi encontrado na API do Google Books.`;
+      } else {
+        friendlyError = getFriendlyError(
+          error.code,
+          rawMsg || "Ocorreu um erro ao adicionar o livro."
+        );
+      }
       setMessageType("error");
       setMessage(friendlyError);
       console.error("Erro ao adicionar livro:", error);
