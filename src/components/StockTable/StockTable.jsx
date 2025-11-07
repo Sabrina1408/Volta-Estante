@@ -45,7 +45,12 @@ const StockTable = () => {
   const isReader = profileData?.userRole === "Reader";
 
   const { mutate: deleteBook } = useMutation({
-    mutationFn: (isbn) => authFetch(`/books/${isbn}`, { method: "DELETE" }),
+    mutationFn: async (isbn) => {
+      const res = await authFetch(`/books/${isbn}`, { method: "DELETE" });
+      if (!res.ok) throw new Error('BOOK_DELETE_FAILED');
+      if (res.status === 204) return null;
+      return await res.json().catch(() => null);
+    },
     onSuccess: () => {
 
       queryClient.invalidateQueries(["stock"]);

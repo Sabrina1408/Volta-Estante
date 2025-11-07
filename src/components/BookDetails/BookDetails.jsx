@@ -46,17 +46,17 @@ const BookDetails = ({ book }) => {
     : [];
 
   const { mutate: sellCopy } = useMutation({
-    mutationFn: (copyId) => authFetch(`/sales/${isbn}/${copyId}`, { method: 'POST' }).then(async (res) => {
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({
-            error: { message: "Erro desconhecido no servidor." },
-          }));
-          throw new Error(errorData.error?.message || `Erro ${res.status}`);
-        }
-        return res.json();
-      }),
+    mutationFn: async (copyId) => {
+      const res = await authFetch(`/sales/${isbn}/${copyId}`, { method: 'POST' });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: { message: 'Erro desconhecido no servidor.' } }));
+        throw new Error(errorData.error?.message || `Erro ${res.status}`);
+      }
+      const data = await res.json();
+      if (!data?.saleId) throw new Error('SALE_REGISTER_FAILED');
+      return data;
+    },
     onSuccess: () => {
-
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
       setAlertMessage(getFriendlyError('SALE_REGISTER_SUCCESS'));
       setAlertOpen(true);
@@ -68,15 +68,18 @@ const BookDetails = ({ book }) => {
   });
 
   const { mutate: deleteCopy } = useMutation({
-    mutationFn: (copyId) => authFetch(`/books/${isbn}/copies/${copyId}`, { method: 'DELETE' }).then(async (res) => {
-        if (!res.ok) {
-          const errorData = await res.json().catch(() => ({
-            error: { message: "Erro desconhecido no servidor." },
-          }));
-          throw new Error(errorData.error?.message || `Erro ${res.status}`);
-        }
-        return res.json();
-      }),
+    mutationFn: async (copyId) => {
+      const res = await authFetch(`/books/${isbn}/copies/${copyId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: { message: 'Erro desconhecido no servidor.' } }));
+        throw new Error(errorData.error?.message || `Erro ${res.status}`);
+      }
+      // Se for 204 (sem corpo), apenas retorna null.
+      if (res.status === 204) return null;
+      // Se houver corpo JSON válido, retorna; senão ignora.
+      const data = await res.json().catch(() => null);
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookSearch', isbn] });
       setAlertMessage(getFriendlyError('COPY_DELETE_SUCCESS'));

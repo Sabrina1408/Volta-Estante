@@ -16,12 +16,16 @@ const Perfil = () => {
   const queryClient = useQueryClient();
 
   const { mutate: updateUser, isLoading: isSaving } = useMutation({
-    mutationFn: (updatedData) =>
-      authFetch(`/users/${user.uid}`, {
+    mutationFn: async (updatedData) => {
+      const res = await authFetch(`/users/${user.uid}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
-      }),
+      });
+      if (!res.ok) throw new Error('PROFILE_UPDATE_FAILED');
+      if (res.status === 204) return null;
+      return await res.json().catch(() => null);
+    },
     onSuccess: () => {
       setAlertMessage('Perfil atualizado com sucesso!');
       setAlertOpen(true);

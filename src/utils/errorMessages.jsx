@@ -33,7 +33,7 @@ const errorMessages = {
   "USER_SIGNUP_SUCCESS": "Usuário cadastrado com sucesso!",
   "EMPLOYEE_DELETE_SUCCESS": "Funcionário excluído com sucesso!",
   "SALE_REGISTER_SUCCESS": "Venda registrada com sucesso!",
-  "COPY_DELETE_SUCCESS": "Exemplar excluído com sucesso!",
+  "COPY_DELETE_SUCCESS": "Cópia excluída com sucesso!",
   "EMPLOYEE_ADD_SUCCESS": "Funcionário adicionado com sucesso!",
   "EMPLOYEE_UPDATE_SUCCESS": "Funcionário atualizado com sucesso!",
 };

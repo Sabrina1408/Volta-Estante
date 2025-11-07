@@ -30,7 +30,12 @@ const ManageEmployees = () => {
   });
 
   const { mutate: deleteEmployee } = useMutation({
-    mutationFn: (userId) => authFetch(`/users/${userId}`, { method: 'DELETE' }),
+    mutationFn: async (userId) => {
+      const res = await authFetch(`/users/${userId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('EMPLOYEE_DELETE_FAILED');
+      if (res.status === 204) return null;
+      return await res.json().catch(() => null);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['employees']);
       setAlertMessage(getFriendlyError('EMPLOYEE_DELETE_SUCCESS'));
