@@ -19,6 +19,11 @@
   width: 90%;
   max-width: 500px;
 }
+/* Limit modal height so it never exceeds viewport and allow internal scrolling */
+.modalContent {
+  max-height: 90vh;
+  overflow-y: auto;
+}
 .closeButton {
   position: absolute;
   top: 0.5rem;
@@ -50,13 +55,21 @@
   font-weight: bold;
 }
 .addBookForm input,
-.addBookForm select {
+.addBookForm select,
+.addBookForm textarea {
   padding: 0.75rem;
   border: 1px solid var(--tertiaryBackground);
   border-radius: 4px;
   font-size: 1rem;
   background-color: var(--white);
   color: var(--primaryText);
+}
+
+/* Textarea specific adjustments */
+.addBookForm textarea {
+  min-height: 80px;
+  max-height: 40vh;
+  resize: vertical;
 }
 .addBookForm button {
   padding: 0.75rem;
@@ -80,4 +93,11 @@
   color: green;
   text-align: center;
   font-weight: bold;
+}
+
+.manualToggleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-start;
 }
