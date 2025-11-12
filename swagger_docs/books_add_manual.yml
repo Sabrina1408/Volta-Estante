@@ -1,0 +1,130 @@
+tags:
+  - Livros
+summary: Adicionar livro manualmente ao estoque
+description: |
+  Adiciona um livro manualmente ao estoque do sebo sem usar a API do Google Books.
+  Use este endpoint quando a API não retornar o livro ou os dados estiverem incorretos.
+  
+  **Campos obrigatórios:**
+  - ISBN (string, 13 dígitos)
+  - title (string)
+  - price (number)
+  - conservationState (string: NEW, GOOD, FAIR, POOR)
+  
+  **Campos opcionais:**
+  - language (string, ex: "pt", "en")
+  - authors (array de strings)
+  - publisher (string)
+  - categories (array de strings)
+  - publishedDate (string, formato ISO)
+  - description (string)
+  - pageCount (integer)
+  - thumbnail (string, URL)
+  - smallThumbnail (string, URL)
+  - maturityRating (string)
+  - 
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - ISBN
+        - title
+        - price
+        - conservationState
+      properties:
+        ISBN:
+          type: string
+          description: ISBN-13 do livro (será normalizado automaticamente)
+          example: "9788535932423"
+        title:
+          type: string
+          description: Título do livro
+          example: "Dom Casmurro"
+        price:
+          type: number
+          format: float
+          description: Preço do exemplar (obrigatório)
+          example: 25.90
+        conservationState:
+          type: string
+          enum: [NEW, GOOD, FAIR, POOR]
+          description: Estado de conservação do exemplar (obrigatório)
+          example: "GOOD"
+        language:
+          type: string
+          description: Código do idioma (ISO 639-1) - opcional
+          example: "pt"
+        authors:
+          type: array
+          items:
+            type: string
+          description: Lista de autores
+          example: ["Machado de Assis"]
+        publisher:
+          type: string
+          description: Editora
+          example: "Companhia das Letras"
+        categories:
+          type: array
+          items:
+            type: string
+          description: Categorias do livro
+          example: ["Ficção", "Literatura Brasileira"]
+        publishedDate:
+          type: string
+          description: Data de publicação
+          example: "1899"
+        description:
+          type: string
+          description: Descrição do livro
+          example: "Romance escrito por Machado de Assis..."
+        pageCount:
+          type: integer
+          description: Número de páginas
+          example: 256
+        thumbnail:
+          type: string
+          description: URL da imagem de capa (tamanho normal)
+          example: "http://books.google.com/books/content?id=..."
+        smallThumbnail:
+          type: string
+          description: URL da imagem de capa (thumbnail pequeno)
+          example: "http://books.google.com/books/content?id=..."
+        maturityRating:
+          type: string
+          description: Classificação etária
+          example: "NOT_MATURE"
+
+responses:
+  201:
+    description: Livro adicionado manualmente com sucesso
+    schema:
+      type: object
+      properties:
+        ISBN:
+          type: string
+          example: "9788535932423"
+        title:
+          type: string
+          example: "Dom Casmurro"
+        message:
+          type: string
+          example: "Book added manually successfully"
+  400:
+    description: Dados inválidos ou campos obrigatórios ausentes
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Missing required field: title"
+  401:
+    description: Token de autenticação inválido ou ausente
+  403:
+    description: Usuário sem permissão para adicionar livros
+  404:
+    description: Sebo não encontrado

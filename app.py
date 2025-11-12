@@ -152,6 +152,43 @@ def add_book_route():
     created = save_book(g.sebo_id, book_data, inventory_data)
     return jsonify(created), 201
 
+@app.route("/books/manual", methods=["POST"])
+@permission_required(UserRole.ADMIN, UserRole.EDITOR)
+@log_action("Adicionar Livro Manualmente")
+@swag_from('swagger_docs/books_add_manual.yml')
+def add_manual_book_route():
+    data = request.get_json()
+    if not data: 
+        raise BadRequest("Invalid JSON data")
+    
+    required_fields = ["ISBN", "title", "conservationState", "price"]
+    for field in required_fields:
+        if field not in data:
+            raise BadRequest(f"Missing required field: {field}")
+    
+    inventory_data = {
+        "price": data.get("price"),
+        "conservation_state": data.get("conservationState")
+    }
+    
+    book_data = {
+        "ISBN": data.get("ISBN"),
+        "title": data.get("title"),
+        "language": data.get("language"),  
+        "authors": data.get("authors", []),
+        "publisher": data.get("publisher"),
+        "categories": data.get("categories", []),
+        "publishedDate": data.get("publishedDate"),
+        "description": data.get("description"),
+        "pageCount": data.get("pageCount"),
+        "thumbnail": data.get("thumbnail"),
+        "smallThumbnail": data.get("smallThumbnail"),
+        "maturityRating": data.get("maturityRating"),
+    }
+    
+    created = add_manual_book(g.sebo_id, book_data, inventory_data)
+    return jsonify(created), 201
+
 @app.route("/books", methods=["GET"])
 @permission_required(UserRole.ADMIN, UserRole.EDITOR, UserRole.READER)
 @swag_from('swagger_docs/books_list.yml')

@@ -16,7 +16,7 @@ class Book(BaseModel):
     page_count: Optional[int] = None
     ratings_count: Optional[int] = None
     average_rating: Optional[float] = None
-    language: str
+    language: Optional[str] = None
     maturity_rating: Optional[str] = None
     thumbnail: Optional[str] = None
     small_thumbnail: Optional[str] = None

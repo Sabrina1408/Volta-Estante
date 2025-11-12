@@ -49,6 +49,55 @@ def save_book(sebo_id, book_data, inventory_data):
     except Exception as e:
         raise BadRequest(f"Data was not modified: failed to save book: {e}")
                             
+def add_manual_book(sebo_id, book_data, inventory_data):
+    try:
+        copy = Copy.model_validate(inventory_data)
+    except ValidationError as e:
+        raise BadRequest(f"Invalid inventory data: {e}")
+    
+    ISBN = sanitize_isbn(book_data.get('ISBN', ''))
+    if not ISBN or len(ISBN) != 13:
+        raise BadRequest("Invalid book data: Missing or invalid ISBN-13")
+    
+    if not book_data.get('title'):
+        raise BadRequest("Invalid book data: Missing title")
+    
+    sebo_ref = db.collection('Sebos').document(sebo_id)
+    if not sebo_ref.get().exists:
+        raise NotFound(f"Sebo with ID {sebo_id} not found")
+    
+    book_ref = sebo_ref.collection('Books').document(ISBN)
+    book_doc = book_ref.get()
+    book_exists = book_doc.exists
+    
+    transaction = db.transaction()
+    @firestore.transactional
+    def add_manual_book_transaction(transaction, book_ref, copy, book_exists):
+        if not book_exists:
+            book_data['totalQuantity'] = 1
+            book_data['ISBN'] = book_ref.id
+            # Validate complete book model
+            book = Book.model_validate(book_data)
+            transaction.set(book_ref, book.model_dump(by_alias=True, exclude={'copies'}))
+        else:
+            transaction.update(book_ref, {"totalQuantity": firestore.firestore.Increment(1)})
+        
+        copy_ref = book_ref.collection('Copies').document()
+        copy_data = copy.model_dump(by_alias=True, exclude={'copyId'})
+        copy_data['copyId'] = copy_ref.id  
+        transaction.set(copy_ref, copy_data)
+    
+    try:
+        add_manual_book_transaction(transaction, book_ref, copy, book_exists)
+        return {
+            "ISBN": ISBN,
+            "title": book_data.get('title'),
+            "message": "Book added manually successfully"
+        }
+    except ValidationError as e:
+        raise BadRequest(f"Invalid book data: {e}")
+    except Exception as e:
+        raise BadRequest(f"Data was not modified: failed to add manual book: {e}")
 
 def fetch_book(sebo_id, ISBN):
     if not ISBN:
