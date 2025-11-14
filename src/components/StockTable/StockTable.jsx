@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import { useAuth } from "../../context/AuthContext";
 import styles from "./StockTable.module.css";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaPlus } from "react-icons/fa";
+import QuickAddCopyModal from "../QuickAddCopyModal/QuickAddCopyModal";
 import ConfirmModal from "../ConfirmModal/ConfirmModal";
 import AlertModal from "../AlertModal/AlertModal";
 import { getFriendlyError } from "../../utils/errorMessages";
@@ -85,6 +86,8 @@ const StockTable = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAddBook, setQuickAddBook] = useState(null);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -231,6 +234,16 @@ const StockTable = () => {
                     <td>
                       <div className={styles.actions}>
                         <button
+                          onClick={() => {
+                            setQuickAddBook(book);
+                            setShowQuickAdd(true);
+                          }}
+                          title="Adicionar cópia"
+                          className={styles.quickAddButton}
+                        >
+                          <FaPlus />
+                        </button>
+                        <button
                           onClick={() => handleDelete(book)}
                           className={styles.deleteButton}
                         >
@@ -285,6 +298,14 @@ const StockTable = () => {
         confirmText="Excluir"
         cancelText="Cancelar"
         variant="danger"
+      />
+      <QuickAddCopyModal
+        isOpen={showQuickAdd}
+        onClose={() => {
+          setShowQuickAdd(false);
+          setQuickAddBook(null);
+        }}
+        book={quickAddBook}
       />
       <AlertModal open={showAlert} onClose={() => setShowAlert(false)} title="Aviso" message={alertMessage} />
     </div>
