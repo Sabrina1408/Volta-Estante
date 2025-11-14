@@ -208,7 +208,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
               {message}
             </p>
           )}
-          <label htmlFor="isbn">ISBN:</label>
+          <label htmlFor="isbn">ISBN <span className={styles.required}>*</span></label>
           <input
             type="text"
             id="isbn"
@@ -228,7 +228,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
             />
           </div>
 
-          <label htmlFor="price">Preço (R$):</label>
+          <label htmlFor="price">Preço (R$) <span className={styles.required}>*</span></label>
           <input
             type="number"
             id="price"
@@ -241,7 +241,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
 
           {manualMode && (
             <>
-              <label htmlFor="title">Título:</label>
+              <label htmlFor="title">Título <span className={styles.required}>*</span></label>
               <input
                 type="text"
                 id="title"
@@ -342,7 +342,7 @@ const AddBookModal = ({ isOpen, onClose }) => {
             </>
           )}
 
-          <label htmlFor="conservationState">Estado de Conservação:</label>
+          <label htmlFor="conservationState">Estado de Conservação <span className={styles.required}>*</span></label>
           <select
             id="conservationState"
             value={conservationState}
