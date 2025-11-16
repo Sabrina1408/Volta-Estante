@@ -123,7 +123,7 @@ const StockTable = () => {
         const stockLevelMatch =
           stockLevelFilter === "all" ||
           (stockLevelFilter === "low" &&
-            book.totalQuantity >= 1 &&
+            book.totalQuantity >= 0 &&
             book.totalQuantity <= 5) ||
           (stockLevelFilter === "medium" &&
             book.totalQuantity >= 6 &&
@@ -196,7 +196,7 @@ const StockTable = () => {
             className={styles.filterSelect}
           >
             <option value="all">Todas</option>
-            <option value="low">Baixo (1-5)</option>
+            <option value="low">Baixo (0-5)</option>
             <option value="medium">Médio (6-10)</option>
             <option value="high">Alto (&gt;10)</option>
           </select>
