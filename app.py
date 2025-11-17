@@ -29,7 +29,7 @@ from services.google_books_service import fetch_book_by_isbn
 app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:5173"],
+        "origins": ["http://localhost:5173", "https://voltaaestante.web.app"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
