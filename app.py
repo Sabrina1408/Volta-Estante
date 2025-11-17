@@ -26,29 +26,16 @@ from services.google_books_service import fetch_book_by_isbn
 
 # Via auth vou ter o user_id, sebo_id e user_role
 
-app = Flask(__name__) 
-CORS(app, 
-     origins=["http://localhost:5173", "https://voltaaestante.web.app"], 
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization"],
-     supports_credentials=True,
-     max_age=86400
-)
-
-@app.after_request
-def after_request_handler(response):
-    response.headers['Access-Control-Allow-Private-Network'] = 'true'
-
-    try:
-        import time
-        if getattr(request, '_start_time', None):
-            duration = (time.time() - request._start_time) * 1000.0
-            app.logger.info(f"Request: {request.method} {request.path} completed in {duration:.1f}ms")
-    except Exception:
-        pass
-    
-    return response
-
+app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173", "https://voltaaestante.web.app"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True,
+        "max_age": 86400
+    }
+})
 
 
 swagger_config = {
