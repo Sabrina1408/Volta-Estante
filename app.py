@@ -26,16 +26,20 @@ from services.google_books_service import fetch_book_by_isbn
 
 # Via auth vou ter o user_id, sebo_id e user_role
 
-app = Flask(__name__) # TODO? Implementar fetch via nome, autor etc
-CORS(app, resources={
-    r"/*": {
-        "origins": ["http://localhost:5173", "https://voltaaestante.web.app"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "supports_credentials": True,
-        "max_age": 86400
-    }
-})
+app = Flask(__name__) 
+CORS(app, 
+     origins=["http://localhost:5173", "https://voltaaestante.web.app"], 
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     supports_credentials=True,
+     max_age=86400
+)
+
+@app.after_request
+def add_private_network_header(response):
+    response.headers['Access-Control-Allow-Private-Network'] = 'true'
+    return response
+
 
 
 swagger_config = {
