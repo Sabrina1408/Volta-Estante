@@ -81,6 +81,7 @@ const NavBar = () => {
           )}
         </ul>
 
+        {user && (
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -97,6 +98,7 @@ const NavBar = () => {
             </svg>
           </button>
         </form>
+        )}
 
     <AlertModal open={showAlert} onClose={() => setShowAlert(false)} title="Aviso" message={alertMessage} />
 
