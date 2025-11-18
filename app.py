@@ -41,9 +41,16 @@ from services.google_books_service import fetch_book_by_isbn
 # Via auth vou ter o user_id, sebo_id e user_role
 
 app = Flask(__name__)
+
+allowed_origins = os.environ.get('CORS_ALLOWED_ORIGINS')
+if allowed_origins:
+    origins = allowed_origins.split(',')
+else:
+    origins = ["http://localhost:5173", "https://voltaaestante.web.app"]
+
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:5173", "https://voltaaestante.web.app"],
+        "origins": origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],
         "supports_credentials": True,
