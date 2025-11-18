@@ -3,14 +3,28 @@ from flask_cors import CORS
 from flasgger import Swagger, swag_from
 import os
 from dotenv import load_dotenv
+import json
+import base64
 from firebase_admin import credentials, firestore
 import firebase_admin
 from werkzeug.exceptions import HTTPException, BadRequest, Forbidden
 from pydantic import ValidationError
 
 load_dotenv()
-path = os.getenv("GOOGLE_APLICATION_CREDENTIALS")
-cred = credentials.Certificate(path)
+
+sa_b64 = os.environ.get('FIREBASE_SERVICE_ACCOUNT_BASE64')
+if sa_b64:
+    try:
+        sa_json = json.loads(base64.b64decode(sa_b64).decode('utf-8'))
+        cred = credentials.Certificate(sa_json)
+    except Exception as e:
+        raise RuntimeError('Failed to parse FIREBASE_SERVICE_ACCOUNT_BASE64') from e
+else:
+    path = os.getenv('GOOGLE_APLICATION_CREDENTIALS') or os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+    if not path:
+        raise RuntimeError('Firebase service account not configured. Set FIREBASE_SERVICE_ACCOUNT_BASE64 or GOOGLE_APLICATION_CREDENTIALS')
+    cred = credentials.Certificate(path)
+
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
